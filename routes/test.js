@@ -5,7 +5,7 @@ router.post('/api/test', (req, res) => {
     const user = req.session.user;
 
     if (user) {
-        res.json({ username: user.username });
+        res.json({ username: user.sharedKey });
     } else {
         res.status(401).json({ message: '로그인 필요' });
     }
