@@ -1,26 +1,22 @@
-const express = require('express');
+const express = require('express'); // 서버 기본 모듈 추가
 const session = require('express-session');
 const bodyParser = require('body-parser');
-const app = express();
 const cors = require('cors');
+
+require('dotenv').config(); // env 파일 사용
+const app = express();
 const port = process.env.PORT || 3000;
-require('dotenv').config();
-const mongoose = require('mongoose');
 
-const updateSession = require('./middlewares/updateSession');
+const connectToMongoDB = require('./configs/mongo'); // MongoDB 연결 추가
+const db = connectToMongoDB();
 
-const loginRouter = require('./routes/login');
+const updateSession = require('./middlewares/updateSession'); // 미들웨어 추가
+
+const loginRouter = require('./routes/login'); // 라우터 추가
 const testRouter = require('./routes/test');
+const searchRouter = require('./routes/search');
 
-mongoose.connect(process.env.DB_HOST);
-
-const db = mongoose.connection;
-
-db.on('error', console.error.bind(console, 'MongoDB 연결 오류:'));
-
-const TestModel = mongoose.model('test2', new mongoose.Schema({}));
-
-app.use(bodyParser.json());
+app.use(bodyParser.json()); // JSON 요청 처리
 
 app.use(cors()); // CORS 설정
 
@@ -35,18 +31,9 @@ app.use(session({
 
 app.use(updateSession); // 세션 갱신 미들웨어 사용
 
-app.get('/api/db', async (req, res) => {
-  try {
-    const data = await TestModel.find({}).limit(10);
-    res.json(data);
-  } catch (err) {
-    console.error('데이터 조회 중 오류:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
 app.use(testRouter); // '/api/test' 경로에 대한 라우터 사용
 app.use(loginRouter); // '/api/login' 경로에 대한 라우터 사용
+app.use(searchRouter);
 
 // 서버 시작
 app.listen(port, () => {
