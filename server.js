@@ -1,12 +1,7 @@
 const express = require('express'); // 서버 기본 모듈 추가
 const session = require('express-session');
-require('dotenv').config();
-const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const session = require('express-session');
-const app = express();
-const cors = require('cors');
 
 require('dotenv').config(); // env 파일 사용
 const app = express();
@@ -14,17 +9,12 @@ const port = process.env.PORT || 3000;
 const updateSession = require('./backend/middlewares/updateSession');
 const loginRouter = require('./backend/routes/login');
 const testRouter = require('./backend/routes/test');
+const searchRouter = require('./backend/routes/search');
 const userRouters = require('./backend/routes/userRouters');
 const mongoose = require('mongoose');
 
-const connectToMongoDB = require('./configs/mongo'); // MongoDB 연결 추가
+const connectToMongoDB = require('./backend/configs/mongo') // MongoDB 연결 추가
 const db = connectToMongoDB();
-
-const updateSession = require('./middlewares/updateSession'); // 미들웨어 추가
-
-const loginRouter = require('./routes/login'); // 라우터 추가
-const testRouter = require('./routes/test');
-const searchRouter = require('./routes/search');
 
 app.use(bodyParser.json()); // JSON 요청 처리
 
