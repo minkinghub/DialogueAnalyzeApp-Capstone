@@ -1,27 +1,30 @@
-const express = require('express');
-const session = require('express-session');
-const bodyParser = require('body-parser');
-const app = express();
-const cors = require('cors');
-const port = process.env.PORT || 3000;
 require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const session = require('express-session');
+const app = express();
+const port = process.env.PORT || 3000;
+const updateSession = require('./backend/middlewares/updateSession');
+const loginRouter = require('./backend/routes/login');
+const testRouter = require('./backend/routes/test');
+const userRouters = require('./backend/routes/userRouters');
 const mongoose = require('mongoose');
-
-const updateSession = require('./middlewares/updateSession');
-
-const loginRouter = require('./routes/login');
-const testRouter = require('./routes/test');
-
-mongoose.connect(process.env.DB_HOST);
-
-const db = mongoose.connection;
-
-db.on('error', console.error.bind(console, 'MongoDB 연결 오류:'));
 
 const TestModel = mongoose.model('test2', new mongoose.Schema({}));
 
-app.use(bodyParser.json());
+// mongoDB 연결
+mongoose
+  .connect(process.env.DB_HOST)
+  .then(() => console.log('몽고DB 연결중...'))
+  .catch(e => console.error(e));
 
+app.get('/', (req, res) => {
+  res.send("안녕하세요?");
+});
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(cors()); // CORS 설정
 
 app.use(session({
@@ -45,6 +48,7 @@ app.get('/api/db', async (req, res) => {
   }
 });
 
+app.use("/api/users", userRouters); // 로그인, 회원가입, 로그아웃에 대한 라우터
 app.use(testRouter); // '/api/test' 경로에 대한 라우터 사용
 app.use(loginRouter); // '/api/login' 경로에 대한 라우터 사용
 
