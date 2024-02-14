@@ -6,25 +6,18 @@ const bodyParser = require('body-parser');
 require('dotenv').config(); // env 파일 사용
 const app = express();
 const port = process.env.PORT || 3000;
-const updateSession = require('./backend/middlewares/updateSession');
-const loginRouter = require('./backend/routes/login');
-const testRouter = require('./backend/routes/test');
-const searchRouter = require('./backend/routes/search');
-const userRouters = require('./backend/routes/userRouters');
-const mongoose = require('mongoose');
+
+const updateSession = require('./backend/middlewares/updateSession'); // 세션 미들웨어 추가
+
+const loginRouter = require('./backend/routes/login'); // 로그인 라우터 추가
+const testRouter = require('./backend/routes/test'); // 테스트 라우터 추가
+const searchRouter = require('./backend/routes/search'); // 검색 라우터 추가
+const userRouters = require('./backend/routes/userRouters'); // 사용자 라우터 추가
 
 const connectToMongoDB = require('./backend/configs/mongo') // MongoDB 연결 추가
 const db = connectToMongoDB();
 
 app.use(bodyParser.json()); // JSON 요청 처리
-
-const TestModel = mongoose.model('test2', new mongoose.Schema({}));
-
-// mongoDB 연결
-mongoose
-  .connect(process.env.DB_HOST)
-  .then(() => console.log('몽고DB 연결중...'))
-  .catch(e => console.error(e));
 
 app.get('/', (req, res) => {
   res.send("안녕하세요?");
@@ -45,20 +38,10 @@ app.use(session({
 
 app.use(updateSession); // 세션 갱신 미들웨어 사용
 
-app.get('/api/db', async (req, res) => {
-  try {
-    const data = await TestModel.find({}).limit(10);
-    res.json(data);
-  } catch (err) {
-    console.error('데이터 조회 중 오류:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
 app.use("/api/users", userRouters); // 로그인, 회원가입, 로그아웃에 대한 라우터
 app.use(testRouter); // '/api/test' 경로에 대한 라우터 사용
 app.use(loginRouter); // '/api/login' 경로에 대한 라우터 사용
-app.use(searchRouter);
+app.use(searchRouter); // 'api/search' 경로에 대한 라우터 사용
 
 // 서버 시작
 app.listen(port, () => {
