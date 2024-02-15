@@ -8,7 +8,8 @@ const userSchema = mongoose.Schema({
     type: String,
     maxlength: 150,
   },
-  email: {
+  // 주의: id가 email이므로 @ 같은 규칙 제작 必
+  id: {
     type: String,
     trim: true,
     unique: 1,
@@ -43,25 +44,18 @@ const userSchema = mongoose.Schema({
   },
 });
 
-//mongoose 기능 pre  > save 전에 뭘한다
+// 비밀번호 해싱
 userSchema.pre("save", function (next) {
-  var user = this;
-  if (user.isModified("password")) {
-    //비밀번호 암호화 bcrypt
-    //salt 생성 (saltRounds= 10)
-    bcrypt.genSalt(saltRounds, function (err, salt) {
+  const user = this;
+  const saltFactor = 10;
+  bcrypt.genSalt(saltFactor, (err, salt) => {
+    if (err) return next(err);
+    bcrypt.hash(user.password, salt, (err, hash) => {
       if (err) return next(err);
-      //this.password = myPlaintextPassword
-      bcrypt.hash(user.password, salt, function (err, hash) {
-        // Store hash in your password DB.
-        if (err) return next(err);
-        user.password = hash;
-        next();
-      });
-    });
-  } else {
-    next();
-  }
+      user.password = hash;
+      next();
+    })
+  })
 });
 
 userSchema.methods.comparePassword = function (plainPassword, cb) {
