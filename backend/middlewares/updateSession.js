@@ -6,7 +6,7 @@ const serverStartTimeInTimeZone = new Intl.DateTimeFormat('en-US', {
     hour12: false, // 24시간 표시를 위해
     year: 'numeric',
     month: '2-digit',
-    day: '2-digit',
+    day: '2-digit', 
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
@@ -28,4 +28,4 @@ function updateSession(req, res, next) {
     }
 }
   
-  module.exports = updateSession;
+module.exports = updateSession;
