@@ -1,21 +1,25 @@
-const { User } = require("../models/User");
+const { User } = require('../models/User');
 
-module.exports = function auth(req, res, next) {
-  //인증 처리를 하는 곳
+const auth = async (req, res, next) => {
+    const userId = req.session.user.userId;
+    const role = req.session.user.role;
 
-  //1. 클라이언트 쿠키에서 토큰을 가져온다.
-  let token = req.cookies.x_auth;
+    if (!userId) {
+        return res.status(401).json({ isAuth: false, message: '로그인이 필요합니다.' });
+    }
 
-  //2. 토큰을 복호화한다 > 유저를 찾는다.
-  User.findByToken(token, (err, user) => {
-    if (err) throw err;
-    if (!user) return res.json({ isAuth: false, error: true });
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(400).json({ isAuth: false, message: '유효하지 않은 사용자입니다.' });
+        }
 
-    req.token = token;
-    req.user = user;
-    next();
-  });
-  //3. 2조건 만족시 Okay
-
-  //4. 2조건 불만족시 NO
+        req.user = user;
+        next();
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 };
+
+module.exports = auth;
