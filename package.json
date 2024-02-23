@@ -3,6 +3,7 @@
   "dependencies": {
     "@react-native-community/cli-platform-android": "^12.3.5",
     "dotenv": "^16.4.3",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "react-native": "^0.73.4"
   }
 }
