@@ -1,6 +1,10 @@
 # Created by https://www.toptal.com/developers/gitignore/api/reactnative,node
 # Edit at https://www.toptal.com/developers/gitignore?templates=reactnative,node
 
+#csv files
+backend/AItest/*.csv
+backend/ai/*.csv
+
 ### Node ###
 # Logs
 logs
