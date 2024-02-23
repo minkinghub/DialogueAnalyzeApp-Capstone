@@ -1,4 +1,5 @@
 const express = require('express'); // 서버 기본 모듈 추가
+const helmet = require('helmet'); // 보안 모듈 추가
 const session = require('express-session');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -9,22 +10,18 @@ const port = process.env.PORT || 3000;
 
 const updateSession = require('./backend/middlewares/updateSession'); // 세션 미들웨어 추가
 
-const loginRouter = require('./backend/routes/login'); // 로그인 라우터 추가
 const testRouter = require('./backend/routes/test'); // 테스트 라우터 추가
-const searchRouter = require('./backend/routes/search'); // 검색 라우터 추가
 const userRouters = require('./backend/routes/userRouters'); // 사용자 라우터 추가
+const searchRouter = require('./backend/routes/search'); // 검색 라우터 추가
 
+// MongoDB 연결, 절대 지우지 말 것! 오류남!
 const connectToMongoDB = require('./backend/configs/mongo') // MongoDB 연결 추가
 const db = connectToMongoDB();
 
 app.use(bodyParser.json()); // JSON 요청 처리
 
-app.get('/', (req, res) => {
-  res.send("안녕하세요?");
-});
-
+app.use(helmet()); // 보안 모듈 사용
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
 app.use(cors()); // CORS 설정
 
 app.use(session({
@@ -40,8 +37,7 @@ app.use(updateSession); // 세션 갱신 미들웨어 사용
 
 app.use("/api/users", userRouters); // 로그인, 회원가입, 로그아웃에 대한 라우터
 app.use(testRouter); // '/api/test' 경로에 대한 라우터 사용
-app.use(loginRouter); // '/api/login' 경로에 대한 라우터 사용
-app.use(searchRouter); // 'api/search' 경로에 대한 라우터 사용
+app.use(searchRouter); // '/api/search' 경로에 대한 라우터 사용
 
 // 서버 시작
 app.listen(port, () => {

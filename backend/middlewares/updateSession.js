@@ -13,7 +13,8 @@ const serverStartTimeInTimeZone = new Intl.DateTimeFormat('en-US', {
 }).format(serverStartTime);
 
 function updateSession(req, res, next) {
-    if(req.path !== '/api/login') {
+    //if(req.path !== '/api/login') {
+    if (req.path !== '/api/users/login') {
         if (req.session.user) {
             // 세션에 사용자 정보가 있으면 갱신
             req.session.user.lastAccessed = new Date();
