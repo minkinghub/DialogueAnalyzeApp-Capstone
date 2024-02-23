@@ -17,7 +17,8 @@ export function loginUser(dataTosubmit) {
 export function registerUser(dataTosubmit) {
     const request = axios
         .post("/api/users/register", dataTosubmit)
-        .then((response) => response.data);
+        .then((response) => response.data)
+        .catch((error) => console.error("Error:", error));
     return {
         type: REGISTER_USER,
         payload: request,

@@ -1,26 +1,45 @@
-//const user = require('./front/controller/user'); // controller import
-//import user from './front/src/controller/user.js';
-// const loginRoutes = require('./backend/server/login');
-import loginRoutes from './backend/server.js';
-import express from 'express';
-import dotenv from 'dotenv';
+const express = require('express'); // 서버 기본 모듈 추가
+const helmet = require('helmet'); // 보안 모듈 추가
+const session = require('express-session');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 
-dotenv.config();
-
+require('dotenv').config(); // env 파일 사용
 const app = express();
-// .env에 입력된 포트값 사용, 없으면 3000(기본)포트 사용
-console.log("dotenv 정상 작동 확인: ", process.env.PORT);
 const port = process.env.PORT || 3000;
 
-app.use(express.json())
-app.use('/api/users', loginRoutes);
+const updateSession = require('./backend/middlewares/updateSession'); // 세션 미들웨어 추가
+
+const testRouter = require('./backend/routes/test'); // 테스트 라우터 추가
+const userRouters = require('./backend/routes/userRouters'); // 사용자 라우터 추가
+const searchRouter = require('./backend/routes/search'); // 검색 라우터 추가
+
+// MongoDB 연결, 절대 지우지 말 것! 오류남!
+const connectToMongoDB = require('./backend/configs/mongo') // MongoDB 연결 추가
+const db = connectToMongoDB();
+
+app.use(bodyParser.json()); // JSON 요청 처리
+
+app.use(helmet()); // 보안 모듈 사용
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors()); // CORS 설정
+
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { 
+    maxAge: 60 * 20 * 1000, // 유효 기간 20분
+    secure: false } // HTTPS를 사용하는 경우 true로 변경
+}));
+
+app.use(updateSession); // 세션 갱신 미들웨어 사용
+
+app.use("/api/users", userRouters); // 로그인, 회원가입, 로그아웃에 대한 라우터
+app.use(testRouter); // '/api/test' 경로에 대한 라우터 사용
+app.use(searchRouter); // '/api/search' 경로에 대한 라우터 사용
 
 // 서버 시작
 app.listen(port, () => {
   console.log(`서버가 http://localhost:${port} 에서 실행 중입니다.`);
-});
-
-// 기본 라우트
-app.get('/', (req, res) => {
-  res.send('간단한 노드 서버입니다.');
 });
