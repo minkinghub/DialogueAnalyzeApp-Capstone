@@ -5,6 +5,9 @@
 backend/AItest/*.csv
 backend/ai/*.csv
 
+#key file
+backend/key
+
 ### Node ###
 # Logs
 logs

@@ -23,10 +23,23 @@ const userSchema = mongoose.Schema({
     type: String,
     trim: true,
     unique: 1,
-    validate: {
+    validate: [
+      {
       validator: (v) => /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/.test(v),
-        message: '아이디는 이메일 형식이어야 합니다.'
+      message: '아이디는 이메일 형식이어야 합니다.'
+    },
+    {
+      validator: async function (v) {
+        const user = await this.constructor.findOne({ id: v });
+        if (user) {
+          if (this._id.toString() === user._id.toString()) return true;
+          return false;
+        }
+        return true;
+      },
+      message: props => `${props.value}는 이미 존재하는 아이디입니다.`
     }
+  ]
   },
   password: {
     type: String,
@@ -64,7 +77,7 @@ const userSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  image: String,
+  imageUrl: String,
 });
 
 // 비밀번호 해싱

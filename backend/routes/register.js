@@ -18,6 +18,7 @@ router.post("/", async (req, res) => {
     console.log("현재 user 값: ", user);
   
     try {
+      await user.validate(); // 스키마에 맞는지 검사
       await user.save(); // 비밀번호 해쉬화 작업, 필수임
       const db = mongoose.connection.useDb('users');
       const collection = db.collection('users');
@@ -25,7 +26,7 @@ router.post("/", async (req, res) => {
       return res.status(200).json({ success: true });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ success: false, err });
+      return res.status(500).json({ success: false, message: err.message });
     }
   });
 
