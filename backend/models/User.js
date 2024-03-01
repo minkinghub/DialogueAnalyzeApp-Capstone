@@ -18,7 +18,7 @@ const userSchema = mongoose.Schema({
         message: props => `${props.value}는 이미 존재하는 이름입니다.`
     },
   },
-  // 주의: id가 email이므로 @ 같은 규칙 제작 必
+  // 주의: id가 email임
   id: {
     type: String,
     trim: true,
@@ -78,6 +78,8 @@ const userSchema = mongoose.Schema({
     default: 0,
   },
   imageUrl: String,
+  // 최근 6개월 동안 사용한 비밀번호 목록
+  recentPasswords: [{ password: String, date: Date }], 
 });
 
 // 비밀번호 해싱

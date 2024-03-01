@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { User } = require('../models/User');
 
+// http://localhost:3000/api/users/idCheck 아이디 중복 검사
 router.post('/', async (req, res) => {
     try {
         const user = await User.findOne({ id: req.body.id });

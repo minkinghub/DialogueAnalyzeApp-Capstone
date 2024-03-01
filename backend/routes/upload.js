@@ -5,6 +5,7 @@ const router = express.Router();
 
 const upload = multer({ storage: multer.memoryStorage() });
 
+// http://localhost:3000/api/upload 이미지 업로드
 router.post('/api/upload', upload.single('file'), async (req, res) => {
   try {
     const file = req.file;

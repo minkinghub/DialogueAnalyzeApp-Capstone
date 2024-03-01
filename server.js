@@ -46,7 +46,7 @@ app.use(session({
 
 app.use(updateSession); // 세션 갱신 미들웨어 사용
 
-app.use("/api/users", userRouters); // 로그인, 회원가입 등에 대한 라우터
+app.use("/api/users", userRouters); // 로그인, 회원가입, 이메일 등에 대한 라우터
 app.use(testRouter); // '/api/test' 경로에 대한 라우터 사용
 app.use(searchRouter); // '/api/search' 경로에 대한 라우터 사용
 app.use(uploadRouter); // '/api/upload' 경로에 대한 라우터 사용
