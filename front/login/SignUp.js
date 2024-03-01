@@ -1,23 +1,30 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, SafeAreaView, ScrollView } from 'react-native';
-import PasswordConfirmation from '../component/login/PasswordConfirmation'; //비밀번호 일치 확인 컴포넌트
-import SignUpAPI from '../component/login/API/SignUpAPI' //회원가입API 컴포넌트
-import DoubleCheckAPI from '../component/login/API/DoubleCheckAPI' //중복확인API 컴포넌트
+
+import PasswordConfirmation from '../component/signUp/PasswordConfirmation'; //비밀번호 일치 확인 컴포넌트
+import SignUpAPI from '../component/API/SignUpAPI' //회원가입API 컴포넌트
+import DoubleCheckAPI from '../component/API/DoubleCheckAPI' //중복확인API 컴포넌트
+import EmailCheckAPI from '../component/API/EmailCheckAPI'; //email인증API 컴포넌트
 
 const SignUp = () => {
   const [email, setEmail] = useState(''); //이메일
   const [id, setId] = useState(''); //아이디
   const [password, setPassword] = useState(''); //비밀번호
   const [confirmPassword, setConfirmPassword] = useState(''); //비밀번호 확인
-  const [nickName, setNickName] = useState(''); //닉네임
+  const [nickname, setNickname] = useState(''); //닉네임
   const [birthDate, setBirthDate] = useState(''); //생년월일
   const [name, setName] = useState(''); //이름
   const [gender, setGender] = useState(''); //성별
-  const [certifNum,setCertifNum] = useState(''); //인증번호
+  const [secureNumber, setSecureNumber] = useState('') //인증번호
+
   const [signUpAttempted, setSignUpAttempted] = useState(false); //회원가입 버튼 클릭여부
-  const [doubleCheckAttempted,setDoubleCheckAttempted] = useState(false); //중복확인 버튼 클릭여부
+  const [idDoubleCheckAttempted,setIdDoubleCheckAttempted] = useState(false); //id중복확인 버튼 클릭여부
+  const [nicknameDoubleCheckAttempted,setNicknameDoubleCheckAttempted] = useState(false); //닉네임 중복확인 클릭여부
+  const [emailCheckAttempted,setEmailCheckAttempted] = useState(false); //email인증 버튼 클릭여부
+
   const [passwordSame,setPasswordSame] = useState(false); //비밀번호 확인 일치여부
-  const [idAvail, setIdAvail] = useState(false); //중복확인 결과
+  const [idAvail, setIdAvail] = useState(false); //id중복확인 결과
+  const [nicknameAvail, setNicknameAvail] = useState(false); //nickname중복확인 결과
 
   //비밀번호 확인 일치여부 
   const onpasswordSame = (resultData) => {
@@ -25,13 +32,13 @@ const SignUp = () => {
   };
 
 
-  //회원가입 결과
+  //회원가입 결과 (Test)
   const onSignUpResult = (resultData) => {
     if (resultData === true){
         Alert.alert('회원가입 성공',
         `아이디: ${id}\n
         비밀번호: ${password}\n
-        닉네임: ${nickName}\n
+        닉네임: ${nickname}\n
         성별: ${gender}\n
         성명: ${name}\n
         생년월일: ${birthDate}\n
@@ -45,18 +52,30 @@ const SignUp = () => {
   };
   //회원가입 버튼
   const handleSignUp = () => {
-    if(passwordSame === false){
-        Alert.alert('경고','비밀번호를 다시 확인해 주세요.');
-    } else if (idAvail === false){
-        Alert.alert('경고','아이디를 다시 입력해주세요.');
-    } else{
-        setSignUpAttempted(true);
-    };
+    if (idAvail === true) {
+        if (passwordSame === true) {
+            if (nicknameAvail === true) {
+                if (gender === 'male' || gender === 'female') {
+                    if (name !== '') {
+                        if (birthDate !== '') {
+                            setSignUpAttempted(true);
+                        }
+                        else Alert.alert('안내','생년월일을 입력해주세요.');
+                    }
+                    else Alert.alert('안내','성명을 입력해주세요.');
+                }
+                else Alert.alert('안내','성별을 선택해주세요.');
+            }
+            else Alert.alert('안내','닉네임을 다시 확인해주세요.');
+        }
+        else Alert.alert('안내','비밀번호를 다시 확인해주세요.');
+    }
+    else Alert.alert('안내','아이디를 다시 확인해주세요.');
   };
 
 
-  //중복확인 결과
-  const onDoubleCheckResult = (resultData) => {
+  //id중복확인 결과
+  const onIdDoubleCheckResult = (resultData) => {
     if(resultData === true){
         Alert.alert(' ','사용가능한 아이디 입니다.');
         setIdAvail(true);
@@ -64,13 +83,37 @@ const SignUp = () => {
         Alert.alert(' ','사용이 불가능한 아이디 입니다.');
         setIdAvail(false);
     }
-    setDoubleCheckAttempted(false);
+    setIdDoubleCheckAttempted(false); 
   };
-  //중복확인 버튼
-  const handleDoubleCheck = () => {
-    setDoubleCheckAttempted(true);
+  //nickName중복확인 결과
+  const onNicknameDoubleCheckResult = (resultData) => {
+    if(resultData === true){
+        Alert.alert(' ','사용가능한 닉네임 입니다.');
+        setNicknameAvail(true);
+    } else if(resultData === false) {
+        Alert.alert(' ','사용이 불가능한 닉네임 입니다.');
+        setNicknameAvail(false);
+    }
+    setNicknameDoubleCheckAttempted(false);
+  };
+  //중복확인 버튼 (id, nickname)
+  const handleIdDoubleCheck = () => {
+    setIdDoubleCheckAttempted(true);
+  };
+  const handleNicknameDoubleCheck = () => {
+    setNicknameDoubleCheckAttempted(true);
   };
   
+
+  //email인증 결과
+  const onEmailCheckResult = (resultData) => {
+    console.log(resultData);
+    setEmailCheckAttempted(false);
+  };
+  //이메일 인증버튼
+  const handleEmailCheck = () => {
+    setEmailCheckAttempted(true);
+  };
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#fff',}}>
@@ -85,7 +128,7 @@ const SignUp = () => {
                         value={id}
                         onChangeText={setId}
                     />
-                    <TouchableOpacity style={styles.doubleCheckButton} onPress={handleDoubleCheck}>
+                    <TouchableOpacity style={styles.doubleCheckButton} onPress={handleIdDoubleCheck}>
                         <Text style={{color: 'white', fontSize: 12}}>중복확인</Text>
                     </TouchableOpacity>
                 </View>
@@ -115,11 +158,11 @@ const SignUp = () => {
                     <TextInput
                         style={styles.idInput}
                         placeholder="닉네임"
-                        value={nickName}
-                        onChangeText={setNickName}
+                        value={nickname}
+                        onChangeText={setNickname}
                     />
 
-                    <TouchableOpacity style={styles.doubleCheckButton} onPress={handleDoubleCheck}>
+                    <TouchableOpacity style={styles.doubleCheckButton} onPress={handleNicknameDoubleCheck}>
                         <Text style={{color: 'white', fontSize: 12}}>중복확인</Text>
                     </TouchableOpacity>
                 </View>
@@ -163,7 +206,7 @@ const SignUp = () => {
                     onChangeText={setEmail}
                     keyboardType="email-address"
                     />
-                    <TouchableOpacity style={styles.doubleCheckButton} onPress={handleDoubleCheck}>
+                    <TouchableOpacity style={styles.doubleCheckButton} onPress={handleEmailCheck}>
                         <Text style={{color: 'white', fontSize: 10}}>인증번호 발송</Text>
                     </TouchableOpacity>
                 </View>
@@ -174,8 +217,8 @@ const SignUp = () => {
                     padding: 10,
                     borderRadius: 10,}}
                     placeholder="인증번호 입력"
-                    value={certifNum}
-                    onChangeText={setCertifNum}
+                    value={secureNumber}
+                    onChangeText={setSecureNumber}
                 />
             </View>
 
@@ -190,19 +233,35 @@ const SignUp = () => {
             <SignUpAPI
             id={id}
             password={password}
-            nickName={nickName}
+            nickname={nickname}
             gender={gender}
             name={name}
             birthDate={birthDate}
             email={email}
             onSignUpResult={onSignUpResult}
+            /> 
+        }
+
+        {idDoubleCheckAttempted &&
+            <DoubleCheckAPI
+            id={id}
+            nickname={null}
+            onIdDoubleCheckResult={onIdDoubleCheckResult}
             />
         }
 
-        {doubleCheckAttempted &&
+        {nicknameDoubleCheckAttempted &&
             <DoubleCheckAPI
-            nickName={nickName}
-            onDoubleCheckResult={onDoubleCheckResult}
+            id={null}
+            nickname={nickname}
+            onNicknameDoubleCheckResult={onNicknameDoubleCheckResult}
+            />
+        }
+
+        {emailCheckAttempted &&
+            <EmailCheckAPI
+            email={email}
+            onEmailCheckResult={onEmailCheckResult}
             />
         }
     </SafeAreaView>

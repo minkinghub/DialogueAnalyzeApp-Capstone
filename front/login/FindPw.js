@@ -1,24 +1,38 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert, SafeAreaView, ScrollView } from 'react-native';
+import FindPwAPI from '../component/API/FindPwAPI';
+import EmailCheckAPI from '../component/API/EmailCheckAPI';
 
 const FindPw = () => {
-  const [id, setId] = useState('');
-  const [name, setName] = useState('');
-  const [birthDate, setBirthDate] = useState('');
-  const [email, setEmail] = useState('');
-  const [certifNum,setCertifNum] = useState('');
+  const [id, setId] = useState(''); //아이디
+  const [name, setName] = useState(''); //이름
+  const [birthDate, setBirthDate] = useState(''); //생년월일
+  const [email, setEmail] = useState(''); //이메일
+  const [secureNumber, setSecureNumber] = useState(''); //인증번호
 
+  const [findPwAttempted, setFindPwAttempted] = useState(false); //비번찾기 버튼 클릭여부
+  const [emailCheckAttempted,setEmailCheckAttempted] = useState(false); //email인증 버튼 클릭여부
 
+  //비밀번호 찾기 버튼
   const handleFindPw = () => {
-    // TODO: 아이디 찾기 로직 구현
-    // 예를 들어, 입력된 이메일로 사용자 아이디 조회 후 결과를 알림으로 표시
-    // 이 부분은 백엔드와의 통신 로직으로 대체될 수 있습니다.
-    Alert.alert('아이디 찾기 요청', `입력된 닉네임: ${id}\n입력된 이메일: ${email}`);
+    setFindPwAttempted(true);
+  };
+  const onFindIdResult = (resultData, pw) => {
+    if (resultData === true) {
+      Alert.alert(' ',`비밀번호 : ${pw}`);
+    } else Alert.alert(' ',`입력하신 정보에 해당하는 비밀번호가 존재하지 않습니다.`);
+
+    setFindPwAttempted(false);
   };
 
-  const handlecitation = () => {
-    // 이메일 인증번호 발송
-    Alert.alert('인증번호 발송', `입력된 이메일: ${email}`);
+  //email인증 결과
+  const onEmailCheckResult = (resultData) => {
+    console.log(resultData);
+    setEmailCheckAttempted(false);
+  };
+  //이메일 인증버튼
+  const handleEmailCheck = () => {
+    setEmailCheckAttempted(true);
   };
 
   return (
@@ -62,7 +76,7 @@ const FindPw = () => {
               onChangeText={setEmail}
               keyboardType="email-address"
               />
-              <TouchableOpacity style={styles.citationButton} onPress={handlecitation}>
+              <TouchableOpacity style={styles.citationButton} onPress={handleEmailCheck}>
                   <Text style={{color: 'white', fontSize: 10}}>인증번호 발송</Text>
               </TouchableOpacity>
           </View>
@@ -70,8 +84,8 @@ const FindPw = () => {
           <TextInput
               style={styles.input}
               placeholder="인증번호 입력"
-              value={certifNum}
-              onChangeText={setCertifNum}
+              value={secureNumber}
+              onChangeText={setSecureNumber}
           />
         </View>
 
@@ -82,7 +96,23 @@ const FindPw = () => {
         </View>
       </ScrollView>
         
-       
+      {findPwAttempted &&
+        <FindPwAPI
+        id={id}
+        name={name}
+        birthDate={birthDate}
+        email={email}
+        onFindPwResult={onFindIdResult}
+        />
+      }
+
+      {emailCheckAttempted &&
+        <EmailCheckAPI
+        email={email}
+        onEmailCheckResult={onEmailCheckResult}
+        />
+      }
+
     </SafeAreaView>
     
   );

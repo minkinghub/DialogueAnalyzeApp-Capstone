@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 
-const LoginAPI = ({ velue, onDoubleCheckResult }) => {
+const FindPwAPI = ({ id, name, birthDate, email, onFindPwResult }) => {
 
     useEffect(() => {
-        onDoubleCheckResult(true);
-    }, [velue]);
+        onFindPwResult(true, 'asdf1234');
+    }, [id, name, birthDate, email]);
     
 
     // useEffect(() => {
@@ -42,4 +42,4 @@ const LoginAPI = ({ velue, onDoubleCheckResult }) => {
     return null;
 };
 
-export default LoginAPI;
+export default FindPwAPI;

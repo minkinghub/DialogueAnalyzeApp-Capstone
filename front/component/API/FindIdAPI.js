@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 
-const LoginAPI = ({ id, password, onLoginSuccess, onLoginFailure }) => {
+const FindIdAPI = ({ name, birthDate, email, onFindIdResult }) => {
 
     useEffect(() => {
-        if (id === 'sinto825' && password === 'gytls825') {
-          onLoginSuccess(); // 로그인 성공 콜백 호출
-        } else {
-          onLoginFailure();
-        }
-    }, [id, password, onLoginSuccess, onLoginFailure]);
+        onFindIdResult(false, 'sinto825');
+    }, [name, birthDate, email]);
     
 
     // useEffect(() => {
@@ -46,4 +42,4 @@ const LoginAPI = ({ id, password, onLoginSuccess, onLoginFailure }) => {
     return null;
 };
 
-export default LoginAPI;
+export default FindIdAPI;

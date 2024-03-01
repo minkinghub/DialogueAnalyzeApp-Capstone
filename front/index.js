@@ -12,4 +12,4 @@ import FindPw from './login/FindPw';
 import Board from './noticeBoard/Board';
 import {name as appName} from './app.json';
 
-AppRegistry.registerComponent(appName, () => SignUp);
+AppRegistry.registerComponent(appName, () => App);

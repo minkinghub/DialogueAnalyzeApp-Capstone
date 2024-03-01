@@ -10,7 +10,10 @@ const PasswordConfirmation = ({ password, confirmPassword, onpasswordSame }) => 
         if (!password && !confirmPassword) {
             setPasswordMessage('비밀번호를 입력해주세요.');
             onpasswordSame(false);
-        } else if (password && confirmPassword && password !== confirmPassword) {
+        } else if (!password && confirmPassword) {
+            setPasswordMessage('비밀번호를 입력해주세요.');
+            onpasswordSame(false);
+        }else if (password && confirmPassword && password !== confirmPassword) {
             setPasswordMessage('비밀번호가 일치하지 않습니다.');
             onpasswordSame(false);
         } else if (password && confirmPassword && password === confirmPassword) {

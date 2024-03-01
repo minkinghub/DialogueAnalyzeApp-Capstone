@@ -1,44 +1,72 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import LoginAPI from '../component/login/API/LoginAPI'; //로그인API 컴포넌트
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import LoginAPI from '../component/API/LoginAPI'; //로그인API 컴포넌트
+import checkLoginStatus from '../component/login/CheckLoginStatus '; //로그인유지 확인 컴포넌트
 
 const Login = () => {
-  const [id, setId] = useState('');
-  const [password, setPassword] = useState('');
-  const [loginAttempted, setLoginAttempted] = useState(false);
+  const navigation = useNavigation(); // 네비게이션 객체
+  const [id, setId] = useState(''); //아이디
+  const [password, setPassword] = useState(''); //비밀번호
+  const [loginAttempted, setLoginAttempted] = useState(false); //로그인 버튼 클릭
+  const [loginKeep, setLoginKeep] = useState(false); //로그인상태 유지 체크상태
 
-  const onLoginSuccess = () => {
-    Alert.alert("Login Success", "You have successfully logged in.");
+  // 컴포넌트 마운트 시 로그인유지 상태 확인
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
+
+  //로그인 성공
+  const onLoginSuccess = async () => {
+    //로그인 유지 체크여부
+    if (loginKeep === true) {
+        try {
+          await AsyncStorage.setItem('userId', id);
+          await AsyncStorage.setItem('loginKeep', 'true');
+        } catch (error) {
+          // 오류 처리
+          console.log(error);
+        }
+    } else if (loginKeep === false) {
+        try {
+            await AsyncStorage.setItem('userId', id);
+            await AsyncStorage.setItem('loginKeep', 'false');
+        } catch (error) {
+            // 오류 처리
+            console.log(error);
+        }
+    }
+    Alert.alert("로그인 성공!!", "You have successfully logged in.");
     setLoginAttempted(false);
-    // 로그인 성공 후의 로직을 여기에 구현합니다.
   };
-
+  //로그인 실패
   const onLoginFailure = () => {
     Alert.alert("Login Failure", "failure");
     setLoginAttempted(false);
   };
-
-  // 로그인 로직 구현
+  // 로그인 버튼
   const handleLogin = () => {
-    setLoginAttempted(true);
+    if (id && password !== null) {
+        setLoginAttempted(true);
+    }
+    else Alert.alert(" ", "아이디 및 비밀번호를 입력해주세요.");
   };
 
-  const handleFindId = () => {
-    console.log('아이디 찾기 로직 구현');
-    console.log(loginAttempted);
 
-    // 아이디 찾기 로직 구현
+
+  const handleFindId = () => {
+    navigation.navigate('FindId');
   };
 
   const handleFindPassword = () => {
-    console.log('비밀번호 찾기 로직 구현');
-    // 비밀번호 찾기 로직 구현
+    navigation.navigate('FindPw');
   };
 
   const handleSignUp = () => {
-    console.log('회원가입 로직 구현');
-    // 회원가입 로직 구현
+    navigation.navigate('SignUp');
   };
 
     return (
@@ -69,7 +97,7 @@ const Login = () => {
                         unfillColor="#FFFFFF"
                         text="로그인 상태 유지"
                         iconStyle={{ borderColor: "red"}}
-                        onPress={(isChecked) => {console.log(isChecked);}}
+                        onPress={(isChecked) => {setLoginKeep(isChecked);}}
                     />
                 </View>
 
