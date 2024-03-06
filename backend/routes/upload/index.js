@@ -1,6 +1,6 @@
 const multer = require('multer');
 const express = require('express');
-const { uploadToFirebase } = require('../utils/firebase');
+const { uploadToFirebase } = require('../../utils/firebase');
 const router = express.Router();
 
 const upload = multer({ storage: multer.memoryStorage() });

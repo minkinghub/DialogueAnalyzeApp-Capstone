@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User } = require('../models/User');
+const { User } = require('../../models/User');
 
 // http://localhost:3000/api/users/nameCheck 닉네임 중복 검사
 router.post('/', async (req, res) => {

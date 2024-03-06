@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middlewares/auth');
+const auth = require('../../middlewares/auth');
 
 // 회원 분류(비회원, 회원, 관리자)
 // 경로: "http://localhost:3000/api/users/auth"

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { User } = require('../models/User');
+const { User } = require('../../models/User');
 
 // http:localhost:3000/api/users/resetPass
 router.post('/', async (req, res) => {

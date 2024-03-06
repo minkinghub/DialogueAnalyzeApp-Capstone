@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const currentYear = new Date().getFullYear(); // 현재 날짜 이후 생년월일은 오류
 
 const userSchema = mongoose.Schema({
-  name: {
+  nickname: {
     type: String,
     maxlength: 150,
     validate: {
@@ -69,9 +69,25 @@ const userSchema = mongoose.Schema({
     type: String,
     minlength: 3,
   },
-  lastname: {
-    type: String,
-    maxlength: 150,
+  height: {
+    type: Number,
+    required: true,
+    min: 0,
+    message: '키는 0 이상의 숫자여야 합니다.'
+  },
+  weight: {
+    type: Number,
+    required: true,
+    min: 0,
+    message: '몸무게는 0 이상의 숫자여야 합니다.'
+  },
+  follows: [{ 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "User" 
+  }], // 팔로우 목록
+  nid: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Nutrient",
   },
   role: {
     type: Number,

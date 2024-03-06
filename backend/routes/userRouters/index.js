@@ -3,14 +3,14 @@ const router = express.Router();
 
 const registerRouter = require('./register');
 const loginRouter = require('./login');
-const authRouter = require('./auth');
+const authRouter = require('./auth'); //
 const logoutRouter = require('./logout');
 const idCheckRouter = require('./idCheck');
 const nameCheckRouter = require('./nameCheck');
-const emailRouter = require('./email');
-const emailAuthRouter = require('./emailAuth');
+const emailRouter = require('./email'); //
+const emailAuthRouter = require('./emailAuth'); //
 const resetPassRouter = require('./resetPass');
-const changePassRouter = require('./changePass');
+const changePassRouter = require('./changePass'); //
 
 router.use('/register', registerRouter);
 router.use('/login', loginRouter);

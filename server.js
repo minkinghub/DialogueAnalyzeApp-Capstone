@@ -14,6 +14,8 @@ const testRouter = require('./backend/routes/test'); // 테스트 라우터 추�
 const userRouters = require('./backend/routes/userRouters'); // 사용자 라우터 추가
 const searchRouter = require('./backend/routes/search'); // 검색 라우터 추가
 const uploadRouter = require('./backend/routes/upload'); // 업로드 라우터 추가
+const dbDataPostRouter = require('./backend/routes/dbDataPost'); // 데이터베이스 POST 라우터 추가
+const dbDataGetRouter = require('./backend/routes/dbDataGet'); // 데이터베이스 GET 라우터 추가
 
 // firebase 관련 설정
 const admin = require('firebase-admin');
@@ -47,9 +49,11 @@ app.use(session({
 app.use(updateSession); // 세션 갱신 미들웨어 사용
 
 app.use("/api/users", userRouters); // 로그인, 회원가입, 이메일 등에 대한 라우터
-app.use(testRouter); // '/api/test' 경로에 대한 라우터 사용
-app.use(searchRouter); // '/api/search' 경로에 대한 라우터 사용
-app.use(uploadRouter); // '/api/upload' 경로에 대한 라우터 사용
+app.use(testRouter); // 테스트용 라우터
+app.use(searchRouter); // 검색을 위해 사용하는 라우터
+app.use(uploadRouter); // 이미지 업로드를 위해 사용하는 라우터
+app.use("/api/post", dbDataPostRouter); // db에 데이터를 보내는 라우터
+app.use("/api/get", dbDataGetRouter); // db에서 데이터를 받는 라우터
 
 // 서버 시작
 app.listen(port, () => {

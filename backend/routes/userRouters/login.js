@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const { User } = require('../models/User');
+const { User } = require('../../models/User');
 
 // 로그인
 // 경로: "http://localhost:3000/api/users/login"

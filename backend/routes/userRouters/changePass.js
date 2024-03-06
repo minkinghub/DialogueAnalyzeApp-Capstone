@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const { User } = require('../models/User');
+const { User } = require('../../models/User');
 
 // http:localhost:3000/api/users/changePass
 router.post('/', async (req, res) => {

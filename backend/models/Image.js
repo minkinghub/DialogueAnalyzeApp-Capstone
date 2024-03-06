@@ -1,4 +1,4 @@
-// mongoDB에 images.recipe에 image url을 저장할 코드
+// mongoDB에 images.recipe에 스키마를 정의하는 코드
 
 const mongoose = require('mongoose');
 

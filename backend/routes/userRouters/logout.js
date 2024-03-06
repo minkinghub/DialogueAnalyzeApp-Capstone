@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { User } = require('../models/User');
-const auth = require('../middlewares/auth');
+const { User } = require('../../models/User');
+const auth = require('../../middlewares/auth');
 
 // 로그아웃
 // 경로: "http://localhost:3000/api/users/logout"
