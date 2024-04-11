@@ -1,7 +1,7 @@
 const admin = require('firebase-admin');
 const { Storage } = require('@google-cloud/storage');
 const format = require("util").format;
-const RecipeModel = require('../models/recipeModel'); // mongoDB에 url 저장용
+const ImageUploadModel = require('../models/Image'); // mongoDB에 url 저장용
 const mongoose = require('mongoose');
 
 // firebase에 storage에 파일 업로드 및 mongoDB에 url 저장
@@ -32,12 +32,12 @@ const uploadToFirebase = async (file) => {
       const collection = db.collection('recipe'); //images DB의 recipe collection에 접근
 
       // images.recipe에서 가장 큰 imageId 찾아서 1을 더한 후 imageId로 저장
-      const maxImageId = await RecipeModel.findOne().sort({ imageId: -1 });
+      const maxImageId = await ImageUploadModel.findOne().sort({ imageId: -1 });
       let newImageId = 1;
       if (maxImageId && maxImageId.imageId) {
         newImageId = maxImageId.imageId + 1;
       }
-      const recipe = new RecipeModel({ imageUrl: publicUrl, imageId: newImageId }); // 스키마 정의 중 imageUrl 사용
+      const recipe = new ImageUploadModel({ imageUrl: publicUrl, imageId: newImageId }); // 스키마 정의 중 imageUrl 사용
       await collection.insertOne(recipe); // recipe collection에 저장
       resolve(publicUrl);
     });

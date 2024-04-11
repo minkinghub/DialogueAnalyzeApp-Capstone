@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const { User } = require('../../models/User');
+const { UserModel } = require('../../models/User');
 
 // 로그인
 // 경로: "http://localhost:3000/api/users/login"
 router.post("/", async (req, res) => {
     // 1. 요청된 이메일id가 DB에 존재하는 지 확인
     try {
-      const user = await User.findOne({ id: req.body.id });
+      const user = await UserModel.findOne({ id: req.body.id });
       if (!user) {
         return res.json({
           loginSuccess: false,

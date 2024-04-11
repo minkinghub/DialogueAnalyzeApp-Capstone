@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User } = require('../../models/User');
+const { UserModel } = require('../../models/User');
 const mongoose = require('mongoose');
 
 // 회원가입
@@ -14,7 +14,7 @@ const mongoose = require('mongoose');
   "name": "hoy"
 } */
 router.post("/", async (req, res) => {
-    const user = new User(req.body);
+    const user = new UserModel(req.body);
     console.log("현재 user 값: ", user);
   
     try {

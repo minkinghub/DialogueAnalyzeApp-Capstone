@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User } = require('../../models/User');
+const { UserModel } = require('../../models/User');
 const auth = require('../../middlewares/auth');
 
 // 로그아웃

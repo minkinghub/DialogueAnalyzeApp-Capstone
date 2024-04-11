@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const { User } = require('../../models/User');
+const { UserModel } = require('../../models/User');
 
 // http:localhost:3000/api/users/changePass
 router.post('/', async (req, res) => {
     const { password, newPassword } = req.body;
     const userId = req.session.user.userId;
 
-    const user = await User.findById(userId);
+    const user = await UserModel.findById(userId);
 
     // 기존 비밀번호가 일치하는지 확인
     const validPassword = await bcrypt.compare(password, user.password);

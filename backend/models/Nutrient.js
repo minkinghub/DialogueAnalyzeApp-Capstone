@@ -1,21 +1,42 @@
-// mongoDB에 nutrients.nutrients에 스키마를 정의하는 코드
+// mongoDB에 nutrient.nutrient에 스키마를 정의하는 코드
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 // 스키마 정의
-const NutrientSchema = new Schema({
-    nid: Number, // 자동으로 늘어나는 넘버링
-    age: Number,
-    gender: String,
-    calorie: Number,
-    carbohydrate: Number,
-    protein: Number,
-    fat: Number,
-    sodium: Number,
+const NutrientSchema = Schema({
+    //nid: { type: Number, required: true }
+    age: {
+        type: Number,
+        required: true
+    },
+    gender: {
+        type: String,
+        required: true
+    },
+    calorie: {
+        type: Number,
+        required: true
+    },
+    carbohydrate: {
+        type: Number,
+        required: true
+    },
+    protein: {
+        type: Number,
+        required: true
+    },
+    fat: {
+        type: Number,
+        required: true
+    },
+    sodium: {
+        type: Number,
+        required: true
+    },
 });
 
-// 'nutrients' DB와 'nutrients_id' 컬렉션에 영양소 정보 저장
-const NutrientModel = mongoose.model('nutrient', NutrientSchema, 'nutrients');
+// nutrient.nutrient에 접근
+const NutrientModel = mongoose.model('nutrient', NutrientSchema);
 
-module.exports = NutrientModel;
+module.exports = { NutrientModel };

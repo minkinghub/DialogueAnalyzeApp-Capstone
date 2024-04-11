@@ -1,9 +1,13 @@
-// mongoDB에 comments.comments에 스키마를 정의하는 코드
+// mongoDB에 comment.comment에 스키마를 정의하는 코드
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const CommentSchema = new Schema({
+const CommentSchema = Schema({
+    /*comment_id: {
+        type: String,
+        required: true
+    },*/
     nickname: {
         type: String,
         required: true
@@ -18,4 +22,6 @@ const CommentSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('comments', CommentSchema);
+const CommentModel = mongoose.model('comment', CommentSchema);
+
+module.exports = { CommentModel };

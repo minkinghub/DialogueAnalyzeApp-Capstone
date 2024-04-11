@@ -1,4 +1,4 @@
-const { User } = require('../models/User');
+const { UserModel } = require('../models/User');
 
 const auth = async (req, res, next) => {
 
@@ -9,7 +9,7 @@ const auth = async (req, res, next) => {
     const userId = req.session.user.userId;
 
     try {
-        const user = await User.findById(userId);
+        const user = await UserModel.findById(userId);
         console.log(userId);
         if (!user) {
             req.isAuth = false;

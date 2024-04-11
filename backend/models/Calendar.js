@@ -3,19 +3,32 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const CalendarSchema = new Schema({
+const CalendarSchema = Schema({
+    uid: {
+        type: String,
+        required: true
+    },
     date: {
         type: String,
         required: true
     },
-    meal: {
-        type: String,
-        required: true
+    morning: {
+        type: String
     },
-    recipeId: {
-        type: String,
-        required: true
+    lunch: {
+        type: String
+    },
+    dinner: {
+        type: String
+    },
+    snack: {
+        type: String
+    },
+    memo: {
+        type: String
     }
 });
 
-module.exports = mongoose.model('calendar', CalendarSchema);
+const CalendarModel = mongoose.model('calendar', CalendarSchema);
+
+module.exports = { CalendarModel };

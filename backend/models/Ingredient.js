@@ -1,20 +1,38 @@
-// mongoDB에 ingredients.ingredients에 스키마를 정의하는는 코드
+// mongoDB에 ingredient.ingredient에 스키마를 정의하는는 코드
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 // 스키마 정의
-const IngredientSchema = new Schema({
-    nid: Number, // 자동으로 늘어나는 넘버링
-    calorie: Number,
-    carbohydrate: Number,
-    protein: Number,
-    fat: Number,
-    sodium: Number,
-    g: Number,
+const IngredientSchema = Schema({
+    //ingredient_id: String, // 컬렉션
+    calorie: {
+        type: Number,
+        required: true
+    },
+    carbohydrate: {
+        type: Number,
+        required: true
+    },
+    protein: {
+        type: Number,
+        required: true
+    },
+    fat: {
+        type: Number,
+        required: true
+    },
+    sodium: {
+        type: Number,
+        required: true
+    },
+    g: {
+        type: Number,
+        required: true
+    }
 });
 
-// 'ingredients' DB와 'ingredients_id' 컬렉션에 재료 정보 저장
-const IngredientModel = mongoose.model('ingredient', IngredientSchema, 'ingredients');
+// ingredient.ingredient에 접근
+const IngredientModel = mongoose.model('ingredient', IngredientSchema);
 
-module.exports = IngredientModel;
+module.exports = { IngredientModel };

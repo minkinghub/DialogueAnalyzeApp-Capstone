@@ -4,13 +4,13 @@ const router = express.Router();
 const calendarRouter = require('./calendar');
 const commentRouter = require('./comment');
 const postRouter = require('./post');
-const reqularRouter = require('./reqular');
-const userRouter = require('./user');
+const reqularRecipeRouter = require('./reqularRecipe');
+const userRecipeRouter = require('./userRecipe');
 
 router.use('/calendar', calendarRouter);
 router.use('/comment', commentRouter);
 router.use('/post', postRouter);
-router.use('/reqular', reqularRouter);
-router.use('/user', userRouter);
+router.use('/reqular', reqularRecipeRouter);
+router.use('/user', userRecipeRouter);
 
 module.exports = router;

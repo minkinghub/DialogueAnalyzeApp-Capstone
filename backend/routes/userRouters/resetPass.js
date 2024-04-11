@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { User } = require('../../models/User');
+const { UserModel } = require('../../models/User');
 
 // http:localhost:3000/api/users/resetPass
 router.post('/', async (req, res) => {
     // 입력한 email 형식 id가 실제 존재하는 지 확인하고, 있으면 임시 비밀번호 발급
     const { id } = req.body;
-    const user = await User.findOne({ id });
+    const user = await UserModel.findOne({ id });
 
     if (!user) {
         return res.status(400).json({ message: '존재하지 않는 이메일입니다.' });

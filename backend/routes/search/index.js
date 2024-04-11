@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const SearchModel = require('../../models/searchModel')
+const SearchModel = require('../../models/search')
 
 router.get('/api/search', async (req, res) => {
     const { key } = req.query;
