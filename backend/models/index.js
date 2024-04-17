@@ -1,8 +1,8 @@
 const { testModelSave } = require('./testModel');
-const { getUserById, signUp } = require('./userDao');
+const { findByKakaoId, kakaoModelSave } = require('./loginModel')
 
 module.exports = {
-    getUserById,
-    signUp,
-    testModelSave
+    testModelSave,
+    findByKakaoId,
+    kakaoModelSave
 }

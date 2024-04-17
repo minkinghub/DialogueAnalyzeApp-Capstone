@@ -12,6 +12,8 @@ const port = process.env.PORT || 3000;
 const { connectToMongoDB } = require('./backend/configs') // MongoDB 연결 추가
 const db = connectToMongoDB();
 
+const { redisClient } = require('./backend/configs')
+
 app.use(bodyParser.json()); // JSON 요청 처리
 
 app.use(helmet()); // 보안 모듈 사용
