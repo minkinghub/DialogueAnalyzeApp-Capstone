@@ -30,7 +30,7 @@ const Analyze = () => {
                     justifyContent: 'center', 
                     alignItems: 'center', 
                     height: '70%', 
-                    width: '100%',
+                    width: '100%', 
                 }}>
                     <FileChoice onFileSelected={fileSelected} />
                 </View>

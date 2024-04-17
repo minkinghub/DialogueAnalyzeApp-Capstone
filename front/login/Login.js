@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Alert, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import * as KakaoLogin from '@react-native-seoul/kakao-login';
+import * as KakaoLogin from '@react-native-seoul/kakao-login'; //카카오 로그인 라이브러리
 import BouncyCheckbox from "react-native-bouncy-checkbox"; //로그인 유지 체크박스
 import AsyncStorage from '@react-native-async-storage/async-storage'; //로그인 유지 async-storage
 
 import checkLoginStatus from '../component/login/CheckLoginStatus '; //로그인유지 확인 컴포넌트
+import getUserInfo from '../component/API/login/GetUserInfo'; //카카오 유저정보 반환 컴포넌트
 
 const Login = () => {
   const navigation = useNavigation(); // 네비게이션 객체
@@ -46,21 +47,27 @@ const Login = () => {
   // const nonMemberLogin = () => {
   //   navigation.navigate('NonMemberLogin');
   // };
+  
   //카카오 로그인 버튼
-  const kakaoLogin = async() => {
+  const kakaoLogin = async () => {
     // navigation.navigate('BottomTap');
 
-    KakaoLogin.login().then((result) => {
+    try {
+        const result = await KakaoLogin.login();
         console.log("Login Success", JSON.stringify(result));
-        // getProfile();
-    }).catch((error) => {
+        
+        // 로그인 성공 후, accessToken을 사용하여 GetUserInfo 함수 호출
+        const userInfo = await getUserInfo(result.accessToken);
+        console.log("User Info:", userInfo);
+
+    } catch (error) {
         if (error.code === 'E_CANCELLED_OPERATION') {
             console.log("Login Cancel", error.message);
         } else {
             console.log(`Login Fail(code:${error.code})`, error.message);
         }
-    });
-  };
+    }
+};
   
 
   return (
