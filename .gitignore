@@ -1,9 +1,13 @@
 # Created by https://www.toptal.com/developers/gitignore/api/reactnative,node
 # Edit at https://www.toptal.com/developers/gitignore?templates=reactnative,node
 
-#csv files
-backend/AItest/*.csv
+#source files
+backend/AItest/recipe/
 backend/ai/*.csv
+backend/AItest/chromedriver-win64
+backend/AItest/textdata
+backend/AItest/myenv
+backend/AItest/textModel
 
 ### Node ###
 # Logs
