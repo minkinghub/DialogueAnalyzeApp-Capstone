@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, SafeAreaView } from 'react-native';
 import FileChoice from '../component/analyze/FileChoice';
-import MannerAnalysis from '../component/analyze/MannerAnalysis';
-import GeneralAnalysis from '../component/analyze/GeneralAnalysis';
+import MannerAnalysis from '../component/API/analyze/MannerAnalysis';
+import GeneralAnalysis from '../component/API/analyze/GeneralAnalysis';
 
 const Analyze = () => {
     const [selectedFile, setSelectedFile] = useState(null);

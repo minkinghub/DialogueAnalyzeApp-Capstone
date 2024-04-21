@@ -13,7 +13,6 @@ async function getUserInfo(accessToken) {
         });
 
         const responseCode = response.status;
-        console.log("[KakaoApi.getUserInfo] responseCode :", responseCode);
 
         const result = await response.json();
         console.log("responseBody =", result);
