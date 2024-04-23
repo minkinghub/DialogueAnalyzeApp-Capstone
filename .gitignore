@@ -8,15 +8,6 @@ backend/ai/*.csv
 #key file
 backend/key
 
-# 백엔드 AI 관련 폴더 제외
-/backend/ai/emotion/content/
-/backend/ai/grammar/saved_model/
-/backend/ai/grammar/saved_tokenizer/
-/backend/ai/grammar/wandb/
-/backend/ai/moral/saved_model/
-/backend/ai/moral/saved_tokenizer/
-/backend/ai/moral/tokenizer/
-/backend/ai/politely/formal_classifier_latest/
 ### Node ###
 # Logs
 logs
