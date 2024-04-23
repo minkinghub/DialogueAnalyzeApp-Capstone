@@ -1,8 +1,9 @@
 const { testModelSave } = require('./testModel');
-const { findByKakaoId, kakaoModelSave } = require('./loginModel')
+const { findByKakaoId, findByObjectId, userModelSave } = require('./userModel')
 
 module.exports = {
     testModelSave,
     findByKakaoId,
-    kakaoModelSave
+    findByObjectId,
+    userModelSave
 }

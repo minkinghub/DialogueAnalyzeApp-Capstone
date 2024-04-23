@@ -1,6 +1,5 @@
 const { signInKakaoService } = require('../services')
 const { asyncWrap } = require('../middlewares');
-const { referrerPolicy } = require('helmet');
 
 const signInKakao = asyncWrap(async (req, res) => {
     console.log("요청 접수")

@@ -1,10 +1,9 @@
-const { findByKakaoId, kakaoModelSave } = require('../models')
+const { findByKakaoId, userModelSave } = require('../models')
+const { generateToken } = require('../configs')
 const axios = require('axios');
 const jwt = require('jsonwebtoken')
 
 const signInKakaoService = async (kakaoToken, kakaoName) => {
-
-    console.log(kakaoToken,kakaoName)
 
     const result = await axios.get("https://kapi.kakao.com/v2/user/me", {
         headers: {
@@ -14,22 +13,28 @@ const signInKakaoService = async (kakaoToken, kakaoName) => {
 
     const { data } = result
     const info = data.properties
-    console.log('info :', info)
     if(!info) throw new Error("NO_USER_", 400)
 
+    let userId
+
     if(kakaoName == info.nickname) { // 검증, 이후 성별과 나이가 맞는지도 추가
-        const isRegigster = await findByKakaoId(data.kakaoId)
-        if(!isRegigster) {
-            kakaoModelSave({
+        const regigsterInfo = await findByKakaoId(data.kakaoId)
+
+        if(!regigsterInfo) {
+            userId = await userModelSave({
+                name: "이름", // info.name
+                nickname: info.nickname,
+                email: "asdf1234@naver.com", // 카카오 api 갱신 시 카카오 이메일로 교체
                 kakaoId: data.kakaoId,
                 gender: true,
                 birth: new Date()
             })
+            userId = userId._id.toString()
+        } else { 
+            userId = regigsterInfo._id.toString()
         }
-
-        const access_token = "확인용 임시 access 토큰"
-        const refresh_token = "확인용 임시 refresh 토큰"
         
+        const { access_token, refresh_token } = generateToken({id: userId})
         return { access_token, refresh_token }
     }
 
