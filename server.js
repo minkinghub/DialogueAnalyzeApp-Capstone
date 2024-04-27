@@ -18,14 +18,14 @@ app.use(helmet()); // 보안 모듈 사용
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors()); // CORS 설정
 
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: { 
-    maxAge: 60 * 20 * 1000, // 유효 기간 20분
-    secure: false } // HTTPS를 사용하는 경우 true로 변경
-}));
+// app.use(session({
+//   secret: process.env.SESSION_SECRET,
+//   resave: false,
+//   saveUninitialized: false,
+//   cookie: { 
+//     maxAge: 60 * 20 * 1000, // 유효 기간 20분
+//     secure: false } // HTTPS를 사용하는 경우 true로 변경
+// }));
 
 app.use('/api', routers);
 
