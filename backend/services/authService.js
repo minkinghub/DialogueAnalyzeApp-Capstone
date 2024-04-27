@@ -1,7 +1,6 @@
 const { findByKakaoId, userModelSave } = require('../models')
 const { generateToken } = require('../configs')
 const axios = require('axios');
-const jwt = require('jsonwebtoken')
 
 const signInKakaoService = async (kakaoToken, kakaoName) => {
 
@@ -13,7 +12,9 @@ const signInKakaoService = async (kakaoToken, kakaoName) => {
 
     const { data } = result
     const info = data.properties
-    if(!info) throw new Error("NO_USER_", 400)
+    const email = data.kakao_account.email
+
+    if(!info || !email) throw new Error("NO_USER_", 400)
 
     let userId
 
@@ -24,9 +25,9 @@ const signInKakaoService = async (kakaoToken, kakaoName) => {
             userId = await userModelSave({
                 name: "이름", // info.name
                 nickname: info.nickname,
-                email: "asdf1234@naver.com", // 카카오 api 갱신 시 카카오 이메일로 교체
+                email: email,
                 kakaoId: data.kakaoId,
-                gender: true,
+                gender: true, // 사업자 번호 없어서, 성별과 생년월일 아니라서 받아야 넣어야됨
                 birth: new Date()
             })
             userId = userId._id.toString()
@@ -34,19 +35,11 @@ const signInKakaoService = async (kakaoToken, kakaoName) => {
             userId = regigsterInfo._id.toString()
         }
         
-        const { access_token, refresh_token } = generateToken({id: userId})
+        const { access_token, refresh_token } = generateToken({userId: userId})
         return { access_token, refresh_token }
     }
 
-    // const user = await getUserById(kakaoId); // DB에 있는지(이미 회원인지) 확인
-
-    // if (!user) {
-    //     await signUp(name);
-    // }
-
-    // return jwt.sign({ kakao_id: user[0].kakao_id }, process.env.TOKKENSECRET);
-
-};
+}
 
 module.exports = {
     signInKakaoService

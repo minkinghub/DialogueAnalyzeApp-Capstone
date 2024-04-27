@@ -13,28 +13,50 @@ redisClient.connect();
 const JWT_SECRET = process.env.JWT_SECRET_KEY
 
 function generateToken(payload) {
+    const userId = payload.userId
     const access_token = jwt.sign(payload, JWT_SECRET, {expiresIn: '15m'})
     const refresh_token = jwt.sign(payload, JWT_SECRET, {expiresIn: '14d'})
 
     // Redis에 토큰 저장 및 만료 시간 설정
-    redisClient.set(access_token, 'valid', { EX: 15 * 60 })  // 15분
-        .catch(err => console.error('액세스 토큰을 Redis에 저장하는데 실패했습니다:', err));
-    redisClient.set(refresh_token, 'valid', { EX: 14 * 24 * 60 * 60 })  // 14일
-        .catch(err => console.error('리프레시 토큰을 Redis에 저장하는데 실패했습니다:', err));
+    redisClient.set(`${userId}:access_token`, 'valid', { EX : 15 * 60})  // 14일
+        .then(() => console.log(`access_token Redis에 저장 성공\nkey: ${userId}:access_token`))
+        .catch(err => console.error('access_token Redis에 저장 실패', err))
+
+    // Redis에 토큰 저장 및 만료 시간 설정
+    redisClient.set(`${userId}:refresh_token`, 'valid', { EX: 14 * 24 * 60 * 60 })  // 14일
+        .then(() => console.log(`refresh_token Redis에 저장 성공\nkey: ${userId}:refresh_token`))
+        .catch(err => console.error('refresh_token Redis에 저장 실패', err))
 
     return { access_token, refresh_token }
 }
 
-function verifyToken(token) {
-    return new Promise((resolve, reject) => {
-        jwt.verify(token, JWT_SECRET, (err, decoded) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(decoded);
-            }
+async function removeToken(userId) {
+    redisClient.del(`${userId}:access_token`)
+    redisClient.del(`${userId}:refresh_token`)
+
+    return true
+}
+
+async function verifyToken(token) {
+    try {
+        const decoded = await new Promise((resolve, reject) => {
+            jwt.verify(token, JWT_SECRET, (err, decoded) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(decoded);
+                }
+            });
         });
-    });
+
+        const key = `${decoded.userId}:access_token`;
+        console.log(`key: ${key}`)
+        const tokenExists = await redisClient.get(key);
+        
+        return { status : tokenExists !== null, userId: decoded.userId };
+    } catch (err) {
+        return { status : false, userId: null}
+    }
 }
 
 async function refreshAccessToken(refreshToken) {
@@ -65,6 +87,7 @@ async function refreshAccessToken(refreshToken) {
 
 module.exports = {
     generateToken,
+    removeToken,
     verifyToken,
     refreshAccessToken
 }

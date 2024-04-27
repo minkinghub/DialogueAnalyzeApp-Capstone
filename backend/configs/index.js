@@ -1,9 +1,10 @@
 const { connectToMongoDB } = require('./mongo')
-const { generateToken, verifyToken, refreshAccessToken } = require('./jwtToken')
+const { generateToken, removeToken, verifyToken, refreshAccessToken } = require('./jwtToken')
 
 module.exports = {
     connectToMongoDB,
     generateToken,
+    removeToken,
     verifyToken,
     refreshAccessToken
 }

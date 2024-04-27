@@ -2,12 +2,8 @@ const { signInKakaoService } = require('../services')
 const { asyncWrap } = require('../middlewares');
 
 const signInKakao = asyncWrap(async (req, res) => {
-    console.log("요청 접수")
-    // const headers = req.headers["authorization"]
-    // const kakaoToken = headers.split(" ")[1];
-    console.log(req.body)
-    const kakaoToken = req.body["access_token"]
-    const kakaoName = req.body["profile_nickname"]
+    const kakaoToken = req.body.access_token
+    const kakaoName = req.body.profile_nickname
 
     const { access_token, refresh_token } = await signInKakaoService(kakaoToken, kakaoName)
 
@@ -15,5 +11,5 @@ const signInKakao = asyncWrap(async (req, res) => {
 })
 
 module.exports = {
-    signInKakao
+    signInKakao,
 }

@@ -1,8 +1,9 @@
 const express = require('express'); // 서버 기본 모듈 추가
 const helmet = require('helmet'); // 보안 모듈 추가
-const session = require('express-session');
+// const session = require('express-session');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const { checkAuth } = require('./backend/middlewares')
 const routers = require('./backend/routes');
 
 require('dotenv').config(); // env 파일 사용
@@ -18,6 +19,7 @@ app.use(helmet()); // 보안 모듈 사용
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors()); // CORS 설정
 
+app.use(checkAuth);
 // app.use(session({
 //   secret: process.env.SESSION_SECRET,
 //   resave: false,
