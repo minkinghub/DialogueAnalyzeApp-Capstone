@@ -1,7 +1,7 @@
 const { verifyToken } = require('../configs')
 
 const checkAuth = async (req, res, next) => {
-    if (req.path.startsWith('/api/auth')) { // 로그인이나 회원가입은 토큰 없음
+    if (req.path.startsWith('/api/auth') || req.path.startsWith('/api/test')) { // 로그인이나 회원가입은 토큰 없음
         return next();  
     }
 

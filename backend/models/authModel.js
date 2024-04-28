@@ -31,7 +31,7 @@ const userModelLoad = async (data) => {
 
 }
 
-async function findByKakaoId(kakaoId) {
+async function findUserByKakaoId(kakaoId) {
     try {
         const user = await userModel.findOne({ kakaoId: kakaoId });
         
@@ -39,13 +39,20 @@ async function findByKakaoId(kakaoId) {
     } catch (err) {
       console.error(err);
     }
-  }
-
-async function findByObjectId(id) {
-
 }
+
+async function findUserByObjectId(id) {
+    try {
+        const user = await userModel.findOne({ _id: id });
+        
+        return user
+    } catch (err) {
+      console.error(err);
+    }
+}
+
 module.exports = {
     userModelSave,
-    findByKakaoId,
-    findByObjectId
+    findUserByKakaoId,
+    findUserByObjectId
 }

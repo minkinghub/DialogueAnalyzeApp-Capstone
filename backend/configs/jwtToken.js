@@ -14,11 +14,11 @@ const JWT_SECRET = process.env.JWT_SECRET_KEY
 
 function generateToken(payload) {
     const userId = payload.userId
-    const access_token = jwt.sign(payload, JWT_SECRET, {expiresIn: '15m'})
+    const access_token = jwt.sign(payload, JWT_SECRET, {expiresIn: '14d'}) // 임시로 14일 설정
     const refresh_token = jwt.sign(payload, JWT_SECRET, {expiresIn: '14d'})
 
     // Redis에 토큰 저장 및 만료 시간 설정
-    redisClient.set(`${userId}:access_token`, 'valid', { EX : 15 * 60})  // 14일
+    redisClient.set(`${userId}:access_token`, 'valid', { EX : 14 * 24 * 60 * 60})  // 임시로 14일 설정
         .then(() => console.log(`access_token Redis에 저장 성공\nkey: ${userId}:access_token`))
         .catch(err => console.error('access_token Redis에 저장 실패', err))
 

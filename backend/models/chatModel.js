@@ -1,17 +1,19 @@
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
 const textSchema = new mongoose.Schema({
-    name: String,
-    gender: Boolean,
-    birth: Date,
-    signType: Number
+    userId: { type: Schema.Types.ObjectId, ref: 'User' },
+    opAge: Number,
+    dataType: Boolean, 
+    analysisType: Boolean,
+    chatList: Array
 }, { versionKey: false })
 
-const testModel = mongoose.model('Chat', textSchema, 'chats')
+const textModel = mongoose.model('Chat', textSchema, 'chats')
 
-const testModelSave = async (data) => {
+const textPoliteModelSave = async (data) => {
     
-    const saveData = new testModel(data)
+    const saveData = new textModel(data)
 
     try {
         await saveData.save()
@@ -20,10 +22,11 @@ const testModelSave = async (data) => {
     } catch (error) {
         console.log("에러 발생")
         console.error(error)
+        return false
     }
 
 }
 
 module.exports = {
-    testModelSave
+    textPoliteModelSave
 }
