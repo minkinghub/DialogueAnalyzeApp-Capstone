@@ -7,7 +7,7 @@ const analyzeText = asyncWrap(async (req, res) => {
     // 보안 처리 필요, 일단 txt 내용 추출만 구현
     if (req.file && req.file.buffer) {
         const textContent = req.file.buffer.toString('utf-8')
-        const opAge_range = req.body.OpAge_range
+        const opAge_range = req.body.opAge_range
         const userId = req.user.userId
         const result = await analyzeTextService(userId, opAge_range, textContent)
         res.status(200).send({status: result})
