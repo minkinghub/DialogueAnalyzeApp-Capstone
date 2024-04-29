@@ -1,5 +1,5 @@
-const { findByKakaoId, userModelSave } = require('../models')
-const { generateToken } = require('../configs')
+const { findOneUserByKakaoId, userModelSave } = require('../models')
+const { generateToken, encrypt, decrypt } = require('../configs')
 const axios = require('axios');
 
 const signInKakaoService = async (kakaoToken, kakaoName) => {
@@ -12,31 +12,38 @@ const signInKakaoService = async (kakaoToken, kakaoName) => {
 
     const { data } = result
     const info = data.properties
+    const kakaoId = data.id
+    const encKakaoId = encrypt(String(kakaoId))
+    
     const email = data.kakao_account.email
+    const encEmail = encrypt(email)
 
     if(!info || !email) throw new Error("NO_USER_", 400)
 
     let userId
+    let isFirst = false
 
     if(kakaoName == info.nickname) { // 검증, 이후 성별과 나이가 맞는지도 추가
-        const regigsterInfo = await findByKakaoId(data.kakaoId)
-
+        const regigsterInfo = await findOneUserByKakaoId(kakaoId)
         if(!regigsterInfo) {
             userId = await userModelSave({
-                name: "이름", // info.name
+                name: info.nickname, // 일단 닉네임으로 설정함
                 nickname: info.nickname,
-                email: email,
-                kakaoId: data.kakaoId,
-                gender: true, // 사업자 번호 없어서, 성별과 생년월일 아니라서 받아야 넣어야됨
-                birth: new Date()
+                email: encEmail,
+                kakaoId: encKakaoId,
+                gender: null,
+                birth: null
             })
             userId = userId._id.toString()
         } else { 
+            if(regigsterInfo.gender != null && regigsterInfo.birth != null) {
+                isFirst = true 
+            }
             userId = regigsterInfo._id.toString()
         }
         
         const { access_token, refresh_token } = generateToken({userId: userId})
-        return { access_token, refresh_token }
+        return { access_token, refresh_token, isFirst }
     }
 
 }
