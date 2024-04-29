@@ -44,5 +44,5 @@ app.use('/api', routers);
 
 // 서버 시작
 app.listen(port, () => {
-  console.log(`서버가 http://localhost:${port} 에서 실행 중입니다.`);
+  console.log(`서버 실행중`);
 });

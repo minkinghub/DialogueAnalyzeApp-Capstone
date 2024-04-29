@@ -5,8 +5,8 @@ const textTypeClassificationKakao = (line) => { // 문자열 형식에 따라 �
     const filePattern = "파일 :" // 일반 대화에서 파일 구분
     const picturePattern = "사진"
     const emotePattern = "이모티콘"
-    const datePattern = /^-{15}\s+(\d{4})년\s+(\d{1,2})월\s+(\d{1,2})일\s+(\S)요일\s+-{15}\r$/ // 날짜 변경
-    
+    const datePattern = /^-{15}\s+(\d{4})년\s+(\d{1,2})월\s+(\d{1,2})일\s+(\S)요일\s+-{15}\r$/ // 날짜 변경 
+
     let type = 0
     let result
     let text
