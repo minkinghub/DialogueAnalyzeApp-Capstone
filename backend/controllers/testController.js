@@ -1,7 +1,5 @@
 const { testService } = require('../services')
 const { asyncWrap } = require('../middlewares');
-const { findUserByObjectId } = require('../models');
-const { generateToken, generateSecretKey } = require('../configs');
 
 const testController = asyncWrap(async (req, res) => {
     // const userId = '662cd80b5ac8aacde3abbc84'
