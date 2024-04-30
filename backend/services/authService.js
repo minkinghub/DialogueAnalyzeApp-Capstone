@@ -24,7 +24,7 @@ const signInKakaoService = async (kakaoToken, kakaoName) => {
     let isFirst = false
 
     if(kakaoName == info.nickname) { // 검증, 이후 성별과 나이가 맞는지도 추가
-        const regigsterInfo = await findOneUserByKakaoId(kakaoId)
+        const regigsterInfo = await findOneUserByKakaoId(encKakaoId)
         if(!regigsterInfo) {
             userId = await userModelSave({
                 name: info.nickname, // 일단 닉네임으로 설정함
