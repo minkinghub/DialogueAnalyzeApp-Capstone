@@ -19,12 +19,10 @@ function generateToken(payload) {
 
     // Redis에 토큰 저장 및 만료 시간 설정
     redisClient.set(`${userId}:access_token`, 'valid', { EX : 14 * 24 * 60 * 60})  // 임시로 14일 설정
-        .then(() => console.log(`access_token Redis에 저장 성공\nkey: ${userId}:access_token`))
         .catch(err => console.error('access_token Redis에 저장 실패', err))
 
     // Redis에 토큰 저장 및 만료 시간 설정
     redisClient.set(`${userId}:refresh_token`, 'valid', { EX: 14 * 24 * 60 * 60 })  // 14일
-        .then(() => console.log(`refresh_token Redis에 저장 성공\nkey: ${userId}:refresh_token`))
         .catch(err => console.error('refresh_token Redis에 저장 실패', err))
 
     return { access_token, refresh_token }

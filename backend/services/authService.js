@@ -14,14 +14,9 @@ const signInKakaoService = async (kakaoToken, kakaoName) => {
     const info = data.properties
     const kakaoId = data.id
     const encKakaoId = encrypt(String(kakaoId))
-    console.log("enc:", encKakaoId);
-    console.log("dec:", decrypt(encKakaoId))
 
     const email = data.kakao_account.email || 'default@example.com';
-    const encEmail = encrypt(email)
-    console.log("enc:", encEmail)
-    console.log("dec:", decrypt(encEmail))
-
+    
     if(!info || !email) throw new Error("NO_USER_", 400)
 
     let userId
