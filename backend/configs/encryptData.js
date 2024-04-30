@@ -1,9 +1,10 @@
 const crypto = require('crypto');
 
 const DB_SECRET_KEY = process.env.DB_SECRET_KEY
+const DB_SECRET_IV_HEX = process.env.DB_SECRET_IV_HEX
 
 function encrypt(text) {
-    const iv = crypto.randomBytes(16); // 초기화 벡터(IV) 생성
+    const iv = Buffer.from(DB_SECRET_IV_HEX, 'hex');
     const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(DB_SECRET_KEY, 'hex'), iv);
     let encrypted = cipher.update(text);
     encrypted = Buffer.concat([encrypted, cipher.final()]);

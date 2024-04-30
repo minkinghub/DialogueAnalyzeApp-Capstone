@@ -14,30 +14,37 @@ const signInKakaoService = async (kakaoToken, kakaoName) => {
     const info = data.properties
     const kakaoId = data.id
     const encKakaoId = encrypt(String(kakaoId))
-    
-    const email = data.kakao_account.email
+    console.log("enc:", encKakaoId);
+    console.log("dec:", decrypt(encKakaoId))
+
+    const email = data.kakao_account.email || 'default@example.com';
     const encEmail = encrypt(email)
+    console.log("enc:", encEmail)
+    console.log("dec:", decrypt(encEmail))
 
     if(!info || !email) throw new Error("NO_USER_", 400)
 
     let userId
-    let isFirst = false
+    let isFirst = true
 
     if(kakaoName == info.nickname) { // 검증, 이후 성별과 나이가 맞는지도 추가
         const regigsterInfo = await findOneUserByKakaoId(encKakaoId)
         if(!regigsterInfo) {
+            console.log("유저 정보 없음")
             userId = await userModelSave({
                 name: info.nickname, // 일단 닉네임으로 설정함
                 nickname: info.nickname,
-                email: encEmail,
+                email: encrypt(email),
                 kakaoId: encKakaoId,
                 gender: null,
                 birth: null
             })
             userId = userId._id.toString()
-        } else { 
+        } else {
+            console.log("유저 정보 있음")
             if(regigsterInfo.gender != null && regigsterInfo.birth != null) {
-                isFirst = true 
+                console.log("기본 정보 있음")
+                isFirst = false
             }
             userId = regigsterInfo._id.toString()
         }
