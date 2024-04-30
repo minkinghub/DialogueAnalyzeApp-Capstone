@@ -8,6 +8,7 @@ backend/AItest/chromedriver-win64
 backend/AItest/textdata
 backend/AItest/myenv
 backend/AItest/textModel
+backend/AImodels/models 
 
 ### Node ###
 # Logs

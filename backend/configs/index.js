@@ -1,7 +1,13 @@
 const { connectToMongoDB } = require('./mongo')
-const { redisClient } = require('./redis')
+const { generateToken, removeToken, verifyToken, refreshAccessToken } = require('./jwtToken')
+const { encrypt, decrypt } = require('./encryptData')
 
 module.exports = {
     connectToMongoDB,
-    redisClient
+    generateToken,
+    removeToken,
+    verifyToken,
+    refreshAccessToken,
+    encrypt,
+    decrypt
 }
