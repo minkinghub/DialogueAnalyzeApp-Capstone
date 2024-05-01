@@ -1,25 +1,29 @@
-import React from 'react';
+import { SaveToken } from '../../tokenData/SaveToken'
+import axios from 'axios';
 
 const SendServer = async ( userInfo, accessToken ) => {
+    console.log("Send server data", userInfo.nickname, accessToken );
 
-    console.log("success", userInfo.nickname, accessToken );
-    
-    // try {
-    // const response = await fetch('http://localhost:3000/api/auth/login/kakao', {
-    //     method: 'POST',
-    //     headers: {
-    //     'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //         access_token: accessToken,
-    //         profile_nickname: nickname,
-    //     }),
-    // });
-    // const jsonResponse = await response.json();
-    // console.log('Server response:', jsonResponse);
-    // } catch (error) {
-    // console.error('Failed to send data to server:', error);
-    // }
+    try {
+        const response = await axios.post('http://35.216.126.98:8080/api/auth/login/kakao', {
+            access_token: `Bearer ${accessToken}`,
+            profile_nickname: userInfo.nickname
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        console.log('Server response:', response.data);
+
+        if(response.status === 200){
+            SaveToken(response.data);
+            return response.data.isFirst
+        }
+        
+    } catch (error) {
+        console.error('Failed to send data to server:', error.response ? error.response.data : error);
+    }
 };
 
 export default SendServer;

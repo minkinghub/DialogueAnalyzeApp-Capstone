@@ -15,7 +15,7 @@ async function getUserInfo(accessToken) {
         const responseCode = response.status;
 
         const result = await response.json();
-        console.log("responseBody =", result);
+        // console.log("responseBody =", result);
 
         if (response.ok) {
             const properties = result.properties;

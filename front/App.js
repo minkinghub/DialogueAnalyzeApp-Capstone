@@ -9,6 +9,7 @@ const Stack = createNativeStackNavigator();
 
 function App() {
   return (
+    
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={Login} options={{ headerTitle: '로그인' }}/>
@@ -16,6 +17,7 @@ function App() {
         <Stack.Screen name="BottomTap" component={BottomTap} options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
+    
   );
 }
 

@@ -11,13 +11,13 @@ const FileChoice = ( {onFileSelected} ) => {
             });
             onFileSelected(res);
             //파일 검사
-            // const isTxtFile = res[0].type === 'text/plain' || res[0].name.endsWith('.txt');
+            const isTxtFile = res[0].type === 'text/plain' || res[0].name.endsWith('.txt');
 
-            // if (isTxtFile) {
-            //     onFileSelected(res);
-            // } else {
-            //     Alert.alert("안내", "텍스트 파일만 선택해주세요.");
-            // }
+            if (isTxtFile) {
+                onFileSelected(res);
+            } else {
+                Alert.alert("안내", "텍스트 파일만 선택해주세요.");
+            }
         } catch (err) {
             if (DocumentPicker.isCancel(err)) {
                 //파일 선택 취소
