@@ -30,28 +30,12 @@ const MannerAnalysis = ( {selectedFile, opAge_range} ) => {
             );
         }
         else {
-            // 파일 내용 추출
-            // const fileContent = await readFileContent(selectedFile.uri);
 
             //formData 객체 생성
             const formData = new FormData();
             formData.append('file', selectedFile);
             formData.append('opAge_range', opAge_range);
             formData.append('analysisType ', analysisType);
-            // formData.append('file', {
-            //     file: selectedFile,
-            //     opAge_range: opAge_range,
-            //     analysisType: analysisType
-            // });
-
-            //디버깅 용 formData 확인
-            // const formDataLog = {};
-            // formDataLog['file'] = {
-            //     file: selectedFile,
-            //     opAge_range: opAge_range,
-            //     analysisType: analysisType
-            // };
-            // console.log('FormData 내용 :', formDataLog, tokens.access_token);
 
             // 서버로 파일 전송
             axios.post('http://35.216.126.98:8080/api/upload/analyze/text', formData, {
@@ -84,7 +68,7 @@ const MannerAnalysis = ( {selectedFile, opAge_range} ) => {
     return (
         <TouchableOpacity 
             style={{
-                backgroundColor: '#8493A8',
+                backgroundColor: '#DDA0DD',
                 alignItems: 'center',
                 padding: 10,
                 width: '80%',

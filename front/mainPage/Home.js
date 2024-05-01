@@ -133,7 +133,7 @@ const Home = () => {
                 </Modal>
 
 
-                <Text style={{fontSize: 30, margin: 10}}>나의 최근 분석 내역</Text>
+                <Text style={{fontSize: 30, margin: 10}}>메인에 넣을 거 없어서 일단 나의 최근 분석 내역</Text>
 
                 {records.length > 0 ? (
                     <View style={{

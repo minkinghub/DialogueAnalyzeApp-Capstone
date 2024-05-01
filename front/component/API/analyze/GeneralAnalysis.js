@@ -30,8 +30,6 @@ const GeneralAnalysis = ( {selectedFile, opAge_range} ) => {
             );
         }
         else {
-            // 파일내용 추출
-            // const fileContent = await readFileContent(selectedFile.uri);
 
             //formData 객체 생성
             const formData = new FormData();
@@ -70,7 +68,7 @@ const GeneralAnalysis = ( {selectedFile, opAge_range} ) => {
     return (
         <TouchableOpacity 
             style={{
-                backgroundColor: '#8493A8',
+                backgroundColor: '#DDA0DD',
                 alignItems: 'center',
                 padding: 10,
                 width: '80%',
@@ -78,7 +76,7 @@ const GeneralAnalysis = ( {selectedFile, opAge_range} ) => {
                 borderRadius: 10,
                 borderWidth: 1,
             }} onPress={handleGeneralAnalysis}>
-            <Text style={{color: 'white', fontSize: 20,}}>일반 분석</Text>
+            <Text style={{color: 'white', fontSize: 20,}}>타입 분석</Text>
         </TouchableOpacity>
     );
 };
