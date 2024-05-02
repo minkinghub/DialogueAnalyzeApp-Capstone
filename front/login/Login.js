@@ -1,140 +1,65 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
-import BouncyCheckbox from "react-native-bouncy-checkbox";
-import LoginAPI from '../component/login/API/LoginAPI'; //로그인API 컴포넌트
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Alert, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import * as KakaoLogin from '@react-native-seoul/kakao-login'; //카카오 로그인 라이브러리
+import BouncyCheckbox from "react-native-bouncy-checkbox"; //로그인 유지 체크박스
+
+import getUserInfo from '../component/API/login/GetUserInfo'; //카카오 유저정보 반환 컴포넌트
+import SendServer from '../component/API/login/SendServer ' //유저정보 전송 컴포넌트
 
 const Login = () => {
-  const [id, setId] = useState('');
-  const [password, setPassword] = useState('');
-  const [loginAttempted, setLoginAttempted] = useState(false);
+  const navigation = useNavigation(); // 네비게이션 객체
+  
+  //카카오 로그인 버튼
+  const kakaoLogin = async () => {
 
-  const onLoginSuccess = () => {
-    Alert.alert("Login Success", "You have successfully logged in.");
-    setLoginAttempted(false);
-    // 로그인 성공 후의 로직을 여기에 구현합니다.
-  };
+    try {
+        const result = await KakaoLogin.login();
+        console.log("Login Success", JSON.stringify(result));
+        
+        // 로그인 성공 후, accessToken을 사용하여 GetUserInfo 함수 호출
+        const userInfo = await getUserInfo(result.accessToken);
 
-  const onLoginFailure = () => {
-    Alert.alert("Login Failure", "failure");
-    setLoginAttempted(false);
-  };
+        //서버로 유저정보 전송
+        const isFirst = await SendServer(userInfo, result.accessToken);
 
-  // 로그인 로직 구현
-  const handleLogin = () => {
-    setLoginAttempted(true);
-  };
-
-  const handleFindId = () => {
-    console.log('아이디 찾기 로직 구현');
-    console.log(loginAttempted);
-
-    // 아이디 찾기 로직 구현
-  };
-
-  const handleFindPassword = () => {
-    console.log('비밀번호 찾기 로직 구현');
-    // 비밀번호 찾기 로직 구현
-  };
-
-  const handleSignUp = () => {
-    console.log('회원가입 로직 구현');
-    // 회원가입 로직 구현
-  };
-
-    return (
-        <SafeAreaView style={{flex: 1, backgroundColor: '#fff',}}>
-            
-            <View style={styles.container}>
-                
-                <Text>ID</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setId}
-                    value={id}
-                    placeholder="아이디"
-                />
-                <Text>Password</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setPassword}
-                    value={password}
-                    placeholder="비밀번호"
-                    secureTextEntry
-                />
-
-                <View style={{width: '80%'}}>
-                    <BouncyCheckbox
-                        size={25}
-                        fillColor="blue"
-                        unfillColor="#FFFFFF"
-                        text="로그인 상태 유지"
-                        iconStyle={{ borderColor: "red"}}
-                        onPress={(isChecked) => {console.log(isChecked);}}
-                    />
-                </View>
-
-                <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                    <Text style={{color: 'white', fontSize: 20,}}>Login</Text>
-                </TouchableOpacity>
-                
-                <View style={styles.subContainer}>
-                    <TouchableOpacity style={styles.Button} onPress={handleFindId}>
-                        <Text>아이디 찾기</Text>
-                    </TouchableOpacity>
-                    <Text>|</Text>
-                    <TouchableOpacity style={styles.Button} onPress={handleFindPassword}>
-                        <Text>비밀번호 찾기</Text>
-                    </TouchableOpacity>
-                    <Text>|</Text>
-                    <TouchableOpacity style={styles.Button} onPress={handleSignUp}>
-                        <Text>회원가입</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-            {loginAttempted &&
-            <LoginAPI
-            id={id}
-            password={password}
-            onLoginSuccess={onLoginSuccess}
-            onLoginFailure={onLoginFailure}
-            />
-      }
-        </SafeAreaView>
-    );
+        if (isFirst !== null) navigation.navigate('BottomTap');
+    } catch (error) {
+        if (error.code === 'E_CANCELLED_OPERATION') {
+            console.log("Login Cancel", error.message);
+        } else {
+            console.log(`Login Fail(code:${error.code})`, error.message);
+        }
+    }
 };
+  
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    subContainer: {
-        flexDirection: 'row', 
-        justifyContent: 'space-around',
-        width: '80%',
-        marginTop: 20,
-    },
-    input: {
-        width: '80%',
-        margin: 10,
-        borderWidth: 1,
-        padding: 10,
-        borderRadius: 10,
-    },
-    loginButton: {
-        backgroundColor: 'blue',
-        alignItems: 'center',
-        padding: 10,
-        width: '60%',
-        margin: 10,
-        borderRadius: 10,
-        borderWidth: 1,
-    },
-    Button: {
-        backgroundColor: 'white',
-    },
-});
+  return (
+      <SafeAreaView style={{flex: 1, backgroundColor: '#fff',}}>
+        <View style={{justifyContent: 'center', alignItems: 'center', height: '10%', backgroundColor: '#f2cd79'}}>
+          <Text style={{fontSize: 30}}>LOGO</Text>
+        </View>
+        
+        <View style={{justifyContent: 'center', alignItems: 'center', height: '90%', backgroundColor: '#f2cd79'}}>
+
+          <View style={{
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            height: '90%', 
+            width:'90%', 
+            backgroundColor: 'white', 
+            borderRadius: 20,
+          }}>
+            <Text>간편 로그인</Text>
+            <Text> </Text>
+            <TouchableOpacity onPress={kakaoLogin}>
+              <Image source={require('../assets/images/kakao_login_medium_wide.png')}/>
+            </TouchableOpacity>
+          </View>
+            
+        </View>
+      </SafeAreaView>
+  );
+};
 
 export default Login;
