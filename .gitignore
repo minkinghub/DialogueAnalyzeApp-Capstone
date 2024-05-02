@@ -5,6 +5,15 @@
 backend/AItest/*.csv
 backend/ai/*.csv
 
+backend/ai/moral/saved_model/
+backend/ai/moral/data/
+backend/ai/emotion/saved_model/
+backend/ai/emotion/data/
+backend/ai/grammar/saved_model/
+backend/ai/grammar/data/
+backend/ai/politely/saved_model/
+backend/ai/politely/data/
+
 #key file
 backend/key
 
