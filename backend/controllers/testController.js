@@ -1,5 +1,6 @@
 const { testService } = require('../services')
 const { asyncWrap } = require('../middlewares');
+const { findOneUserByObjectId } = require('../models');
 
 const testController = asyncWrap(async (req, res) => {
     console.log("테스트 요청 접수")

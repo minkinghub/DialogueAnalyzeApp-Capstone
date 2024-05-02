@@ -6,27 +6,27 @@ const textSchema = new mongoose.Schema({
     opAge: Number,
     dataType: Boolean, 
     analysisType: Boolean,
-    chatList: Array
+    conversationType: Number,
+    totalScore: Number,
+    detailInfo: Array,
+    fullChatId: { type: Schema.Types.ObjectId, ref: 'fullChats' },
 }, { versionKey: false })
 
 const textModel = mongoose.model('Chat', textSchema, 'chats')
 
-const textPoliteModelSave = async (data) => {
+const textModelSave = async (data) => {
     
     const saveData = new textModel(data)
 
     try {
         await saveData.save()
-        console.log("저장 성공")
-        return true
+        return saveData._id
     } catch (error) {
         console.log("에러 발생")
-        console.error(error)
-        return false
     }
 
 }
 
 module.exports = {
-    textPoliteModelSave
+    textModelSave
 }

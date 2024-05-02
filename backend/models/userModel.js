@@ -26,6 +26,16 @@ const userModelSave = async (data) => {
     
 }
 
+async function userModelUpdate(userId, data) {
+    try {
+        const updatedUser = await userModel.findByIdAndUpdate(userId, {$set: {gender: data.gender, birth: data.birth}}, {new: true})
+        return { status: true, data: updatedUser}
+    } catch (err) {
+        console.log(err)
+        return { status: true, data: null}
+    } 
+}
+
 const userModelLoad = async (data) => {
     const loadData = new userModel(data)
 
@@ -43,7 +53,7 @@ async function findOneUserByKakaoId(kakaoId) {
 
 async function findOneUserByObjectId(id) {
     try {
-        const user = await userModel.findOne({ _id: id });
+        const user = await userModel.findById(id);
         
         return user
     } catch (err) {
@@ -53,6 +63,7 @@ async function findOneUserByObjectId(id) {
 
 module.exports = {
     userModelSave,
+    userModelUpdate,
     findOneUserByKakaoId,
     findOneUserByObjectId
 }

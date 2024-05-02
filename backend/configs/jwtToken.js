@@ -29,8 +29,19 @@ function generateToken(payload) {
 }
 
 async function removeToken(userId) {
-    redisClient.del(`${userId}:access_token`)
-    redisClient.del(`${userId}:refresh_token`)
+    console.log(userId)
+    try {
+        // access_token 삭제
+        const resultAccessToken = await redisClient.del(`${userId}:access_token`);
+        console.log(`Deleted ${resultAccessToken} instance(s) of access_token.`);
+
+        // refresh_token 삭제
+        const resultRefreshToken = await redisClient.del(`${userId}:refresh_token`);
+        console.log(`Deleted ${resultRefreshToken} instance(s) of refresh_token.`);
+
+    } catch (error) {
+        console.error('Error deleting tokens:', error);
+    }
 
     return true
 }
@@ -48,9 +59,9 @@ async function verifyToken(token) {
         });
 
         const key = `${decoded.userId}:access_token`;
-        console.log(`key: ${key}`)
+
         const tokenExists = await redisClient.get(key);
-        
+        console.log(decoded.userId,tokenExists)
         return { status : tokenExists !== null, userId: decoded.userId };
     } catch (err) {
         return { status : false, userId: null}

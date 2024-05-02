@@ -1,11 +1,15 @@
 const { testModelSave } = require('./testModel');
-const { findOneUserByKakaoId, findOneUserByObjectId, userModelSave } = require('./authModel');
-const { textPoliteModelSave } = require('./chatModel');
+const { findOneUserByKakaoId, findOneUserByObjectId, userModelSave, userModelUpdate } = require('./userModel');
+const { textModelSave } = require('./chatModel');
+const { fullTextModelSave } = require('./fullChatModel');
+
 
 module.exports = {
     testModelSave,
     findOneUserByKakaoId,
     findOneUserByObjectId,
     userModelSave,
-    textPoliteModelSave
+    userModelUpdate,
+    textModelSave,
+    fullTextModelSave
 }

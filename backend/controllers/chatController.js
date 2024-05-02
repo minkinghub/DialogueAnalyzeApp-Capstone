@@ -9,8 +9,9 @@ const analyzeText = asyncWrap(async (req, res) => {
         const textContent = req.file.buffer.toString('utf-8')
         const opAge_range = req.body.opAge_range
         const userId = req.user.userId
-        const result = await analyzeTextService(userId, opAge_range, textContent)
-        res.status(200).send({status: result})
+        const analysisType = req.body.analysisType
+        const result = await analyzeTextService(userId, analysisType, opAge_range, textContent)
+        res.status(200).send(result)
     } else {
         res.status(400).send("파일이 전송되지 않았습니다.")
     }
