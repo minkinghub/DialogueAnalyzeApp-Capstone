@@ -38,9 +38,9 @@ class FormalClassifier:
 
     def dataLoader(self):
         train = pd.read_csv(BASE_DIR.joinpath(
-            'modeling', 'data', 'train.tsv'), sep='\t', index_col=0)
+            'politely', 'Data', 'train.tsv'), sep='\t', index_col=0)
         dev = pd.read_csv(BASE_DIR.joinpath(
-            'modeling', 'data', 'dev.tsv'), sep='\t', index_col=0)
+            'politely', 'Data', 'dev.tsv'), sep='\t', index_col=0)
 
         train = train.dropna()
         dev = dev.dropna()

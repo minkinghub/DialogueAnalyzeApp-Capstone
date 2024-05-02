@@ -1,7 +1,6 @@
-# 불쾌 발언
-
 import pandas as pd
 from torch.utils.data import DataLoader, Dataset
+from tqdm import tqdm
 from transformers import BertTokenizer, BertForSequenceClassification, AdamW
 from transformers import get_linear_schedule_with_warmup
 import torch
@@ -10,6 +9,23 @@ from sklearn.metrics import classification_report
 
 # 데이터 로드
 df = pd.read_csv('data/output.csv')
+
+# 데이터 타입 숫자로 변환
+type_mapping = {
+    'is_immoral': 0,
+    'DISCRIMINATION': 1,
+    'SEXUAL': 1,
+    'ABUSE': 2,
+    'VIOLENCE': 3,
+    'CRIME': 3,
+    'HATE': 4,
+    'CENSURE': 5
+}
+df['types'] = df['types'].map(type_mapping)
+
+# NaN 값이 있는 행 삭제
+df = df.dropna(subset=['types'])
+
 
 # KoBERT 토크나이저 로드
 tokenizer = BertTokenizer.from_pretrained('kykim/bert-kor-base')
@@ -43,9 +59,9 @@ class HateSpeechDataset(Dataset):
             'attention_mask': inputs['attention_mask'].flatten(),
             'labels': torch.tensor(label, dtype=torch.long)
         }
-
+    
 # 데이터 준비
-X_train, X_test, y_train, y_test = train_test_split(df['text'], df['is_immoral'].astype(int), test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(df['text'], df['types'], test_size=0.2, random_state=42)
 
 train_dataset = HateSpeechDataset(X_train.tolist(), y_train.tolist(), tokenizer)
 test_dataset = HateSpeechDataset(X_test.tolist(), y_test.tolist(), tokenizer)
@@ -54,7 +70,7 @@ train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 
 # 모델 로드 및 파인 튜닝
-model = BertForSequenceClassification.from_pretrained('kykim/bert-kor-base', num_labels=2)
+model = BertForSequenceClassification.from_pretrained('kykim/bert-kor-base', num_labels=6)
 model.cuda()
 
 optimizer = AdamW(model.parameters(), lr=2e-5)
@@ -65,7 +81,14 @@ scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0, num_t
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model.train()
+
 for epoch in range(3):
+    train_loss = 0.0
+    train_steps = 0
+    
+    # 프로그레스 바 추가
+    train_loader = tqdm(train_loader, desc=f"Epoch {epoch+1}/3", unit="batch")
+    
     for batch in train_loader:
         batch = {k: v.to(device) for k, v in batch.items()}
         outputs = model(**batch)
@@ -74,13 +97,21 @@ for epoch in range(3):
         optimizer.step()
         scheduler.step()
         optimizer.zero_grad()
+        
+        train_loss += loss.item()
+        train_steps += 1
+        
+        # 프로그레스 바 업데이트
+        train_loader.set_postfix(loss=train_loss/train_steps)
+        
+    print(f"Epoch {epoch+1}/3 - Training Loss: {train_loss/train_steps:.4f}")
+
 
 # 모델 저장
-model_path = './saved_model/trained_model.pt'
-torch.save(model.state_dict(), model_path)
+model.save_pretrained('./saved_model')
 
 # 토크나이저 저장
-tokenizer.save_pretrained('./saved_tokenizer')
+tokenizer.save_pretrained('./saved_model')
 
 # 평가
 model.eval()

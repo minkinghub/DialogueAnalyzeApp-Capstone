@@ -1,20 +1,20 @@
 # 맞춤법
 
 import torch
-from transformers import T5ForConditionalGeneration, T5Tokenizer
+from transformers import T5ForConditionalGeneration, T5TokenizerFast
 from transformers import Trainer, TrainingArguments
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-# ET5 모델 로드
-#model = T5ForConditionalGeneration.from_pretrained("./model")
-#tokenizer = T5Tokenizer.from_pretrained("./model")
+# T5 모델 로드
+model = T5ForConditionalGeneration.from_pretrained('paust/pko-t5-small')
+tokenizer = T5TokenizerFast.from_pretrained('paust/pko-t5-small')
 
-model = T5ForConditionalGeneration.from_pretrained("j5ng/et5-base")
-tokenizer = T5Tokenizer.from_pretrained("j5ng/et5-base")
+#model = T5ForConditionalGeneration.from_pretrained("j5ng/et5-base")
+#tokenizer = T5Tokenizer.from_pretrained("j5ng/et5-base")
 
-df = pd.read_csv("./data/typos_val.csv", index_col=0)
+df = pd.read_csv("./data/typos_test.csv", index_col=0)
 
 train_df, val_df = train_test_split(df, test_size=0.2, random_state=42)
 
@@ -23,8 +23,8 @@ train_df["input"] = "맞춤법을 고쳐주세요: " + train_df["original"]
 val_df["input"] = "맞춤법을 고쳐주세요: " + val_df["original"]
 
 # 출력 문장의 끝에 "." 추가
-train_df["output"] = train_df["corrected"] + "."
-val_df["output"] = val_df["corrected"] + "."
+train_df["output"] = "정답: " + train_df["corrected"] + "."
+val_df["output"] = "정답: " + val_df["corrected"] + "."
 
 train_encodings = tokenizer(
     train_df["input"].tolist(), max_length=128, padding=True, truncation=True
@@ -62,7 +62,7 @@ training_args = TrainingArguments(
     output_dir="./outputs",
     evaluation_strategy="epoch",
     learning_rate=1e-4,
-    per_device_train_batch_size=16,
+    per_device_train_batch_size=32,
     num_train_epochs=8,
     weight_decay=0.01,
     save_strategy="epoch",
@@ -75,8 +75,13 @@ trainer = Trainer(
     args=training_args,
     train_dataset=train_dataset,
     eval_dataset=val_dataset,
-    legacy=False,
 )
 
 # 학습 실행
 trainer.train()
+
+# 모델 저장
+model.save_pretrained("./saved_model")
+
+# tokenizer 저장
+tokenizer.save_pretrained("./saved_model")

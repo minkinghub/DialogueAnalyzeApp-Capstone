@@ -8,7 +8,8 @@ from utils import clean
 
 BASE_DIR = str(Path(__file__).resolve().parent)
 
-latest_model_path = BASE_DIR + '/formal_classifier_latest'
+#latest_model_path = BASE_DIR + '/formal_classifier_latest'
+latest_model_path = BASE_DIR + '/saved_model'
 device = 'cuda:0'
 
 class FormalClassifier(object):

@@ -1,52 +1,50 @@
 import pandas as pd
-import re
-import json
-from konlpy.tag import Okt
-from keras.preprocessing.text import Tokenizer
-from keras.utils import pad_sequences
-import pickle
-import keras
-import tensorflow as tf
+import numpy as np
+import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
-tf.config.run_functions_eagerly(True)
+# 저장된 모델과 토크나이저 불러오기
+model = AutoModelForSequenceClassification.from_pretrained("./saved_model")
+tokenizer = AutoTokenizer.from_pretrained("./saved_model")
 
-okt = Okt()
-tokenizer = Tokenizer()
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model.to(device)
 
-# 설정 파일 및 토크나이저 불러오기
-DATA_CONFIGS = 'data_configs.json'
-prepro_configs = json.load(open('C:/final_project/CalendarRecipe-Capstone/backend/ai/emotion/content/sample_data/CLEAN_DATA/' + DATA_CONFIGS, 'r'))
+def sentence_predict(sent):
+    model.eval()
+    tokenized_sent = tokenizer(
+        [sent],
+        return_tensors="pt",
+        max_length=128,
+        padding=True,
+        truncation=True,
+        add_special_tokens=True,
+    )
+    tokenized_sent = {k: v.to(device) for k, v in tokenized_sent.items()}
+    with torch.no_grad():
+        outputs = model(
+            input_ids=tokenized_sent["input_ids"],
+            attention_mask=tokenized_sent["attention_mask"],
+        )
+    logits = outputs[0]
+    logits = logits.detach().cpu()
+    result = logits.argmax(-1).numpy()[0]
+    return result
 
-with open('C:/final_project/CalendarRecipe-Capstone/backend/ai/emotion/content/sample_data/CLEAN_DATA/tokenizer.pickle', 'rb') as handle:
-    word_vocab = pickle.load(handle)
+# 데이터 로드 및 샘플링
+data = pd.read_csv("Data/ratings_train2.tsv", sep='\t')
+sampled_data = data.sample(n=1000)
 
-prepro_configs['vocab'] = word_vocab
-tokenizer.fit_on_texts(word_vocab)
+# 정확도 계산을 위한 변수 초기화
+correct_predictions = 0
 
-# 문장 최대 길이 설정
-MAX_LENGTH = 8
+for index, row in sampled_data.iterrows():
+    sentence = row['document']
+    true_label = row['label']
+    predicted_label = sentence_predict(sentence)
+    print(f"True Label: {true_label}, Predicted Label: {predicted_label}")
+    if true_label == predicted_label:
+        correct_predictions += 1
 
-# 학습한 모델 불러오기
-model = keras.models.load_model('C:/final_project/CalendarRecipe-Capstone/backend/ai/emotion/content/sample_data/my_models/')
-model.load_weights('C:/final_project/CalendarRecipe-Capstone/backend/ai/emotion/content/sample_data/DATA_OUT/cnn_classifier_kr/weights.h5')
-
-# 데이터 불러오기
-df = pd.read_csv("Data/typos_test.csv")
-df_sample = df['corrected'].sample(n=20)  # 무작위로 20개 샘플 선택
-
-for sentence in df_sample:
-    print(f"분석할 문장: {sentence}")
-    sentence = re.sub(r'[^ㄱ-ㅎㅏ-ㅣ가-힣\s]', '', sentence)
-    stopwords = ['은', '는', '이', '가', '하', '아', '것', '들', '의', '있', '되', '수', '보', '주', '등', '한']
-    sentence = okt.morphs(sentence, stem=True)  # 토큰화
-    sentence = [word for word in sentence if not word in stopwords]  # 불용어 제거
-    vector = tokenizer.texts_to_sequences([sentence])
-    pad_new = pad_sequences(vector, maxlen=MAX_LENGTH)  # 패딩
-
-    predictions = model.predict(pad_new)
-    predictions = float(predictions.squeeze(-1)[0])
-
-    if predictions > 0.5:
-        print("{:.2f}% 확률로 긍정 리뷰입니다.\n".format(predictions * 100))
-    else:
-        print("{:.2f}% 확률로 부정 리뷰입니다.\n".format((1 - predictions) * 100))
+accuracy = correct_predictions / len(sampled_data)
+print(f"정확도: {accuracy * 100:.2f}%")
