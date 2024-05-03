@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, SafeAreaView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { GetToken } from '../component/tokenData/GetToken'; //토큰 불러오기
+import GenDateToServer from '../component/API/GenDateToServer'; //서버로 셩별, 생년월일 전송
 
 const Home = () => {
     const [modalVisible, setModalVisible] = useState(false); //modal 표시여부
     const [records, setRecords] = useState([]); //대화 성향 분석 데이터
     const [isFirst, setIsFirst] = useState(''); //토큰 저장
-    const [gender, setGender] = useState('male');
-    const [birthDate, setBirthDate] = useState('');
-
+    const [gender, setGender] = useState('true');
+    const [birthYear, setBirthYear] = useState('');
+    const [birthMonth, setBirthMonth] = useState('');
+    const [birthDay, setBirthDay] = useState('');
 
     useEffect(() => {
         const checkIsFirst = async () => {
@@ -29,10 +31,17 @@ const Home = () => {
         }
     }, [isFirst.isFirst]);
 
+    //성별, 생년월일 입력 모달
     const handleComplete = () => {
-        console.log("Selected Gender: ", gender); 
-        console.log("Entered Birth Date: ", birthDate);
-        setModalVisible(!modalVisible); 
+        
+        if(birthYear && birthMonth && birthDay !== ''){
+            console.log("Selected Gender: ", gender); 
+            setModalVisible(!modalVisible);
+            const formattedDate = `${birthYear}-${birthMonth.padStart(2, '0')}-${birthDay.padStart(2, '0')}`;
+            
+            GenDateToServer(gender, formattedDate, isFirst.access_token);
+        }
+        else Alert.alert("안내", "생년월일을 입력해 주세요.");
     };
 
     useEffect(() => {
@@ -86,23 +95,23 @@ const Home = () => {
                         <View style={{flexDirection: 'row', marginBottom: 20,}}>
                             <TouchableOpacity
                                 style={{marginHorizontal: 10, alignItems: 'center',}}
-                                onPress={() => setGender('male')}
+                                onPress={() => setGender('true')}
                             >
                                 <Text style={{fontSize: 16}}>
-                                    {gender === 'male' ? '🔘 남성' : '⚪ 남성'}
+                                    {gender === 'true' ? '🔘 남성' : '⚪ 남성'}
                                 </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={{marginHorizontal: 10, alignItems: 'center',}}
-                                onPress={() => setGender('female')}
+                                onPress={() => setGender('false')}
                             >
                                 <Text style={{fontSize: 16}}>
-                                    {gender === 'female' ? '🔘 여성' : '⚪ 여성'}
+                                    {gender === 'false' ? '🔘 여성' : '⚪ 여성'}
                                 </Text>
                             </TouchableOpacity>
                         </View>
 
-                        <View style={{width: '100%', marginBottom: 20,}}>
+                        {/* <View style={{width: '100%', marginBottom: 20,}}>
                             <TextInput
                                 style={{
                                     height: 40,
@@ -117,6 +126,54 @@ const Home = () => {
                                 value={birthDate}
                                 onChangeText={setBirthDate}
                             />
+                        </View> */}
+                        <View style={{ flexDirection: 'row', marginBottom: 20,justifyContent: 'center', alignItems: 'center' }}>
+                            <TextInput
+                                style={{
+                                    height: 40,
+                                    borderColor: 'gray',
+                                    borderWidth: 1,
+                                    borderRadius: 5,
+                                    width: '30%',
+                                    textAlign: 'center',
+                                }}
+                                placeholder="YYYY"
+                                keyboardType="numeric"
+                                value={birthYear}
+                                onChangeText={setBirthYear}
+                            />
+                            <Text style={{fontSize: 15}}>년</Text>
+                            <TextInput
+                                style={{
+                                    height: 40,
+                                    borderColor: 'gray',
+                                    borderWidth: 1,
+                                    borderRadius: 5,
+                                    width: '25%',
+                                    textAlign: 'center',
+                                    marginHorizontal: 5,
+                                }}
+                                placeholder="MM"
+                                keyboardType="numeric"
+                                value={birthMonth}
+                                onChangeText={setBirthMonth}
+                            />
+                            <Text style={{fontSize: 15}}>월</Text>
+                            <TextInput
+                                style={{
+                                    height: 40,
+                                    borderColor: 'gray',
+                                    borderWidth: 1,
+                                    borderRadius: 5,
+                                    width: '25%',
+                                    textAlign: 'center',
+                                }}
+                                placeholder="DD"
+                                keyboardType="numeric"
+                                value={birthDay}
+                                onChangeText={setBirthDay}
+                            />
+                            <Text style={{fontSize: 15}}>일</Text>
                         </View>
 
                         <TouchableOpacity 
