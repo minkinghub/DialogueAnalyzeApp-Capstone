@@ -317,6 +317,7 @@ const analyzeTextService = async (userId, analysisType, opAge_range, content) =>
         userId: userId,
         opAge: opAge_range,
         chatName: defineChatName(speakerArray),
+        uploadTime: new Date(),
         speakers: speakerArray,
         dataType: true, // 채팅 데이터와 음성 데이터 구분, 여기는 채팅 데이터 api임
         analysisType: analysisType, // 예절 분석과 타입 분석 구분, ture - 예절 / false - 타입
