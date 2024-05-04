@@ -10,23 +10,6 @@ from sklearn.metrics import classification_report
 # 데이터 로드
 df = pd.read_csv('data/output.csv')
 
-# 데이터 타입 숫자로 변환
-type_mapping = {
-    'is_immoral': 0,
-    'DISCRIMINATION': 1,
-    'SEXUAL': 1,
-    'ABUSE': 2,
-    'VIOLENCE': 3,
-    'CRIME': 3,
-    'HATE': 4,
-    'CENSURE': 5
-}
-df['types'] = df['types'].map(type_mapping)
-
-# NaN 값이 있는 행 삭제
-df = df.dropna(subset=['types'])
-
-
 # KoBERT 토크나이저 로드
 tokenizer = BertTokenizer.from_pretrained('kykim/bert-kor-base')
 
@@ -74,7 +57,7 @@ model = BertForSequenceClassification.from_pretrained('kykim/bert-kor-base', num
 model.cuda()
 
 optimizer = AdamW(model.parameters(), lr=2e-5)
-total_steps = len(train_loader) * 3
+total_steps = len(train_loader) * 10
 scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0, num_training_steps=total_steps)
 
 # 모델 학습
@@ -82,12 +65,12 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model.train()
 
-for epoch in range(3):
+for epoch in range(10):
     train_loss = 0.0
     train_steps = 0
     
     # 프로그레스 바 추가
-    train_loader = tqdm(train_loader, desc=f"Epoch {epoch+1}/3", unit="batch")
+    train_loader = tqdm(train_loader, desc=f"Epoch {epoch+1}/10", unit="batch")
     
     for batch in train_loader:
         batch = {k: v.to(device) for k, v in batch.items()}
@@ -104,7 +87,7 @@ for epoch in range(3):
         # 프로그레스 바 업데이트
         train_loader.set_postfix(loss=train_loss/train_steps)
         
-    print(f"Epoch {epoch+1}/3 - Training Loss: {train_loss/train_steps:.4f}")
+    print(f"Epoch {epoch+1}/10 - Training Loss: {train_loss/train_steps:.4f}")
 
 
 # 모델 저장

@@ -32,19 +32,12 @@ def sentence_predict(sent):
     return result
 
 # 데이터 로드 및 샘플링
-data = pd.read_csv("Data/ratings_test.tsv", sep='\t')
-sampled_data = data.sample(n=1000)
-
-# 정확도 계산을 위한 변수 초기화
-correct_predictions = 0
+data = pd.read_csv("../grammar/Data/typos_test.csv")
+sampled_data = data.sample(n=100)
 
 for index, row in sampled_data.iterrows():
-    sentence = row['document']
-    true_label = row['label']
+    sentence = row['corrected']
     predicted_label = sentence_predict(sentence)
-    print(f"True Label: {true_label}, Predicted Label: {predicted_label}")
-    if true_label == predicted_label:
-        correct_predictions += 1
-
-accuracy = correct_predictions / len(sampled_data)
-print(f"정확도: {accuracy * 100:.2f}%")
+    print(f"Text: {sentence}")
+    print(f"Predicted Label: {predicted_label}")
+    print()
