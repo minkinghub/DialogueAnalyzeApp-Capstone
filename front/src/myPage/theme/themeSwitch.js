@@ -1,7 +1,12 @@
 import { Switch, Text, View } from "react-native";
 import { useTheme } from "../../ThemeContext";
-
 const ThemeSwitch = () => {
+    
+
+    const toTheme = () => {
+
+        console.log('toggleTheme');
+    }
     
     //true면 다크, flase면 라이트
     const {isDarkMode, toggleTheme} = useTheme();

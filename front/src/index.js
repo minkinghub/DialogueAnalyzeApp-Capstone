@@ -31,15 +31,13 @@ const App = () => {
   const MyPageStack = () => {
     const Stack = createStackNavigator();
     return (
-      <ThemeProvider>
-      <Stack.Navigator
-      screenOptions={{
-        headerShown: false, // 모든 화면에서 헤더 숨기기
-      }}>
-        <Stack.Screen name="MyPage" component={MyPage} />
-        <Stack.Screen name="history" component={History} />
-      </Stack.Navigator>
-      </ThemeProvider>
+        <Stack.Navigator
+        screenOptions={{
+          headerShown: false, // 모든 화면에서 헤더 숨기기
+        }}>
+          <Stack.Screen name="MyPage" component={MyPage} />
+          <Stack.Screen name="history" component={History} />
+        </Stack.Navigator>
     );
   };
 

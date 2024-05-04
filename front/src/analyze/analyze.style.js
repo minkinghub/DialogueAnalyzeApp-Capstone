@@ -66,6 +66,7 @@ const styles = (isDarkMode) =>{
             borderBottomWidth: 2,
             borderRightWidth:2, 
             borderColor: theme.borderColor,
+            backgroundColor: theme.backgroundColor,
             justifyContent: 'center',
             alignItems: 'center',
             alignSelf: 'center',
@@ -78,6 +79,9 @@ const styles = (isDarkMode) =>{
             fontWeight: 'bold',
             padding: 15,
         },
+
+        ////////////////////////예절분석///////////////////////////
+        //drawTable 스타일
         //예절분석 테이블 스타일
         standardTableView:{
             flexDirection: 'row',
@@ -85,7 +89,7 @@ const styles = (isDarkMode) =>{
             padding: 10,
             borderBottomWidth: 2,
             borderBottomColor: theme.borderColor,
-        
+            backgroundColor: theme.backgroundColor,
         },
         standardItemView:{
             flex: 1,
@@ -129,6 +133,8 @@ const styles = (isDarkMode) =>{
         standardcommentTextView:{
             borderWidth: 1,
             padding: 3,
+            backgroundColor: theme.backgroundColor,
+
         },
         standardCommentText:{
             fontSize: 18,

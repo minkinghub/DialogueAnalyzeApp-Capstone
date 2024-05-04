@@ -1,6 +1,8 @@
-import React,{useRef, useState} from "react";
+import React,{useRef, useContext} from "react";
 import {View, Text, TouchableOpacity, ScrollView} from "react-native";
-import styles from "./analyze.style";
+import analyzeStyle from "./analyze.style";
+import ThemeContext from "../ThemeContext";
+
 // 예절 분석
 //서버에서 가져올때 기준 배열
 const standard=["grammar", "emotion", "moral", "politely"]
@@ -13,7 +15,8 @@ const standardScore=[12, 24, 25, 19]
 let CommentHeight = 0;
 // standard | score 테이블 그리기
 
-const drawTable = (scrollViewRef) => {
+const DrawTable = (scrollViewRef, styles) => {
+
     //해당 standard의 comment를 이동하기 위한 함수
     const scrollToItem = (index) => {
         // scrollTo 위치 계산
@@ -49,6 +52,12 @@ const drawTable = (scrollViewRef) => {
 const Etiquette = () => {
     const scrollViewRef = useRef(null);
 
+    const DarkMode = useContext(ThemeContext);
+    const isDarkMode = DarkMode.isDarkMode;
+    const styles = analyzeStyle(isDarkMode);
+    console.log('Category: ',isDarkMode);
+    isDarkMode ? console.log('DarkMode') : console.log('LightMode');
+
     //Standard Comment의 세로 길이를 계산하기 위한 함수
     const handleLayout = (index, event) => {
         const { width, height } = event.nativeEvent.layout;
@@ -60,15 +69,16 @@ const Etiquette = () => {
     
     
     return(
-        <View style= {{flex:1}}>
+        <View style= {styles.container}>
             <View style = {styles.headerStyle}>
                 <Text style = {styles.headerTextStyle}>예절 분석 결과</Text>
             </View>
             {/* standard | score 테이블 그리기 */}
-            {drawTable(scrollViewRef)}
+            {/* {drawTable(scrollViewRef, styles)} */}
+            <DrawTable scrollViewRef={scrollViewRef} styles={styles}/>
 
             <View>
-                <Text>총 {totalScore} 점입니다.</Text>
+                <Text style = {styles.totalScoreView}>총 {totalScore} 점입니다.</Text>
             </View>
             <ScrollView ref={scrollViewRef}>
                 {standard.map((item, index) => (
