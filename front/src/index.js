@@ -5,7 +5,6 @@ import { NavigationContainer } from "@react-navigation/native";
 
 import {Category, Etiquette} from "./analyze";
 import MyPage from "./myPage";
-import Theme from "./myPage/theme/theme";
 import History from "./myPage/history";
 const App = () => {
     const Tab = createBottomTabNavigator();
@@ -34,7 +33,6 @@ const App = () => {
         headerShown: false, // 모든 화면에서 헤더 숨기기
       }}>
         <Stack.Screen name="MyPage" component={MyPage} />
-        <Stack.Screen name="theme" component={Theme} />
         <Stack.Screen name="history" component={History} />
       </Stack.Navigator>
     );

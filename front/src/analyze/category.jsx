@@ -1,8 +1,12 @@
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import styles from "./analyze.style";
+//data.detailList[화자].detailInfo[].label                      //기준 유형
+//data.detailList[화자].detailInfo[].detailScore                //유형 점수 
+//data.detailList[화자].detailInfo[].exmpleText[].isStandard    //moral만 숫자
+//data.detailList[화자].detailInfo[].exmpleText[].chatContent   //대화 내용
 
 // 타입 분석
-const Category = () => {
+const Category = (data) => {
     
     return (
         <View>

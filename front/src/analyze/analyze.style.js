@@ -1,19 +1,5 @@
 import {StyleSheet} from 'react-native';
 
-const lightTheme = {
-    backgroundColor: 'white',
-    textColor: 'black',
-    borderColor: '#D3D3D3',
-    // 다른 스타일 속성들...
-};
-
-const darkTheme = {
-    backgroundColor: 'black',
-    textColor: 'white',
-    borderColor: 'white',
-    // 다른 스타일 속성들...
-};
-
 const styles = StyleSheet.create({
     //분석 결과 헤더 스타일
     headerStyle:{
