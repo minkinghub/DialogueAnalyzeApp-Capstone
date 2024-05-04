@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const fullTextSchema = new mongoose.Schema({
-    chatList : Array
+    fullChat: Array
 }, { versionKey: false })
 
 const fullTextModel = mongoose.model('FullChat', fullTextSchema, 'fullChats')

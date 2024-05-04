@@ -1,4 +1,4 @@
-const { userModelSave } = require('../models');
+const { userModelSave, findOneHistoryByChatId, findHistoryByUserId } = require('../models');
 const { userModelUpdate } = require('../models');
 
 // const logoutService = async (access_token, refresh_token) => {
@@ -22,7 +22,25 @@ const updateUserService = async (userId, gender, birth) => {
     return result.status
 }
 
+const sendHistoryDetailService = async (userId, historyKey) => {
+    const history = await findOneHistoryByChatId(historyKey)
+
+    if(history.userId.toString() == userId) {
+        history.userId == null // userId 값이 객체에서 안지워진다, 추후 수정 필요
+        return history
+    }
+    else return null
+}
+
+const sendHistoryListService = async (userId) => {
+    const historyList = await findHistoryByUserId(userId)
+
+    return historyList
+}
+
 module.exports = {
     // logoutService,
-    updateUserService
+    updateUserService,
+    sendHistoryDetailService,
+    sendHistoryListService
 }

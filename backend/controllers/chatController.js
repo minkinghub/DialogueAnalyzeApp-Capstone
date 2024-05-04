@@ -11,7 +11,11 @@ const analyzeText = asyncWrap(async (req, res) => {
         const userId = req.user.userId
         const analysisType = req.body.analysisType
         const result = await analyzeTextService(userId, analysisType, opAge_range, textContent)
-        res.status(200).send(result)
+        if(result == null) {
+            res.status(400).send("오류 발생")
+        } else {
+            res.status(200).send(result)
+        }
     } else {
         res.status(400).send("파일이 전송되지 않았습니다.")
     }

@@ -1,6 +1,6 @@
 const { removeToken } = require('../configs');
 const { asyncWrap } = require('../middlewares');
-const { updateUserService } = require('../services');
+const { updateUserService, sendHistoryDetailService, sendHistoryListService } = require('../services');
 
 const logout = asyncWrap(async (req, res) => {
     const userId = req.user.userId
@@ -18,7 +18,26 @@ const updateUser = asyncWrap(async (req, res) => {
     return res.status(200).json({status: result})
 })
 
+const sendHistoryList = asyncWrap(async (req, res) => {
+    const userId = req.user.userId
+
+    const result = await sendHistoryListService(userId)
+    if(result == null) return res.status(400).send("권한 없음")
+    else return res.status(200).send(result)
+})
+
+const sendHistoryDetail = asyncWrap(async (req, res) => {
+    const userId = req.user.userId
+    const historyKey = req.body.historyKey
+
+    const result = await sendHistoryDetailService(userId, historyKey)
+    if(result == null) return res.status(400).send("권한 없음")
+    else return res.status(200).send(result)
+})
+
 module.exports = {
     logout,
-    updateUser
+    updateUser,
+    sendHistoryList,
+    sendHistoryDetail
 }
