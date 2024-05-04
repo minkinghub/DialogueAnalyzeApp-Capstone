@@ -3,12 +3,13 @@ const { Schema } = mongoose;
 
 const textSchema = new mongoose.Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User' },
+    chatName: String,
     opAge: Number,
-    dataType: Boolean, 
+    dataType: Boolean,
     analysisType: Boolean,
     conversationType: Number,
     totalScore: Number,
-    detailInfo: Array,
+    detailList: Array,
     fullChatId: { type: Schema.Types.ObjectId, ref: 'fullChats' },
 }, { versionKey: false })
 
@@ -27,6 +28,29 @@ const textModelSave = async (data) => {
 
 }
 
+const findOneHistoryByChatId = async (historyKey) => {
+
+    try {
+        const history = await textModel.findById(historyKey);
+        
+        return history
+    } catch (err) {
+      console.error(err);
+    }
+}
+
+const findHistoryByUserId = async (userId) => {
+    try {
+        const historyList = await textModel.find({userId: userId}).select('chatName opAge dataType analysisType')
+
+        return historyList
+    } catch (err) {
+        console.error(err);
+    }
+}
+
 module.exports = {
-    textModelSave
+    textModelSave,
+    findOneHistoryByChatId,
+    findHistoryByUserId
 }

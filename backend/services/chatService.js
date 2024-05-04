@@ -1,3 +1,4 @@
+const { text } = require('body-parser');
 const { textModelSave } = require('../models')
 const { fullTextModelSave } = require('../models')
 
@@ -65,118 +66,165 @@ const extractExampleNumber = (numberRange) => { // 틀린 텍스트 범위 안�
     return { firstNumber, secondNumber }
 }
 
-const requestAnalyzeText = async (saveArray) => { // 분석 요청, 얘를 여따 써야하는지 모르겠네, 음성도 여기에 쓰긴 할텐데
-
-    for(text of saveArray) { // 일단 임시로 내가 랜덤으로 넣음
-        const Rnumber = Math.floor(Math.random() * 6);
-        let isPolite, isGrammar, isPositive
-        let isMoral = Rnumber
-
-        if(Rnumber < 3) {
-            isPolite = true
-            isGrammar = true
-            isPositive = true
-        } else {
-            isPolite = false
-            isGrammar = false
-            isPositive = false
+const requestAnalyzeText = async (splittedList) => { // 분석 요청, 얘를 여따 써야하는지 모르겠네, 음성도 여기에 쓰긴 할텐데
+    for(let j = 0; j < 2; j++) {
+        for(let i = 0; i < splittedList[j].length; i++) { // 일단 임시로 내가 랜덤으로 넣음
+            const Rnumber = Math.floor(Math.random() * 6);
+            let isPolite, isGrammar, isPositive
+            let isMoral = Rnumber
+    
+            if(Rnumber < 3) {
+                isPolite = true
+                isGrammar = true
+                isPositive = true
+            } else {
+                isPolite = false
+                isGrammar = false
+                isPositive = false
+            }
+    
+            splittedList[j][i].isPolite = isPolite
+            splittedList[j][i].isMoral = isMoral
+            splittedList[j][i].isGrammar = isGrammar
+            splittedList[j][i].isPositive = isPositive
         }
-
-        text.isPolite = isPolite
-        text.isMoral = isMoral
-        text.isGrammar = isGrammar
-        text.isPositive = isPositive
     }
 
     return
 }
 
-const calculateScore = (saveArray) => { // 점수 계산 함수
-    const totalText = saveArray.length
-    const standardArray = ["polite", "moral", "grammar", "positive"]
-    const notTextCount = [[], [], [], []] // 인덱스만 저장해서 효율을 높이려고 함, 지금 배열 하나 하나 객체가 너무 큼
-    const detailInfo = [] // 반환 배열
+const extractSpeakerArray = (saveArray) => {
+    const speaker = []
 
-    let textCount = 0;
-    for(text of saveArray) { // 전체 채팅 리스트를 반복
-        if(!text.isPolite) { // 존댓말
-            notTextCount[0].push(textCount)
-        } 
-        if(text.isMoral != 0) { // 문제 없음 제외
-            notTextCount[1].push(textCount)
+    for(let text of saveArray) {
+        if(!speaker.includes(text.speaker)) {
+            speaker.push(text.speaker)
         }
-        if(!text.isGrammar) { // 문법
-            notTextCount[2].push(textCount)
-        }
-        if(!text.isPositive) { // 긍부정
-            notTextCount[3].push(textCount)
-        }
-        textCount++;
     }
 
-    let count = 0;
-    let totalScore = 0;
-    while(count < 4) {
-        let detailScore = 0
-        console.log(notTextCount[count].length)
-        if(totalText != 0) { // 0으로 나누면 안됨
-            detailScore = Math.floor(((totalText - notTextCount[count].length) / totalText) * 25)
+    return speaker
+}
+
+const splitArrayBySpeaker = (saveArray, speakerArray) => {
+    const list = []
+
+    for(let i = 0; i < speakerArray.length; i++) {
+        list.push([])
+    }
+
+    for(let text of saveArray) {
+        for (const [index, speaker] of speakerArray.entries()) {
+            if(text.speaker == speaker) {
+                delete text.speaker
+                list[index].push(text)
+            }
+        }
+    }
+    return list
+}
+
+const calculateScore = (fullChat) => { // 점수 계산 함수
+    const list = []
+    for(let splittedChat of fullChat) { // 대화 대상이 2명
+        const totalText = splittedChat.chatList.length
+        const standardArray = ["polite", "moral", "grammar", "positive"]
+        const notTextCount = [[], [], [], []] // 인덱스만 저장해서 효율을 높이려고 함, 지금 배열 하나 하나 객체가 너무 큼
+        const detailInfo = [] // 반환 배열
+
+        let textCount = 0;
+        for(let text of splittedChat.chatList) { // 전체 채팅 리스트를 반복
+            if(!text.isPolite) { // 존댓말
+                notTextCount[0].push(textCount)
+            } 
+            if(text.isMoral != 0) { // 문제 없음 제외
+                notTextCount[1].push(textCount)
+            }
+            if(!text.isGrammar) { // 문법
+                notTextCount[2].push(textCount)
+            }
+            if(!text.isPositive) { // 긍부정
+                notTextCount[3].push(textCount)
+            }
+            textCount++;
         }
 
-        exampleText = null
-        if(detailScore < 25 && notTextCount[count].length > 2) { // 2개 이하면 무한 반복임
-            exampleText = []
-            const { firstNumber, secondNumber } = extractExampleNumber(notTextCount[count].length)
-            if(count == 0) { // 존댓말, 나도 이렇게 나누기 싫다... 왜 배열로 안했을까
-                exampleText.push({
-                    isStandard: saveArray[notTextCount[count][firstNumber]].isPolite,
-                })
-                exampleText.push({
-                    isStandard: saveArray[notTextCount[count][secondNumber]].isPolite,
-                })
-            } else if (count == 1) { // 도덕성, 이게 만악의 근원인듯
-                exampleText.push({
-                    isStandard: saveArray[notTextCount[count][firstNumber]].isMoral,
-                })
-                exampleText.push({
-                    isStandard: saveArray[notTextCount[count][secondNumber]].isMoral,
-                })
-            } else if (count == 2) { // 문법
-                exampleText.push({
-                    isStandard: saveArray[notTextCount[count][firstNumber]].isGrammar,
-                })
-                exampleText.push({
-                    isStandard: saveArray[notTextCount[count][secondNumber]].isGrammar,
-                })
-            } else if (count == 3) { // 긍부정
-                exampleText.push({
-                    isStandard: saveArray[notTextCount[count][firstNumber]].isPositive,
-                })
-                exampleText.push({
-                    isStandard: saveArray[notTextCount[count][secondNumber]].isPositive,
-                })
+        let count = 0;
+        while(count < 4) {
+            let detailScore = 0
+            if(totalText != 0) { // 0으로 나누면 안됨
+                detailScore = Math.floor(((totalText - notTextCount[count].length) / totalText) * 25)
+            }
+            
+            exampleText = null
+            if(detailScore < 25 && notTextCount[count].length > 2) { // 2개 이하면 무한 반복임
+                exampleText = []
+                const { firstNumber, secondNumber } = extractExampleNumber(notTextCount[count].length)
+                if(count == 0) { // 존댓말, 나도 이렇게 나누기 싫다... 왜 배열로 안했을까
+                    exampleText.push({
+                        isStandard: splittedChat.chatList[notTextCount[count][firstNumber]].isPolite,
+                    })
+                    exampleText.push({
+                        isStandard: splittedChat.chatList[notTextCount[count][secondNumber]].isPolite,
+                    })
+                } else if (count == 1) { // 도덕성, 이게 만악의 근원인듯
+                    exampleText.push({
+                        isStandard: splittedChat.chatList[notTextCount[count][firstNumber]].isMoral,
+                    })
+                    exampleText.push({
+                        isStandard: splittedChat.chatList[notTextCount[count][secondNumber]].isMoral,
+                    })
+                } else if (count == 2) { // 문법
+                    exampleText.push({
+                        isStandard: splittedChat.chatList[notTextCount[count][firstNumber]].isGrammar,
+                    })
+                    exampleText.push({
+                        isStandard: splittedChat.chatList[notTextCount[count][secondNumber]].isGrammar,
+                    })
+                } else if (count == 3) { // 긍부정
+                    exampleText.push({
+                        isStandard: splittedChat.chatList[notTextCount[count][firstNumber]].isPositive,
+                    })
+                    exampleText.push({
+                        isStandard: splittedChat.chatList[notTextCount[count][secondNumber]].isPositive,
+                    })
+                }
+
+                exampleText[0].chatContent = splittedChat.chatList[notTextCount[count][firstNumber]].chatContent
+                exampleText[1].chatContent = splittedChat.chatList[notTextCount[count][secondNumber]].chatContent
             }
 
-            exampleText[0].chatContent = saveArray[notTextCount[count][firstNumber]].chatContent
-            exampleText[1].chatContent = saveArray[notTextCount[count][secondNumber]].chatContent
+            const detail = {
+                label: standardArray[count], // 기준 명
+                detailScore: detailScore, // 기준에 따른 점수
+                exampleText: exampleText // 예시 배열
+            }
+            detailInfo.push(detail)
+            count++
         }
-
-        const detail = {
-            label: standardArray[0], // 기준 명
-            detailScore: detailScore, // 기준에 따른 점수
-            exampleText: exampleText // 예시 배열
+        let totalScore = 0;
+        for(let detail of detailInfo) {
+            totalScore += detail.detailScore
         }
-        totalScore += detailScore
-        detailInfo.push(detail)
-        count++
+        list.push({
+            speaker: splittedChat.speaker,
+            detailInfo: detailInfo,
+            totalScore: totalScore
+        })
     }
 
-    return { totalScore, detailInfo }
+    return list
+}
+
+const defineChatName = (speakerArray) => {
+    
+    const chatName = (speakerArray.length == 2) ? `${speakerArray[0]}, ${speakerArray[1]}의 대화` : "제목 없음"
+
+    return chatName
 }
 
 const classficationConversataionType = () => { // 타입 분류 함수
 
-    const conversationType = 1
+    const conversationType = Math.floor(Math.random() * 8)
 
     return conversationType
 }
@@ -201,8 +249,9 @@ const analyzeTextService = async (userId, analysisType, opAge_range, content) =>
 
     const saveArray = []
 
-    for(const line of contentArray) {
+    for(let line of contentArray) {
         let result = textTypeClassificationKakao(line)
+        let analysisNeed = false
         if(result.type == 1) {
             nowDate = {
                 year: result.year,
@@ -213,12 +262,14 @@ const analyzeTextService = async (userId, analysisType, opAge_range, content) =>
             if(nowDate == null || preText == null) {
                 continue
             }
+            analysisNeed = true
             const time = new Date(nowDate.year, nowDate.month, nowDate.day, preText.hour, preText.minute)
             // 위에 모델 이용 분석 함수 들어가면 됨
             const chatDetail = {
                 count: count,
                 speaker: preText.speaker,
                 chatTime: time,
+                analysisNeed: analysisNeed,
                 chatType: result.type,
                 chatContent: result.text,
             }
@@ -226,11 +277,15 @@ const analyzeTextService = async (userId, analysisType, opAge_range, content) =>
             count++
         } else {
             preText = result
+            if(result.type == 3) {
+                analysisNeed = true
+            }
             const time = new Date(nowDate.year, nowDate.month, nowDate.day, result.hour, result.minute)
             const chatDetail = {
                 count: count,
-                spearker: result.speaker,
+                speaker: result.speaker,
                 chatTime: time,
+                analysisNeed: analysisNeed,
                 chatType: result.type,
                 chatContent: result.text,
             }
@@ -238,12 +293,31 @@ const analyzeTextService = async (userId, analysisType, opAge_range, content) =>
             count++
         }
     }
+
+    const speakerArray = extractSpeakerArray(saveArray)
+    if(speakerArray.length != 2) return null
+
+    const splittedList = splitArrayBySpeaker(saveArray, speakerArray);
+
     // try-catch 써야하냐? 이거 래핑되어있지 않나
-    await requestAnalyzeText(saveArray)
+    await requestAnalyzeText(splittedList)
+
+    const fullChat = [
+        {
+            speaker: speakerArray[0],
+            chatList: splittedList[0]
+        },
+        {
+            speaker: speakerArray[1],
+            chatList: splittedList[1]
+        }
+    ]
 
     const saveChatData = {
         userId: userId,
         opAge: opAge_range,
+        chatName: defineChatName(speakerArray),
+        speakers: speakerArray,
         dataType: true, // 채팅 데이터와 음성 데이터 구분, 여기는 채팅 데이터 api임
         analysisType: analysisType, // 예절 분석과 타입 분석 구분, ture - 예절 / false - 타입
     }
@@ -251,20 +325,20 @@ const analyzeTextService = async (userId, analysisType, opAge_range, content) =>
     analysisType = stringToBoolean(analysisType)
     if(analysisType) { // 타입 분석
         saveChatData.conversationType = classficationConversataionType() // 대화 타입
-        saveChatData.totalScore = null // 일부러 null 값 넣음, 보기 편하라고
-        saveChatData.detailInfo = null
+        saveChatData.detailList = null // 반대 값은 걍 null값 넣음
     } else { // 예절 분석
         saveChatData.conversationType = null // 마찬가지
-        const { totalScore, detailInfo } = calculateScore(saveArray)
-        saveChatData.totalScore = totalScore
-        saveChatData.detailInfo = detailInfo // 점수 및 예시
+        const detailList = calculateScore(fullChat)
+        saveChatData.detailList = detailList
     }
 
-    const saveFullData = await fullTextModelSave({chatList: saveArray})
+    const saveFullData = await fullTextModelSave({fullChat: fullChat})
     saveChatData.fullChatId = saveFullData
     const saveLiteData = await textModelSave(saveChatData)
-    return saveLiteData
+    return { historyKey: saveLiteData._id.toString()}
 }
+
+
 
 module.exports = {
     analyzeTextService

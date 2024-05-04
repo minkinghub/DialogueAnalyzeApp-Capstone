@@ -9,7 +9,7 @@ function uploadFile() {
     if (file) {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('OpAge_range', age);
+        formData.append('opAge_range', age);
         formData.append('analysisType', analysisType); // 분석 타입 데이터 추가
 
         const token = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjMwY2RmZjk2MDc4NTg4OGM3MmIyNWUiLCJpYXQiOjE3MTQ2MDY0NDQsImV4cCI6MTcxNTgxNjA0NH0.6I3ZqV6RIHboto91jJbsLHCU3inHt0IqcwwHuAb2uvI';
