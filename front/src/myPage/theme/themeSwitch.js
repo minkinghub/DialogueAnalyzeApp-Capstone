@@ -1,30 +1,20 @@
 import { Switch, Text, View } from "react-native";
-import { useState } from "react";
-import handleTheme from "./handleTheme";
+import { useTheme } from "../../ThemeContext";
 
 const ThemeSwitch = () => {
+    
     //true면 다크, flase면 라이트
-    const [isDarkMode, setDarkMode] = useState(false);
-    const handleDarkMode = () => {
-        const newValue = !isDarkMode;
-        setDarkMode(newValue);
-        handleTheme(newValue);
-        console.log('handleDarkMode: ', newValue);
-    }
+    const {isDarkMode, toggleTheme} = useTheme();
+    console.log('switch: ',isDarkMode);
     return (
-        <View style = {{
-            flexDirection:'row',
-            alignItems:'flex-end',
-            borderWidth: 2,
-            }}>
-            {console.log('return: ', isDarkMode)}
+        <View style = {{flexDirection:'row', alignItems:'flex-end', borderWidth: 2 }}>
 
-            <Text>lightTheme</Text>
+            <Text>Light Theme</Text>
             <Switch
                 value={isDarkMode}
-                onValueChange={handleDarkMode}
+                onValueChange={toggleTheme}
             />
-            <Text>darkTheme</Text>
+            <Text>Dark Theme</Text>
         </View>
     );
 }
