@@ -4,12 +4,21 @@ import styles from "./analyze.style";
 //data.detailList[화자].detailInfo[].detailScore                //유형 점수 
 //data.detailList[화자].detailInfo[].exmpleText[].isStandard    //moral만 숫자
 //data.detailList[화자].detailInfo[].exmpleText[].chatContent   //대화 내용
+import { View, Text, Image } from "react-native";
+import analyzeStyle from "./analyze.style";
+import { useContext } from "react";
+import ThemeContext from "../ThemeContext";
 
 // 타입 분석
-const Category = (data) => {
+const Category = () => {
+    const DarkMode = useContext(ThemeContext);
+    const isDarkMode = DarkMode.isDarkMode;
+    const styles = analyzeStyle(isDarkMode);
+    console.log('Category: ',isDarkMode);
+    isDarkMode ? console.log('DarkMode') : console.log('LightMode');
     
     return (
-        <View>
+        <View style = {styles.container}>
             <View style = {styles.headerStyle}>
                 <Text style = {styles.headerTextStyle}>유형 분석 결과</Text>
             </View>
