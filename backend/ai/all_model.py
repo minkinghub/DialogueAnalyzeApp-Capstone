@@ -8,15 +8,15 @@ from transformers import BertTokenizer, BertForSequenceClassification
 from utils import clean
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-grammar_model = T5ForConditionalGeneration.from_pretrained('./grammar/saved_model')
-emotion_model = AutoModelForSequenceClassification.from_pretrained("./emotion/saved_model").to(device)
-moral_model = BertForSequenceClassification.from_pretrained('./moral/saved_model').to(device)
-politely_model = AutoModelForSequenceClassification.from_pretrained("./politely/saved_model/save").to(device)
+grammar_model = T5ForConditionalGeneration.from_pretrained('./saved_model/grammar')
+emotion_model = AutoModelForSequenceClassification.from_pretrained("./saved_model/emotion").to(device)
+moral_model = BertForSequenceClassification.from_pretrained('./saved_model/moral').to(device)
+politely_model = AutoModelForSequenceClassification.from_pretrained("./saved_model/politely").to(device)
 
 # 4개의 토크나이저 불러오기
-grammar_tokenizer = T5TokenizerFast.from_pretrained('./grammar/saved_model')
-emotion_tokenizer = AutoTokenizer.from_pretrained("./emotion/saved_model")
-moral_tokenizer = BertTokenizer.from_pretrained('./moral/saved_model')
+grammar_tokenizer = T5TokenizerFast.from_pretrained('./saved_model/grammar')
+emotion_tokenizer = AutoTokenizer.from_pretrained("./saved_model/emotion")
+moral_tokenizer = BertTokenizer.from_pretrained('./saved_model/moral')
 politely_tokenizer = AutoTokenizer.from_pretrained('beomi/kcbert-base')
 
 # 정제된 문자열 배열
@@ -24,19 +24,26 @@ corrected_texts = [
     "가람 초등학교는 완전히 끝난거 맞죠?",
     "가람초 해당되는 강사분들 답변바랍니다",
     "제가알기론 13일날 한번 남은걸로 알고있습니다.!",
-    "하루 안한적이 있나요?",
+    "추가로 스마트팜 조립은 프레임 빼고 다 해놨고 오늘 공진건 학생 안와서 5개만 되어있어요.",
+    "각 조립에 학생들 이름 붙여놨으니 구별할 수 있습니다.",
     "그냥 그대로 하루에 2차시씩 한거 맞나요?",
-    "네 맞습니다.",
+    "결과보고서 및 기증문서 대부분은 제가 다 작성해놓았으니 서명받고 사업단에 제출하시면 됩니다",
     "네. 원래 일정상 13일이 마지막 날입니다",
-    "안녕하세요, 11월 말일까지 진행했던 해봄학교 교육활동 출석부만 먼저 제출 부탁드립니다~ (활동결과보고서X 출석부O)",
-    "현재 다 완료되지 않은 관계로 활동결과보고서 전체가 아닌 서명부 부탁드립니다. (현재일자 기준 사진 혹은 스캔본)",
-    "지금 현재 본인이 담당하고 있는 클래스 [주 강사]는 현재까지 '출석부' 날짜 잘 보이게 사진 찍어서 내일 [10:00시]까지 보내주세요.",
-    "강사비 지급 '마지막' 공지입니다. 수요일 오후 [14:00시]까지 1번, 2번 서류 작성해서 보내주세요.",
+    "안녕하세요, 11월 말일까지 진행했던 해봄학교 교육활동 출석부만 먼저 제출 부탁드립니다~ ",
+    "현재 다 완료되지 않은 관계로 활동결과보고서 전체가 아닌 서명부 부탁드립니다. ",
+    "지금 현재 본인이 담당하고 있는 클래스 주 강사는 현재까지 '출석부' 날짜 잘 보이게 사진 찍어서 내일 10:00시까지 보내주세요.",
+    "강사비 지급 '마지막' 공지입니다. 수요일 오후 14:00시까지 1번, 2번 서류 작성해서 보내주세요.",
     "안 보내시면강사비 지급 '불가'합니다.최종으로 공지드립니다.",
-    "출석부 12월 1일까지의 출결사항 및 근무일자 기재 후 필히 보내주시기 바랍니다. (법인카드 지출 증빙 목적)",
+    "출석부 12월 1일까지의 출결사항 및 근무일자 기재 후 필히 보내주시기 바랍니다.",
     "선문대학교 담당자입니다.",
     "내일 회식 참석 전",
-    "또는 귀가 전"
+    "또는 귀가 전",
+    "시발새끼",
+    "난 너가 너무 싫어",
+    "혐오스러워",
+    "진짜 세상 다 안망하네~ 인생 잣같네 진짜",
+    "싫다 진자 전부 다 귀찮다 이젠",
+    "너가 너무 미워서 정말 시러"
 ]
 
 # 맞춤법 검증 모델

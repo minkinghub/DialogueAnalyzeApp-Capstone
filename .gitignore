@@ -13,6 +13,7 @@ backend/ai/grammar/saved_model/
 backend/ai/grammar/data/
 backend/ai/politely/saved_model/
 backend/ai/politely/data/
+backend/ai/saved_model/
 
 #key file
 backend/key
