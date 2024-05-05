@@ -29,7 +29,7 @@ const Etiquette = () => {
     const chatContent = [];
     let totalScore = 0;
 
-    detailList.map((item, Listindex) => {
+    detailList?.map((item, Listindex) => {
       item.detailInfo.map((item, Infoindex) => {
         score.push(item.detailScore);
         label.push(item.label);
