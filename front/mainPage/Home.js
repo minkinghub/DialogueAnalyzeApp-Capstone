@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, SafeAreaView, TouchableOpacity, TextInput, Alert } from 'react-native';
+import {useContext} from 'react';
+import ThemeContext from '../src/ThemeContext';
 import { GetToken } from '../component/tokenData/GetToken'; //토큰 불러오기
 import GenDateToServer from '../component/API/GenDateToServer'; //서버로 셩별, 생년월일 전송
+import { darkTheme, lightTheme } from '../src/myPage/theme/theme.styles';
 
 const Home = () => {
     const [modalVisible, setModalVisible] = useState(false); //modal 표시여부
@@ -11,6 +14,9 @@ const Home = () => {
     const [birthYear, setBirthYear] = useState('');
     const [birthMonth, setBirthMonth] = useState('');
     const [birthDay, setBirthDay] = useState('');
+    const DarkMode = useContext(ThemeContext);
+    const isDarkMode = DarkMode.isDarkMode;
+    const theme = isDarkMode ? darkTheme : lightTheme;
 
     useEffect(() => {
         const checkIsFirst = async () => {
@@ -72,15 +78,15 @@ const Home = () => {
     }, []);
 
     return (
-        <SafeAreaView style={{flex: 1, backgroundColor: '#fff',}}>
+        <SafeAreaView style={{flex: 1}}>
             
-            <View style={{justifyContent: 'center', alignItems: 'center',}}>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.backgroundColor}}>
                 <Modal
                     transparent={true} // 배경을 투명하게 할 것인지
                     visible={modalVisible} // 모달의 표시 여부
                 >
                     <View style={{margin: 20,
-                            backgroundColor: "white",
+                            backgroundColor: theme.backgroundColor,
                             borderRadius: 20,
                             padding: 30,
                             alignItems: "center",
@@ -110,23 +116,7 @@ const Home = () => {
                                 </Text>
                             </TouchableOpacity>
                         </View>
-
-                        {/* <View style={{width: '100%', marginBottom: 20,}}>
-                            <TextInput
-                                style={{
-                                    height: 40,
-                                    borderColor: 'gray',
-                                    borderWidth: 1,
-                                    padding: 10,
-                                    borderRadius: 5,
-                                    width: '100%',
-                                    textAlign: 'center',
-                                }}
-                                placeholder="생년월일 8자리 입력 ex)000825"
-                                value={birthDate}
-                                onChangeText={setBirthDate}
-                            />
-                        </View> */}
+                        
                         <View style={{ flexDirection: 'row', marginBottom: 20,justifyContent: 'center', alignItems: 'center' }}>
                             <TextInput
                                 style={{
@@ -190,17 +180,18 @@ const Home = () => {
                 </Modal>
 
 
-                <Text style={{fontSize: 30, margin: 10}}>메인에 넣을 거 없어서 일단 나의 최근 분석 내역</Text>
+                <Text style={{fontSize: 30, margin: 10, color: theme.textColor}}>메인에 넣을 거 없어서 일단 나의 최근 분석 내역</Text>
 
                 {records.length > 0 ? (
                     <View style={{
                         justifyContent: 'center',
                         alignItems: 'center',
-                        backgroundColor: 'white',
+                        backgroundColor: theme.backgroundColor,
                         width: '90%',
                         height: '80%',
                         borderRadius: 15,
                         borderWidth: 1,
+                        borderColor: theme.borderColor
                     }}>
                         {records.map((record, index) => (
                             <TouchableOpacity key={index} style={{ 
@@ -209,21 +200,21 @@ const Home = () => {
                                 borderRadius: 15, 
                                 padding: 10, 
                                 borderWidth: 1, 
-                                borderColor: 'gray', 
+                                borderColor: theme.borderColor, 
                             }}>
-                                <Text style={{ fontSize: 20 }}>{record.analysisType}</Text>
-                                <Text style={{ fontSize: 15 }}>분석 시간: {record.timestamp}</Text>
+                                <Text style={{ fontSize: 20, color: theme.textColor }}>{record.analysisType}</Text>
+                                <Text style={{ fontSize: 15, color: theme.textColor }}>분석 시간: {record.timestamp}</Text>
                                 {record.analysisType === "일반 분석" ? (
                                     <>
-                                        <Text style={{ fontSize: 15 }}>대화 유형: {record.results.chat_type}</Text>
+                                        <Text style={{ fontSize: 15, color: theme.textColor }}>대화 유형: {record.results.chat_type}</Text>
                                     </>
                                 ) : (
                                     <>
-                                        <Text style={{ fontSize: 15 }}>점수 : {record.results.total_score}</Text>
+                                        <Text style={{ fontSize: 15, color: theme.textColor }}>점수 : {record.results.total_score}</Text>
                                     </>
                                 )}
                                 <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 10,}}>
-                                    <Text>상세보기 터치</Text>
+                                    <Text style={{color: theme.textColor}}>상세보기 터치</Text>
                                 </View>
                                 
                             </TouchableOpacity>

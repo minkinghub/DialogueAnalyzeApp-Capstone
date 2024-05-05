@@ -20,7 +20,7 @@ const GeneralAnalysis = ( {selectedFile, opAge_range} ) => {
         else {
             // 서버로 파일 전송
             uploadFile(formData).then(res => {
-                console.log('File upload server response:', res);
+                console.log('File upload server response:', res.data);
             }).catch(error => {
                 console.error('Error during upload:', error);
             });
