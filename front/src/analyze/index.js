@@ -12,5 +12,6 @@ const analyze = historyKey => {
   const [isCategory, setCategory] = useState(true); // 타입분석이면 true
   isLoading ? activity() : isCategory ? <Category /> : <Etiquette />;
 };
+
 // export default analyze;
 export {Category, Etiquette};
