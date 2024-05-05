@@ -1,32 +1,29 @@
 import React, {useRef, useContext, useEffect} from 'react';
 import {View, Text, TouchableOpacity, ScrollView} from 'react-native';
 import analyzeStyle from './analyze.style';
-import ThemeContext from '../ThemeContext';
 import {getDetail} from '../../API';
 
 //지금 자체 정적 데이터를 사용하고 있음
 //token확인하고 되는 이후 수정 필요
 import data from '../data';
+import {useTheme} from '../ThemeContext';
 
 // 예절 분석
 
-const Etiquette = isHistoryKey => {
-  console.log("히스토리키 : ", isHistoryKey);
+const Etiquette = () => {
   const scrollViewRef = useRef(null);
-  const {isDarkMode} = useContext(ThemeContext);
-
+  const {isDarkMode, historyKey} = useTheme();
+  console.log('historyKey:', historyKey);
   const styles = analyzeStyle(isDarkMode);
-  console.log('Category: ', isDarkMode);
-  isDarkMode ? console.log('DarkMode') : console.log('LightMode');
 
   //historyKey를 업로드페이지로부터 받아옴
   // const loadData = () => {
   // const isHistoryKey = '663634701e6c5c47cf4b5368';
   // const detailList = data.detailList;
-
-  const loadData = isHistoryKey => {
-    const detailList = getDetail(isHistoryKey)?.detailList;
-
+  console.log(123123);
+  const loadData = () => {
+    const detailList = getDetail(historyKey)?.detailList;
+    console.log('detailList:', detailList);
     const score = [];
     const label = [];
     const chatContent = [];
@@ -101,7 +98,7 @@ const Etiquette = isHistoryKey => {
     CommentHeight = height;
     // console.log(index, '컴포넌트의 세로 길이:', height);
   };
-  loadData(isHistoryKey);
+  loadData(historyKey);
   return (
     <View style={styles.container}>
       <View style={styles.headerStyle}>
