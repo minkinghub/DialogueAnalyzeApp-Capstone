@@ -14,14 +14,12 @@ const getHistory = async () => {
   return response.data;
 };
 
-const uploadFile = async (formData) => {
-  const response = await axiosAuthApi.post(
-    'upload/analyze/text', 
-    formData, 
-    {headers: {
-          'Content-Type': 'multipart/form-data',
-    }}
-  );
+const uploadFile = async formData => {
+  const response = await axiosAuthApi.post('upload/analyze/text', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return response;
 };
 
