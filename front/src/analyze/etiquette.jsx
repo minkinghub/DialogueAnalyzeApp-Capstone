@@ -1,4 +1,4 @@
-import React, {useRef, useContext, useEffect} from 'react';
+import React, {useRef, useContext, useState, useEffect} from 'react';
 import {View, Text, TouchableOpacity, ScrollView} from 'react-native';
 import analyzeStyle from './analyze.style';
 import {getDetail} from '../../API';
@@ -8,39 +8,47 @@ import {getDetail} from '../../API';
 import data from '../data';
 import {useTheme} from '../ThemeContext';
 
-// 예절 분석
-
 const Etiquette = () => {
   const scrollViewRef = useRef(null);
-  const {isDarkMode, historyKey} = useTheme();
-  console.log('historyKey:', historyKey);
-  const styles = analyzeStyle(isDarkMode);
+  const historyKey = '6637a5f5879a1a77270b4f57';
+  const {isDarkMode} = useTheme();
+  console.log(historyKey);
 
-  //historyKey를 업로드페이지로부터 받아옴
-  // const loadData = () => {
-  // const isHistoryKey = '663634701e6c5c47cf4b5368';
-  // const detailList = data.detailList;
-  console.log(123123);
+  const styles = analyzeStyle(isDarkMode);
+  const [detailList, setDetailList] = useState(undefined);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (historyKey) {
+        const result = await getDetail(historyKey).detailList;
+        setDetailList(result);
+      }
+      fetchData();
+
+      console.log(historyKey);
+      console.log('result:', result);
+    };
+  }, [historyKey]);
+  // 예절 분석
   const loadData = () => {
-    const detailList = getDetail(historyKey)?.detailList;
+    // const historyKey = '66379e52879a1a77270b4f0e';
     console.log('detailList:', detailList);
+
     const score = [];
     const label = [];
     const chatContent = [];
     let totalScore = 0;
 
-    detailList.map((item, Listindex) => {
+    detailList?.map((item, Listindex) => {
       item.detailInfo.map((item, Infoindex) => {
         score.push(item.detailScore);
         label.push(item.label);
-        console.log('label:', item.label);
-        console.log('score:', item.detailScore);
-        console.log('chatContent:', item.exampleText);
         const pushitem = item.exampleText.map(example => example.chatContent);
         chatContent.push(pushitem);
       });
       totalScore = item.totalScore;
     });
+
     console.log('score:', score);
     console.log('label:', label);
     console.log('chatContent:', chatContent);
@@ -62,8 +70,7 @@ const Etiquette = () => {
       scrollViewRef.current.scrollTo({
         y: index * CommentHeight,
         animated: true,
-      }); // 예시로 100픽셀씩 이동
-      // console.log(CommentHeight);
+      });
     };
     return (
       <View>
@@ -92,13 +99,14 @@ const Etiquette = () => {
       </View>
     );
   };
+
   //Standard Comment의 세로 길이를 계산하기 위한 함수
   const handleLayout = (index, event) => {
     const {width, height} = event.nativeEvent.layout;
     CommentHeight = height;
     // console.log(index, '컴포넌트의 세로 길이:', height);
   };
-  loadData(historyKey);
+
   return (
     <View style={styles.container}>
       <View style={styles.headerStyle}>

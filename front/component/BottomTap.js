@@ -5,7 +5,7 @@ import Home from '../mainPage/Home'; // 홈 화면 컴포넌트 경로
 import Analyze from '../analyzePage/Analyze';
 import MyPage from '../src/myPage';
 import History from '../src/myPage/history';
-import {Etiquette} from '../src/analyze';
+import {Category, Etiquette} from '../src/analyze';
 
 const Tab = createBottomTabNavigator();
 
@@ -42,7 +42,7 @@ function BottomTap() {
       />
       <Tab.Screen
         name="Category"
-        component={Etiquette}
+        component={Category}
         options={{tabBarLabel: '카테고리'}}
       />
     </Tab.Navigator>

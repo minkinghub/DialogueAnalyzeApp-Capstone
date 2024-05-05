@@ -16,7 +16,6 @@ export const ThemeProvider = ({children}) => {
 
   useEffect(() => {
     AsyncStorage.getItem('isDarkMode').then(theme => {
-      console.log('Provider Theme: ', theme, '2');
       if (theme === '1') {
         setIsDarkMode(true);
       }
