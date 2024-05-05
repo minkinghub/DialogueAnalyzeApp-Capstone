@@ -11,6 +11,7 @@ import data from '../data';
 // 예절 분석
 
 const Etiquette = isHistoryKey => {
+  console.log("히스토리키 : ", isHistoryKey);
   const scrollViewRef = useRef(null);
   const {isDarkMode} = useContext(ThemeContext);
 

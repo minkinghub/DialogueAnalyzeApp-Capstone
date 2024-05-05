@@ -1,5 +1,6 @@
 import { TouchableOpacity, Text, Alert } from 'react-native';
 import { uploadFile } from '../../../API';
+import { Etiquette } from '../../../src/analyze';
 
 const GeneralAnalysis = ( {selectedFile, opAge_range} ) => {
     const analysisType = false;
@@ -21,6 +22,7 @@ const GeneralAnalysis = ( {selectedFile, opAge_range} ) => {
             // 서버로 파일 전송
             uploadFile(formData).then(res => {
                 console.log('File upload server response:', res.data);
+                Etiquette(res.data);
             }).catch(error => {
                 console.error('Error during upload:', error);
             });
