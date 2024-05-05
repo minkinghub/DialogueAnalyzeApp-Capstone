@@ -7,6 +7,7 @@ export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  
   const toggleTheme = () => {
     setIsDarkMode(prevIsDarkMode => !prevIsDarkMode);
     AsyncStorage.setItem('isDarkMode', isDarkMode ? '0' : '1');
@@ -25,7 +26,6 @@ export const ThemeProvider = ({ children }) => {
   return (
     <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
       {children}
-      {console.log(children)}
       {console.log('Provider: ',isDarkMode, '1')}
     </ThemeContext.Provider>
   );

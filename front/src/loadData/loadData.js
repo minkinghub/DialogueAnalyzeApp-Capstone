@@ -7,22 +7,22 @@ const loadData = (historyKey) => {
     const isHistoryKey = '663634701e6c5c47cf4b5368'
     //토큰 불러오기
     const fetchDataFromAPI = async () => {
-    try {
-        
-    const response = await axios.post(
-        'http://35.216.126.98:8080/api/user/history/detail',
-        isHistoryKey,
-        {
-            headers: {
-                Authorization: `Bearer ${tokens}`
-            }
-        }
-    );
+        try {
 
-    setResponseData(response.data);
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    }
+            const response = await axios.post(
+                'http://35.216.126.98:8080/api/user/history/detail',
+                isHistoryKey,
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokens}`
+                    }
+                }
+            );
+
+            setResponseData(response.data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
     };
 
     useEffect(() => {
