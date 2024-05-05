@@ -24,7 +24,7 @@ function BottomTap() {
     }}>
       <Tab.Screen name="Home" component={Home} options={{tabBarLabel: '홈'}}/>
       <Tab.Screen name="Analyze" component={Analyze} options={{tabBarLabel: '채팅 분석', headerTitle: 'Chat Analysis'}}/>
-      <Tab.Screen name="MyPageStack" component={MyPageStack} />
+      <Tab.Screen name="MyPageStack" component={MyPageStack} options={{tabBarLabel: '마이 페이지'}}/>
     </Tab.Navigator>
   );
 }
