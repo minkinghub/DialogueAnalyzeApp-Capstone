@@ -1,8 +1,10 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {createStackNavigator} from '@react-navigation/stack';
 import Home from '../mainPage/Home'; // 홈 화면 컴포넌트 경로
 import Analyze from '../analyzePage/Analyze';
-import MyPage from '../MyPage';
+import MyPage from '../src/myPage';
+import History from '../src/myPage/history';
 
 const Tab = createBottomTabNavigator();
 
@@ -22,9 +24,22 @@ function BottomTap() {
     }}>
       <Tab.Screen name="Home" component={Home} options={{tabBarLabel: '홈'}}/>
       <Tab.Screen name="Analyze" component={Analyze} options={{tabBarLabel: '채팅 분석', headerTitle: 'Chat Analysis'}}/>
-      <Tab.Screen name="MyPage" component={MyPage} options={{tabBarLabel: '마이 페이지'}}/>
+      <Tab.Screen name="MyPageStack" component={MyPageStack} />
     </Tab.Navigator>
   );
 }
+
+const MyPageStack = () => {
+  const Stack = createStackNavigator();
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false, // 모든 화면에서 헤더 숨기기
+      }}>
+      <Stack.Screen name="MyPage" component={MyPage} />
+      <Stack.Screen name="history" component={History} />
+    </Stack.Navigator>
+  );
+};
 
 export default BottomTap;

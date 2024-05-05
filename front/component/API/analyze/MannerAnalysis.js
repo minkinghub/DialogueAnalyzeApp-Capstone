@@ -40,7 +40,7 @@ const MannerAnalysis = ( {selectedFile, opAge_range} ) => {
             //     }
             // });
             uploadFile(formData).then(res => {
-                console.log('File upload server response:', res);
+                console.log('File upload server response:', res.data);
             }).catch(error => {
                 console.error('Error during upload:', error);
             });

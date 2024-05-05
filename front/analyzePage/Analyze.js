@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, SafeAreaView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import {useContext} from 'react';
+import ThemeContext from '../src/ThemeContext';
 import FileChoice from '../component/analyze/FileChoice';
 import MannerAnalysis from '../component/API/analyze/MannerAnalysis';
 import GeneralAnalysis from '../component/API/analyze/GeneralAnalysis';
+import { darkTheme, lightTheme } from '../src/myPage/theme/theme.styles';
 
 const Analyze = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [opAge_range, setOpAge_range] = useState('20');
+    const DarkMode = useContext(ThemeContext);
+    const isDarkMode = DarkMode.isDarkMode;
+    const theme = isDarkMode ? darkTheme : lightTheme;
 
     //파일 선택
     const fileSelected = (file) => {
@@ -15,8 +21,8 @@ const Analyze = () => {
     };
 
     return (
-        <SafeAreaView style={{flex: 1, backgroundColor: '#fff',}}>
-            <View style={{justifyContent: 'center', alignItems: 'center',}}>
+        <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+            <View style={{justifyContent: 'center', alignItems: 'center', backgroundColor: theme.backgroundColor}}>
                 <View style={{
                     justifyContent: 'center', 
                     alignItems: 'center', 
@@ -24,8 +30,9 @@ const Analyze = () => {
                     width: '90%', 
                     borderRadius: 10,
                     borderWidth: 1, 
+                    borderColor: theme.borderColor
                 }}>
-                    <Text>{selectedFile ? "선택한 파일 : " + selectedFile.name : "선택한 파일 없음"}</Text>
+                    <Text style={{color: theme.textColor}}>{selectedFile ? "선택한 파일 : " + selectedFile.name : "선택한 파일 없음"}</Text>
                 </View>
 
                 <View style={{
@@ -34,10 +41,11 @@ const Analyze = () => {
                     height: '5%', 
                     width: '90%',  
                 }}>
-                    <Text style={{fontSize: 15}}>상대방 연령 선택  </Text>
+                    <Text style={{fontSize: 15,color: theme.textColor}}>상대방 연령 선택  </Text>
                     <View style={{
-                        borderWidth: 1, // 테두리 두께
-                        borderRadius: 5, // 테두리 둥글기
+                        borderWidth: 1, 
+                        borderRadius: 5, 
+                        borderColor: theme.borderColor,
                         height: 30,
                         width: 120,
                         justifyContent: 'center',
@@ -48,6 +56,7 @@ const Analyze = () => {
                             style={{ 
                                 height: '100%', 
                                 width: '100%',
+                                color: theme.textColor
                             }}>
                             <Picker.Item label="20대" value="20" />
                             <Picker.Item label="30대" value="30" />
