@@ -1,10 +1,14 @@
 import { TouchableOpacity, Text, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { uploadFile } from '../../../API';
 import { Etiquette } from '../../../src/analyze';
+import {useTheme} from '../../../src/ThemeContext';
 
 const GeneralAnalysis = ( {selectedFile, opAge_range} ) => {
+    const navigation = useNavigation(); // 네비게이션 객체
     const analysisType = false;
-
+    const {sethistoryKey} = useTheme();
+    
     //formData 객체 생성
     const formData = new FormData();
     formData.append('file', selectedFile);
@@ -13,17 +17,16 @@ const GeneralAnalysis = ( {selectedFile, opAge_range} ) => {
 
     const handleGeneralAnalysis = async() => {
         if (selectedFile === undefined) {
-            Alert.alert(
-                "안내",
-                "파일이 선택되지 않았습니다.",
-            );
+            Alert.alert("안내", "파일이 선택되지 않았습니다.");
         }
         else {
             // 서버로 파일 전송
-            uploadFile(formData).then(res => {
-                console.log('File upload server response:', res.data);
-                Etiquette(res.data);
-            }).catch(error => {
+            uploadFile(formData)
+                .then(res => {
+                    console.log('File upload server response:', res.data);
+                    sethistoryKey(res.data.historyKey);
+                    navigation.navigate('Category');
+                }).catch(error => {
                 console.error('Error during upload:', error);
             });
             
