@@ -6,7 +6,6 @@ import {View, Text, TouchableOpacity, Image} from 'react-native';
 import analyzeStyle from './analyze.style';
 import {useContext} from 'react';
 import ThemeContext from '../ThemeContext';
-// import loadData from '../loadData/loadData';
 
 // 타입 분석
 const Category = () => {
@@ -16,7 +15,6 @@ const Category = () => {
   console.log('Category: ', isDarkMode);
 
   isDarkMode ? console.log('DarkMode') : console.log('LightMode');
-  // const data = loadData();
 
   return (
     <View style={styles.container}>
