@@ -14,4 +14,15 @@ const getHistory = async () => {
   return response.data;
 };
 
-export {getDetail, getHistory};
+const uploadFile = async (formData) => {
+  const response = await axiosAuthApi.post(
+    'upload/analyze/text', 
+    formData, 
+    {headers: {
+          'Content-Type': 'multipart/form-data',
+    }}
+  );
+  return response;
+};
+
+export {getDetail, getHistory, uploadFile};

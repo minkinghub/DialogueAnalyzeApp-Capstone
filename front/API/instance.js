@@ -24,16 +24,16 @@ axiosAuthApi.interceptors.request.use(
     return Promise.reject(error);
   },
 );
-axiosApi.interceptors.response.use(
-  response => {
-    //응답 데이터를 받기전에 실행 할 것
-    return response;
-  },
-  error => {
-    //에러가 발생하기 전에 실행 할 것
+// axiosApi.interceptors.response.use(
+//   response => {
+//     //응답 데이터를 받기전에 실행 할 것
+//     return response;
+//   },
+//   error => {
+//     //에러가 발생하기 전에 실행 할 것
 
-    return Promise.reject(error);
-  },
-);
+//     return Promise.reject(error);
+//   },
+// );
 
 export {axiosAuthApi};
