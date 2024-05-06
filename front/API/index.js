@@ -1,16 +1,26 @@
 import {axiosAuthApi} from './instance';
 
 const getDetail = async historyKey => {
-  const response = await axiosAuthApi.post(
-    'user/history/detail',
-    historyKey,
-    {},
-  );
-  return response.data;
+  try {
+    const response = await axiosAuthApi.post(
+      'user/history/detail',
+      {historyKey: historyKey},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    console.log('response.data:', response.data);
+
+    return response.data;
+  } catch (error) {
+    console.error('Error getDetail data:', error);
+  }
 };
 
 const getHistory = async () => {
-  const response = await axiosAuthApi.get('user/history', {});
+  const response = await axiosAuthApi.post('user/history');
   return response.data;
 };
 

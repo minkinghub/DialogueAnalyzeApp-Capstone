@@ -26,7 +26,6 @@ export const ThemeProvider = ({children}) => {
     <ThemeContext.Provider
       value={{isDarkMode, toggleTheme, historyKey, sethistoryKey}}>
       {children}
-      {console.log('Provider: ', isDarkMode, '1')}
     </ThemeContext.Provider>
   );
 };

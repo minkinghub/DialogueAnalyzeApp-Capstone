@@ -1,11 +1,11 @@
 import {TouchableOpacity, Text, Alert} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {uploadFile} from '../../../API';
 import {Etiquette} from '../../../src/analyze';
 import {useTheme} from '../../../src/ThemeContext';
 
 const MannerAnalysis = ({selectedFile, opAge_range}) => {
-    const navigation = useNavigation(); // 네비게이션 객체
+  const navigation = useNavigation(); // 네비게이션 객체
   const analysisType = true;
   const {sethistoryKey} = useTheme();
 

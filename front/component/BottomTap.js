@@ -38,7 +38,7 @@ function BottomTap() {
       <Tab.Screen
         name="Etiquette"
         component={Etiquette}
-        options={{tabBarLabel: '에티켓'}}
+        options={{tabBarLabel: '에티켓', headerShown: false}}
       />
       <Tab.Screen
         name="Category"

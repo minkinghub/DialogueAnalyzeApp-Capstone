@@ -1,5 +1,6 @@
 import {StyleSheet} from 'react-native';
 import {darkTheme, lightTheme} from '../myPage/theme/theme.styles';
+import {pick} from 'react-native-document-picker';
 
 const styles = isDarkMode => {
   const theme = isDarkMode ? darkTheme : lightTheme;
@@ -12,12 +13,18 @@ const styles = isDarkMode => {
     },
     headerStyle: {
       backgroundColor: theme.backgroundColor,
-      borderBottomWidth: 1,
+      borderWidth: 1,
       borderBottomColor: theme.borderColor,
       justifyContent: 'center',
       height: 70,
       alignItems: 'center',
       padding: 15,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    pickerStyle: {
+      backgroundColor: theme.backgroundColor,
+      color: theme.textColor,
     },
     //분석 결과 헤더 텍스트 스타일
     headerTextStyle: {
@@ -82,19 +89,22 @@ const styles = isDarkMode => {
     ////////////////////////예절분석///////////////////////////
     //drawTable 스타일
     //예절분석 테이블 스타일
-    standardTableView: {
+    tableView: {
+      flexDirection: 'row',
+      backgroundColor: theme.backgroundColor,
+      alignItems: 'center',
+    },
+    standardView: {
       flexDirection: 'row',
       alignItems: 'center',
-      padding: 10,
-      borderBottomWidth: 2,
-      borderBottomColor: theme.borderColor,
-      backgroundColor: theme.backgroundColor,
+      justifyContent: 'center',
+      paddingHorizontal: 20,
     },
-    standardItemView: {
+    tablelabelTextView: {
       flex: 1,
     },
     //item 스타일
-    standardItemText: {
+    tablelabelText: {
       fontSize: 18,
       color: theme.textColor,
       textAlign: 'center',
@@ -102,26 +112,38 @@ const styles = isDarkMode => {
       padding: 3,
     },
     //item, score 라인 스타일
-    standardHeightLine: {
-      borderColor: theme.borderColor,
-      borderRadius: 6,
-      borderWidth: 3,
-      height: '100%',
-      margin: 12,
-      alignSelf: 'center',
-      justifyContent: 'center',
-    },
-    standardScoreView: {
-      width: '65%',
-    },
+
+    tableScoreTextView: {flex: 3},
     //score 스타일
-    standardScoreText: {
+    tableScoreText: {
       fontSize: 20,
       color: theme.textColor,
       fontWeight: 'bold',
       padding: 15,
     },
-
+    tableTotalScoreView: {
+      flex: 1,
+    },
+    tableTotalScoreTitleTextView: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    tableTotalScoreTitleText: {
+      fontSize: 18,
+      color: theme.textColor,
+      fontWeight: 'bold',
+    },
+    tableTotalScoreTextView: {
+      flex: 4,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    tableTotalScoreText: {
+      fontSize: 40,
+      color: theme.textColor,
+      fontWeight: 'bold',
+    },
     //standardDetail 스타일
     standardCommentView: {
       margin: 10,
@@ -138,13 +160,21 @@ const styles = isDarkMode => {
       fontSize: 18,
       color: theme.textColor,
     },
-    standardWidthLine: {
-      borderBottomWidth: 3,
+    heightLine: {
+      borderRadius: 6,
+      borderWidth: 3,
       borderColor: theme.borderColor,
-      width: '100%',
-      margin: 12,
-      alignSelf: 'center',
-      justifyContent: 'center',
+      height: '90%',
+      marginVertical: 10,
+      marginHorizontal: 5,
+    },
+    widthLine: {
+      borderRadius: 6,
+      borderWidth: 3,
+      borderColor: theme.borderColor,
+      width: '90%',
+      marginVertical: 5,
+      marginHorizontal: 10,
     },
   });
 };

@@ -12,9 +12,6 @@ const Category = () => {
   const DarkMode = useContext(ThemeContext);
   const isDarkMode = DarkMode.isDarkMode;
   const styles = analyzeStyle(isDarkMode);
-  console.log('Category: ', isDarkMode);
-
-  isDarkMode ? console.log('DarkMode') : console.log('LightMode');
 
   return (
     <View style={styles.container}>
