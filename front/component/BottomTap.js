@@ -23,7 +23,8 @@ function BottomTap() {
           borderTopWidth: 1,
           borderTopStyle: 'solid',
         },
-      }}>
+      }}
+      initialRouteName="Category">
       <Tab.Screen name="Home" component={Home} options={{tabBarLabel: '홈'}} />
       <Tab.Screen
         name="Analyze"
@@ -43,7 +44,7 @@ function BottomTap() {
       <Tab.Screen
         name="Category"
         component={Category}
-        options={{tabBarLabel: '카테고리'}}
+        options={{tabBarLabel: '카테고리', headerShown: false}}
       />
     </Tab.Navigator>
   );

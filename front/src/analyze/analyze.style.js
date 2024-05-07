@@ -1,6 +1,5 @@
 import {StyleSheet} from 'react-native';
 import {darkTheme, lightTheme} from '../myPage/theme/theme.styles';
-import {pick} from 'react-native-document-picker';
 
 const styles = isDarkMode => {
   const theme = isDarkMode ? darkTheme : lightTheme;
@@ -13,7 +12,7 @@ const styles = isDarkMode => {
     },
     headerStyle: {
       backgroundColor: theme.backgroundColor,
-      borderWidth: 1,
+      borderBottomWidth: 2,
       borderBottomColor: theme.borderColor,
       justifyContent: 'center',
       height: 70,
