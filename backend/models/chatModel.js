@@ -5,6 +5,7 @@ const textSchema = new mongoose.Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User' },
     chatName: String,
     opAge: Number,
+    uploadTime: Date,
     dataType: Boolean,
     analysisType: Boolean,
     conversationType: Number,
@@ -41,7 +42,7 @@ const findOneHistoryByChatId = async (historyKey) => {
 
 const findHistoryByUserId = async (userId) => {
     try {
-        const historyList = await textModel.find({userId: userId}).select('chatName opAge dataType analysisType')
+        const historyList = await textModel.find({userId: userId}).select('chatName opAge uploadTime dataType analysisType')
 
         return historyList
     } catch (err) {

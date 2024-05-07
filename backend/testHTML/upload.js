@@ -12,11 +12,16 @@ function uploadFile() {
         formData.append('opAge_range', age);
         formData.append('analysisType', analysisType); // 분석 타입 데이터 추가
 
-        const token = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjMwY2RmZjk2MDc4NTg4OGM3MmIyNWUiLCJpYXQiOjE3MTQ2MDY0NDQsImV4cCI6MTcxNTgxNjA0NH0.6I3ZqV6RIHboto91jJbsLHCU3inHt0IqcwwHuAb2uvI';
+        const historyData = {
+            historyKey: "6637a2c4879a1a77270b4f4c"
+        }
 
-        axios.post('http://localhost:8080/api/upload/analyze/text', formData, {
+        const token = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjMzNGQ2NzI4OGVlZDQyNGViNTkwNjAiLCJpYXQiOjE3MTQ5OTcwOTMsImV4cCI6MTcxNjIwNjY5M30.ZY-RVL2pHjBc-wR1bx8apfHf9BzfEZaj70wxD-V72S8';
+
+        axios.post('http://35.216.126.98:8080/api/user/history/detail', historyData, {
             headers: {
-                'Content-Type': 'multipart/form-data',
+                'Content-Type': 'application/json',
+                // 'Content-Type': 'multipart/form-data',
                 'Authorization': token
             }
         })
