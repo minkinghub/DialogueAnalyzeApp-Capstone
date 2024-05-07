@@ -23,6 +23,9 @@ backend/ai/politely/data/
 backend/ai/saved_model/
 backend/key/
 
+#key file
+backend/key
+
 ### Node ###
 # Logs
 logs
