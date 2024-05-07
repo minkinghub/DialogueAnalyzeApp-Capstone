@@ -23,16 +23,6 @@ backend/ai/politely/data/
 backend/ai/saved_model/
 backend/key/
 
-backend/ai/moral/saved_model/
-backend/ai/moral/data/
-backend/ai/emotion/saved_model/
-backend/ai/emotion/data/
-backend/ai/grammar/saved_model/
-backend/ai/grammar/data/
-backend/ai/politely/saved_model/
-backend/ai/politely/data/
-backend/ai/saved_model/
-
 #key file
 backend/key
 
