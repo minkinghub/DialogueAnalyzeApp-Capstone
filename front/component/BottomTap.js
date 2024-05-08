@@ -24,7 +24,7 @@ function BottomTap() {
           borderTopStyle: 'solid',
         },
       }}
-      initialRouteName="Category">
+      initialRouteName="Home">
       <Tab.Screen name="Home" component={Home} options={{tabBarLabel: '홈'}} />
       <Tab.Screen
         name="Analyze"

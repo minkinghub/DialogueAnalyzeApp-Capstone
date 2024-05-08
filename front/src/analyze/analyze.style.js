@@ -3,7 +3,6 @@ import {darkTheme, lightTheme} from '../myPage/theme/theme.styles';
 
 const styles = isDarkMode => {
   const theme = isDarkMode ? darkTheme : lightTheme;
-  console.log('styles: ', isDarkMode);
   return StyleSheet.create({
     //분석 결과 헤더 스타일
     container: {

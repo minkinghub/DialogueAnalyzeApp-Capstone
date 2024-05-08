@@ -2,7 +2,7 @@ import {View, Text, Image, ActivityIndicator} from 'react-native';
 import analyzeStyle from './analyze.style';
 import {useTheme} from '@react-navigation/native';
 import {useEffect, useState} from 'react';
-import loadData from './loadData';
+import {loadDatail} from './loadData';
 import SpeakerPicker from './speakerPicker';
 // 타입 분석
 const Category = () => {
@@ -39,7 +39,7 @@ const Category = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await loadData();
+      const data = await loadDatail();
       setDetailList(data);
       setSpeakerList(data);
       const type = typeExract(data);
@@ -57,10 +57,19 @@ const Category = () => {
     };
     fetchData();
   }, [historyKey]);
+  useEffect(() => {
+    if (detailList) {
+      const type = typeExract(detailList);
+      console.log('type:', type);
+      setType(type);
+      setImageUrl(typeEn[type]);
+    }
+  }, [selpeaker]);
   const typeExract = data => {
     if (data) {
       const scoreList = [];
       data[selpeaker].detailInfo.map(item => {
+        console.log('item:', item);
         scoreList.push(item.detailScore);
       });
       const highScore = () => {
@@ -117,7 +126,7 @@ const Category = () => {
       <View>
         <View style={styles.typeStyle}>
           <Text style={styles.typeTextStyle}>
-            당신은 {typeKr[type]} 형입니다.
+            {speaker[selpeaker]}님은 {typeKr[type]} 형입니다.
           </Text>
         </View>
 

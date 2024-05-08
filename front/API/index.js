@@ -1,4 +1,5 @@
 import {axiosAuthApi} from './instance';
+import {useState} from 'react';
 
 const getDetail = async historyKey => {
   try {
@@ -20,7 +21,12 @@ const getDetail = async historyKey => {
 };
 
 const getHistory = async () => {
-  const response = await axiosAuthApi.post('user/history');
+  const response = await axiosAuthApi.post('user/history', {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  console.log('response.data:', response.data);
   return response.data;
 };
 

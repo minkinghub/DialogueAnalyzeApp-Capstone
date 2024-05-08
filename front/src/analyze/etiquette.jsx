@@ -9,11 +9,12 @@ import {
 import analyzeStyle from './analyze.style';
 import {useTheme} from '../ThemeContext';
 import {Picker} from '@react-native-picker/picker';
-import loadData from './loadData';
+import {loadDatail} from './loadData';
+import History from '../myPage/history';
 
 const Etiquette = () => {
   const scrollViewRef = useRef(null);
-  const {isDarkMode} = useTheme();
+  const {isDarkMode, historykey} = useTheme();
   const styles = analyzeStyle(isDarkMode);
   const [CommentHeight, setCommentHeight] = useState(0); //ScrollToItem을 위한 변수, 값을 계산하기 위해 사용, 동적인 높이를 위해 사용
   const [detailList, setDetailList] = useState([]);
@@ -26,7 +27,7 @@ const Etiquette = () => {
   }, [speaker]);
   useEffect(() => {
     const fetchData = async () => {
-      const data = await loadData();
+      const data = await loadDatail();
       console.log('data:', data);
       setDetailList(data);
       setIsLoading(false);
@@ -41,7 +42,7 @@ const Etiquette = () => {
       setSpeaker(speakerList);
     };
     fetchData();
-  }, []);
+  }, [historykey]);
 
   const SpeakerPicker = () => {
     let key = 3111;
