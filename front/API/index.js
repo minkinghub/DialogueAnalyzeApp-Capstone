@@ -1,5 +1,4 @@
 import {axiosAuthApi} from './instance';
-import {useState} from 'react';
 
 const getDetail = async historyKey => {
   try {
