@@ -1,12 +1,119 @@
-const { text } = require('body-parser');
 const { textModelSave } = require('../models')
 const { fullTextModelSave } = require('../models')
+const axios = require('axios')
+
+const analyzeTextService = async (userId, analysisType, opAge_range, content) => {
+    console.log("내용 해체 시작")
+    console.log(userId)
+
+    const contentArray = content.split("\n"); // 줄바꿈을 기준으로 내용 자르기
+    
+    let count = 1; // 대화 순서
+    let nowDate = { // 대화 날짜
+        year: 2000,
+        month: 0,
+        day: 1
+    } 
+    let preText = null // 이전 대화
+
+    const saveArray = []
+
+    for(let line of contentArray) {
+        let result = textTypeClassificationKakao(line)
+        let analysisNeed = false
+        if(result.type == 1) {
+            nowDate = {
+                year: result.year,
+                month: result.month,
+                day: result.day
+            }
+        } else if (result.type == 0) {
+            if(nowDate == null || preText == null) {
+                continue
+            }
+            analysisNeed = true
+            const time = new Date(nowDate.year, nowDate.month, nowDate.day, preText.hour, preText.minute)
+            // 위에 모델 이용 분석 함수 들어가면 됨
+            const chatDetail = {
+                count: count,
+                speaker: preText.speaker,
+                chatTime: time,
+                analysisNeed: analysisNeed,
+                chatType: result.type,
+                chatContent: result.text,
+            }
+            saveArray.push(chatDetail)
+            count++
+        } else {
+            preText = result
+            if(result.type == 3) {
+                analysisNeed = true
+            }
+            const time = new Date(nowDate.year, nowDate.month, nowDate.day, result.hour, result.minute)
+            const chatDetail = {
+                count: count,
+                speaker: result.speaker,
+                chatTime: time,
+                analysisNeed: analysisNeed,
+                chatType: result.type,
+                chatContent: result.text,
+            }
+            saveArray.push(chatDetail)
+            count++
+        }
+    }
+
+    const speakerArray = extractSpeakerArray(saveArray)
+    if(speakerArray.length != 2) return null
+
+    const splittedList = splitArrayBySpeaker(saveArray, speakerArray);
+
+    // try-catch 써야하냐? 이거 래핑되어있지 않나
+    const labelingData = await requestAnalyzeText(splittedList)
+    console.log(labelingData)
+    return { massage: "으에에 "}
+
+    const fullChat = [
+        {
+            speaker: speakerArray[0],
+            chatList: labelingData[0]
+        },
+        {
+            speaker: speakerArray[1],
+            chatList: labelingData[1]
+        }
+    ]
+
+    const saveChatData = {
+        userId: userId,
+        opAge: opAge_range,
+        chatName: defineChatName(speakerArray),
+        uploadTime: new Date(),
+        speakers: speakerArray,
+        dataType: true, // 채팅 데이터와 음성 데이터 구분, 여기는 채팅 데이터 api임
+        analysisType: analysisType, // 예절 분석과 타입 분석 구분, ture - 예절 / false - 타입
+    }
+
+    if(analysisType) { // 타입 분석
+        saveChatData.conversationType = classficationConversataionType() // 대화 타입
+        saveChatData.detailList = null // 반대 값은 걍 null값 넣음
+    } else { // 예절 분석
+        saveChatData.conversationType = null // 마찬가지
+        const detailList = calculateScore(fullChat)
+        saveChatData.detailList = detailList
+    }
+
+    const saveFullData = await fullTextModelSave({fullChat: fullChat})
+    saveChatData.fullChatId = saveFullData
+    const saveLiteData = await textModelSave(saveChatData)
+    return { historyKey: saveLiteData._id.toString()}
+}
 
 const textTypeClassificationKakao = (line) => { // 문자열 형식에 따라 타입 분류 (카카오톡)
     const generalPattern = /\[(.*?)\] \[(오후|오전) (\d{1,2}:\d{2})\] (.*)/; // 일반 대화 시작
     const filePattern = "파일 :" // 일반 대화에서 파일 구분
-    const picturePattern = "사진"
-    const emotePattern = "이모티콘"
+    const picturePattern = "사진" // 일반 대화에서 사진 구분
+    const emotePattern = "이모티콘" // 일반 대화에서 이모티콘 구분
     const datePattern = /^-{15}\s+(\d{4})년\s+(\d{1,2})월\s+(\d{1,2})일\s+(\S)요일\s+-{15}\r$/ // 날짜 변경 
 
     let type = 0
@@ -67,6 +174,20 @@ const extractExampleNumber = (numberRange) => { // 틀린 텍스트 범위 안�
 }
 
 const requestAnalyzeText = async (splittedList) => { // 분석 요청, 얘를 여따 써야하는지 모르겠네, 음성도 여기에 쓰긴 할텐데
+
+    try { // 이거 감싸야 하나, 최상위에서 에러를 잡긴 하는데, 추후 수정 필요
+        const response = await axios.post('http://127.0.0.1:5001/analysis', {
+            requestArray: splittedList
+        }, {
+            'Content-Type':'application/json'
+        })
+        return response.data
+    } catch (error) {
+        console.log(error)
+        return null
+    }
+       
+    
     for(let j = 0; j < 2; j++) {
         for(let i = 0; i < splittedList[j].length; i++) { // 일단 임시로 내가 랜덤으로 넣음
             const Rnumber = Math.floor(Math.random() * 6);
@@ -232,113 +353,6 @@ const classficationConversataionType = () => { // 타입 분류 함수
 const stringToBoolean = (str) => {
     return str.toLowerCase() === 'true';
 }
-
-const analyzeTextService = async (userId, analysisType, opAge_range, content) => {
-    console.log("내용 해체 시작")
-    console.log(userId)
-
-    const contentArray = content.split("\n"); // 줄바꿈을 기준으로 내용 자르기
-    
-    let count = 1; // 대화 순서
-    let nowDate = { // 대화 날짜
-        year: 2000,
-        month: 0,
-        day: 1
-    } 
-    let preText = null // 이전 대화
-
-    const saveArray = []
-
-    for(let line of contentArray) {
-        let result = textTypeClassificationKakao(line)
-        let analysisNeed = false
-        if(result.type == 1) {
-            nowDate = {
-                year: result.year,
-                month: result.month,
-                day: result.day
-            }
-        } else if (result.type == 0) {
-            if(nowDate == null || preText == null) {
-                continue
-            }
-            analysisNeed = true
-            const time = new Date(nowDate.year, nowDate.month, nowDate.day, preText.hour, preText.minute)
-            // 위에 모델 이용 분석 함수 들어가면 됨
-            const chatDetail = {
-                count: count,
-                speaker: preText.speaker,
-                chatTime: time,
-                analysisNeed: analysisNeed,
-                chatType: result.type,
-                chatContent: result.text,
-            }
-            saveArray.push(chatDetail)
-            count++
-        } else {
-            preText = result
-            if(result.type == 3) {
-                analysisNeed = true
-            }
-            const time = new Date(nowDate.year, nowDate.month, nowDate.day, result.hour, result.minute)
-            const chatDetail = {
-                count: count,
-                speaker: result.speaker,
-                chatTime: time,
-                analysisNeed: analysisNeed,
-                chatType: result.type,
-                chatContent: result.text,
-            }
-            saveArray.push(chatDetail)
-            count++
-        }
-    }
-
-    const speakerArray = extractSpeakerArray(saveArray)
-    if(speakerArray.length != 2) return null
-
-    const splittedList = splitArrayBySpeaker(saveArray, speakerArray);
-
-    // try-catch 써야하냐? 이거 래핑되어있지 않나
-    await requestAnalyzeText(splittedList)
-
-    const fullChat = [
-        {
-            speaker: speakerArray[0],
-            chatList: splittedList[0]
-        },
-        {
-            speaker: speakerArray[1],
-            chatList: splittedList[1]
-        }
-    ]
-
-    const saveChatData = {
-        userId: userId,
-        opAge: opAge_range,
-        chatName: defineChatName(speakerArray),
-        uploadTime: new Date(),
-        speakers: speakerArray,
-        dataType: true, // 채팅 데이터와 음성 데이터 구분, 여기는 채팅 데이터 api임
-        analysisType: analysisType, // 예절 분석과 타입 분석 구분, ture - 예절 / false - 타입
-    }
-
-    if(analysisType) { // 타입 분석
-        saveChatData.conversationType = classficationConversataionType() // 대화 타입
-        saveChatData.detailList = null // 반대 값은 걍 null값 넣음
-    } else { // 예절 분석
-        saveChatData.conversationType = null // 마찬가지
-        const detailList = calculateScore(fullChat)
-        saveChatData.detailList = detailList
-    }
-
-    const saveFullData = await fullTextModelSave({fullChat: fullChat})
-    saveChatData.fullChatId = saveFullData
-    const saveLiteData = await textModelSave(saveChatData)
-    return { historyKey: saveLiteData._id.toString()}
-}
-
-
 
 module.exports = {
     analyzeTextService
