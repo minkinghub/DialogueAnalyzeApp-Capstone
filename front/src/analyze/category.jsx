@@ -5,8 +5,8 @@ import {useEffect, useState} from 'react';
 import {loadDatail} from './loadData';
 import SpeakerPicker from './speakerPicker';
 // 타입 분석
-const Category = () => {
-  const {isDarkMode, historyKey} = useTheme();
+const Category = ({route}) => {
+  const {isDarkMode} = useTheme();
   const styles = analyzeStyle(isDarkMode);
   const [detailList, setDetailList] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,7 +39,7 @@ const Category = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await loadDatail();
+      const data = await loadDatail(route.params.historyKey);
       setDetailList(data);
       setSpeakerList(data);
       const type = typeExract(data);
@@ -56,7 +56,8 @@ const Category = () => {
       setSpeaker(speakerList);
     };
     fetchData();
-  }, [historyKey]);
+  }, [route.params.historyKey]);
+
   useEffect(() => {
     if (detailList) {
       const type = typeExract(detailList);

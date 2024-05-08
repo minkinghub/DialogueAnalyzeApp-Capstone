@@ -10,24 +10,23 @@ import analyzeStyle from './analyze.style';
 import {useTheme} from '../ThemeContext';
 import {Picker} from '@react-native-picker/picker';
 import {loadDatail} from './loadData';
-import History from '../myPage/history';
 
-const Etiquette = () => {
+const Etiquette = ({route}) => {
   const scrollViewRef = useRef(null);
-  const {isDarkMode, historykey} = useTheme();
+  const {isDarkMode} = useTheme();
   const styles = analyzeStyle(isDarkMode);
   const [CommentHeight, setCommentHeight] = useState(0); //ScrollToItem을 위한 변수, 값을 계산하기 위해 사용, 동적인 높이를 위해 사용
   const [detailList, setDetailList] = useState([]);
   const [selectedSpeaker, setSelectedSpeaker] = useState(0);
   const [speaker, setSpeaker] = useState([]); //speaker 목록을 저장하기 위한 변수, Picker에 사용
   const [isLoading, setIsLoading] = useState(true);
-  let a = 0;
-  useEffect(() => {
-    console.log('speaker:', speaker);
-  }, [speaker]);
+  const [a, setA] = useState('a');
+
   useEffect(() => {
     const fetchData = async () => {
-      const data = await loadDatail();
+      console.log('historykey1:', route.params.historyKey);
+      setA(a + 'c');
+      const data = await loadDatail(route.params.historyKey);
       console.log('data:', data);
       setDetailList(data);
       setIsLoading(false);
@@ -42,7 +41,7 @@ const Etiquette = () => {
       setSpeaker(speakerList);
     };
     fetchData();
-  }, [historykey]);
+  }, [route.params.historyKey]);
 
   const SpeakerPicker = () => {
     let key = 3111;
@@ -77,7 +76,7 @@ const Etiquette = () => {
     return (
       <View style={styles.tableView}>
         <View style={{flex: 5}}>
-          {detailList[selectedSpeaker].detailInfo.map((item, index) => (
+          {detailList[selectedSpeaker]?.detailInfo.map((item, index) => (
             <TouchableOpacity
               key={index}
               style={{
@@ -134,6 +133,7 @@ const Etiquette = () => {
         <View key="3110" style={{flex: 1}}>
           <SpeakerPicker />
         </View>
+        {console.log('a', a)}
       </View>
       {/* standard | score 테이블 그리기 */}
       <DrawTable scrollViewRef={scrollViewRef} />
