@@ -5,7 +5,7 @@ import Home from '../mainPage/Home'; // 홈 화면 컴포넌트 경로
 import Analyze from '../analyzePage/Analyze';
 import MyPage from '../src/myPage';
 import History from '../src/myPage/history';
-import {Etiquette} from '../src/analyze';
+import {Category} from '../src/analyze';
 
 const Tab = createBottomTabNavigator();
 
@@ -23,7 +23,8 @@ function BottomTap() {
           borderTopWidth: 1,
           borderTopStyle: 'solid',
         },
-      }}>
+      }}
+      initialRouteName="Home">
       <Tab.Screen name="Home" component={Home} options={{tabBarLabel: '홈'}} />
       <Tab.Screen
         name="Analyze"
@@ -35,15 +36,15 @@ function BottomTap() {
         component={MyPageStack}
         options={{tabBarLabel: '마이 페이지'}}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Etiquette"
         component={Etiquette}
-        options={{tabBarLabel: '에티켓'}}
-      />
+        options={{tabBarLabel: '에티켓', headerShown: false}}
+      /> */}
       <Tab.Screen
         name="Category"
-        component={Etiquette}
-        options={{tabBarLabel: '카테고리'}}
+        component={Category}
+        options={{tabBarLabel: '카테고리', headerShown: false}}
       />
     </Tab.Navigator>
   );

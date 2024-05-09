@@ -1,14 +1,10 @@
 import {TouchableOpacity, Text, Alert} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {uploadFile} from '../../../API';
-import {Etiquette} from '../../../src/analyze';
-import {useTheme} from '../../../src/ThemeContext';
 
 const MannerAnalysis = ({selectedFile, opAge_range}) => {
   const navigation = useNavigation(); // 네비게이션 객체
   const analysisType = true;
-  const {sethistoryKey} = useTheme();
-
   //formData 객체 생성
   const formData = new FormData();
   formData.append('file', selectedFile);
@@ -41,8 +37,8 @@ const MannerAnalysis = ({selectedFile, opAge_range}) => {
       uploadFile(formData)
         .then(res => {
           console.log('File upload server response:', res.data);
-          sethistoryKey(res.data.historyKey);
-          navigation.navigate('Etiquette');
+
+          navigation.navigate('Etiquette', {historyKey: res.data.historyKey});
         })
         .catch(error => {
           console.error('Error during upload:', error);

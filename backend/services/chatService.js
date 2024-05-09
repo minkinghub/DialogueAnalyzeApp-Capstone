@@ -317,12 +317,12 @@ const analyzeTextService = async (userId, analysisType, opAge_range, content) =>
         userId: userId,
         opAge: opAge_range,
         chatName: defineChatName(speakerArray),
+        uploadTime: new Date(),
         speakers: speakerArray,
         dataType: true, // 채팅 데이터와 음성 데이터 구분, 여기는 채팅 데이터 api임
         analysisType: analysisType, // 예절 분석과 타입 분석 구분, ture - 예절 / false - 타입
     }
 
-    analysisType = stringToBoolean(analysisType)
     if(analysisType) { // 타입 분석
         saveChatData.conversationType = classficationConversataionType() // 대화 타입
         saveChatData.detailList = null // 반대 값은 걍 null값 넣음
