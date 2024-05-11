@@ -5,6 +5,7 @@ import {uploadFile} from '../../../API';
 const MannerAnalysis = ({selectedFile, opAge_range}) => {
   const navigation = useNavigation(); // 네비게이션 객체
   const analysisType = true;
+  
   //formData 객체 생성
   const formData = new FormData();
   formData.append('file', selectedFile);
@@ -16,24 +17,6 @@ const MannerAnalysis = ({selectedFile, opAge_range}) => {
       Alert.alert('안내', '파일이 선택되지 않았습니다.');
     } else {
       // 서버로 파일 전송
-      // axios.post('http://35.216.126.98:8080/api/upload/analyze/text', formData, {
-      // headers: {
-      //     'Content-Type': 'multipart/form-data',
-      //     'Authorization': `Bearer ${tokens.access_token}`
-      // }
-      // })
-      // .then(response => {
-      //     console.log('Success:', response);
-      // })
-      // .catch(error => {
-      //     console.error('Error:', error);
-      //     if (error.response) {
-      //         console.error('Error status:', error.response.status);
-      //         console.error('Error data:', error.response.data);
-      //     } else {
-      //         console.error('Error information is not available.');
-      //     }
-      // });
       uploadFile(formData)
         .then(res => {
           console.log('File upload server response:', res.data);
