@@ -1,29 +1,53 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, SafeAreaView} from 'react-native';
+import {View, Text, SafeAreaView, TouchableOpacity, Alert} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import {useContext} from 'react';
 import ThemeContext from '../src/ThemeContext';
-import FileChoice from '../component/analyze/FileChoice';
-import MannerAnalysis from '../component/API/analyze/MannerAnalysis';
-import GeneralAnalysis from '../component/API/analyze/GeneralAnalysis';
-import {darkTheme, lightTheme} from '../src/myPage/theme/theme.styles';
+import FileChoice from '../component/analyze/FileChoice'; //파일 선택 컴포넌트 경로
+import {darkTheme, lightTheme} from '../src/myPage/theme/theme.styles'; //테마 변경
+import FileSendServer from '../component/API/analyze/FileSendServer';
 
 const Analyze = () => {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [mannerFileSend, setMannerFileSend] = useState(false);
+  const [generalFileSend, setGeneralFileSend] = useState(false);
   const [opAge_range, setOpAge_range] = useState('20');
   const DarkMode = useContext(ThemeContext);
   const isDarkMode = DarkMode.isDarkMode;
   const theme = isDarkMode ? darkTheme : lightTheme;
 
-  //파일 선택
-  //여기서 historyKey를 관리하는 useState를 만들어서
+  const resetMannerFileSend = () => setMannerFileSend(false);
+  const resetGeneralFileSend = () => setGeneralFileSend(false);
 
+  //파일 선택
   const fileSelected = file => {
+    setMannerFileSend(false);
     setSelectedFile(file[0]);
+  };
+
+  //예절분석 버튼
+  const handleMannerAnalysis = (selectedFile, opAge_range) => {
+    if (selectedFile === null) {
+      Alert.alert('안내', '파일이 선택되지 않았습니다.');
+    } else {
+      setMannerFileSend(true);
+    }
+  };
+
+  //타입분석 버튼
+  const handleGeneralAnalysis = (selectedFile, opAge_range) => {
+    if (selectedFile === null) {
+      Alert.alert('안내', '파일이 선택되지 않았습니다.');
+    } else {
+      setGeneralFileSend(true);
+    }
   };
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+      {mannerFileSend && <FileSendServer selectedFile={selectedFile} opAge_range={opAge_range} analysisType={true} onCompleted={resetMannerFileSend}/>}
+      {generalFileSend && <FileSendServer selectedFile={selectedFile} opAge_range={opAge_range} analysisType={false} onCompleted={resetGeneralFileSend}/>}
+
       <View
         style={{
           justifyContent: 'center',
@@ -101,18 +125,34 @@ const Analyze = () => {
             height: '20%',
             width: '100%',
           }}>
-          <MannerAnalysis
-            selectedFile={
-              selectedFile && selectedFile ? selectedFile : undefined
-            }
-            opAge_range={opAge_range}
-          />
-          <GeneralAnalysis
-            selectedFile={
-              selectedFile && selectedFile ? selectedFile : undefined
-            }
-            opAge_range={opAge_range}
-          />
+
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#DDA0DD',
+              alignItems: 'center',
+              padding: 10,
+              width: '80%',
+              margin: 10,
+              borderRadius: 10,
+              borderWidth: 1,
+            }}
+            onPress={() => handleMannerAnalysis(selectedFile, opAge_range)}>
+            <Text style={{color: 'white', fontSize: 20}}>예절 분석</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#DDA0DD',
+              alignItems: 'center',
+              padding: 10,
+              width: '80%',
+              margin: 10,
+              borderRadius: 10,
+              borderWidth: 1,
+            }}
+            onPress={() => handleGeneralAnalysis(selectedFile, opAge_range)}>
+            <Text style={{color: 'white', fontSize: 20}}>타입 분석</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>

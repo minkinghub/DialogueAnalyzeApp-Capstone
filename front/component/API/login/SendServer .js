@@ -14,7 +14,7 @@ const SendServer = async ( userInfo, accessToken ) => {
             }
         });
 
-        console.log('Server response:', response.data);
+        // console.log('Server response:', response.data);
 
         if(response.status === 200){
             SaveToken(response.data);

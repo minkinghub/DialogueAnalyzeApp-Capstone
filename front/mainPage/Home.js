@@ -10,10 +10,10 @@ const Home = () => {
     const [modalVisible, setModalVisible] = useState(false); //modal 표시여부
     const [records, setRecords] = useState([]); //대화 성향 분석 데이터
     const [isFirst, setIsFirst] = useState(''); //토큰 저장
-    const [gender, setGender] = useState('true');
-    const [birthYear, setBirthYear] = useState('');
-    const [birthMonth, setBirthMonth] = useState('');
-    const [birthDay, setBirthDay] = useState('');
+    const [gender, setGender] = useState('true'); //성별
+    const [birthYear, setBirthYear] = useState(''); //생년
+    const [birthMonth, setBirthMonth] = useState(''); //생월
+    const [birthDay, setBirthDay] = useState(''); //생일
     const DarkMode = useContext(ThemeContext);
     const isDarkMode = DarkMode.isDarkMode;
     const theme = isDarkMode ? darkTheme : lightTheme;
@@ -57,9 +57,9 @@ const Home = () => {
                 {
                     "id": 1,
                     "timestamp": "2024-04-14T12:00:00Z",
-                    "analysisType": "일반 분석",
+                    "analysisType": "타입 분석",
                     "results": {
-                        "chat_type": "꼰대형",
+                        "chat_type": "존맞형",
                     }
                 },
                 {

@@ -15,7 +15,6 @@ async function getUserInfo(accessToken) {
         const responseCode = response.status;
 
         const result = await response.json();
-        // console.log("responseBody =", result);
 
         if (response.ok) {
             const properties = result.properties;
@@ -25,7 +24,7 @@ async function getUserInfo(accessToken) {
                 nickname: nickname,
             };
         } else {
-            // 서버 에러 처리
+            //에러 처리
             throw new Error(`Server returned status code ${responseCode}`);
         }
     } catch (error) {
