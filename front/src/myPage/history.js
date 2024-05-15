@@ -1,55 +1,103 @@
 import {useEffect, useState} from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {loadList} from '../analyze/loadData';
 import ActivityIndicatorLoading from '../analyze/ActivityIndicatorLoading';
 import {ScrollView} from 'react-native-gesture-handler';
 import {useNavigation} from '@react-navigation/native';
 
-/* 분석 결과 보여주는 페이지
-타입분석, 예절 분석결과 보여줘야함
-.map으로 리스트 출력 
-사용자가 원하는 분석 결과를 선택할 수 있게 해야함
-analyze폴더에 타입분석, 예절분석에 맞는 페이지로 이동 후 결과 출력
-*/
-
 const History = () => {
   const navigation = useNavigation(); // 네비게이션 객체
-  const [historyList, setHistoryList] = useState(undefined);
+  const [historyList, setHistoryList] = useState(null);
+
   useEffect(() => {
     const fetchData = async () => {
       const data = await loadList();
-      setHistoryList(data);
+      const sortedData = data.sort(
+        (a, b) => new Date(b.uploadTime) - new Date(a.uploadTime),
+      );
+      setHistoryList(sortedData);
+
       console.log('data:', data);
     };
     fetchData();
   }, []);
+
   const handlePress = item => {
-    navigation.push(item.dataType ? 'Category' : 'Etiquette', {
+    const type = item.dataType ? 'Category' : 'Etiquette';
+    navigation.push(type, {
       historyKey: item._id,
     });
   };
+
+  const formatDate = dateString => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    })
+      .format(date)
+      .replace(/\. /g, '-')
+      .replace(/ /g, ' / ')
+      .replace(':', ' ');
+  };
+
   return (
-    <View>
-      <Text>분석 결과</Text>
-      {historyList ? (
+    <View style={styles.container}>
+      <Text style={styles.title}>분석 결과</Text>
+      {historyList === null ? (
+        <ActivityIndicatorLoading />
+      ) : historyList.length === 0 ? (
+        <Text>데이터가 없습니다.</Text>
+      ) : (
         <ScrollView>
           {historyList.map((item, index) => (
             <TouchableOpacity
               key={index}
-              style={{flexDirection: 'row'}}
-              // onPress={handlePress(item)}
-            >
+              style={styles.item}
+              onPress={() => handlePress(item)}>
               <Text>{item.chatName}</Text>
-              <Text>{item.uploadTime}</Text>
-              <Text>{item.dataType ? '예절분석' : '타입분석'}</Text>
+              <Text>{formatDate(item.uploadTime)}</Text>
+              {/* <Text>{item.dataType ? '예절분석' : '타입분석'}</Text> */}
             </TouchableOpacity>
           ))}
         </ScrollView>
-      ) : (
-        <ActivityIndicatorLoading />
       )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  item: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  chatName: {
+    fontSize: 16,
+  },
+  uploadTime: {
+    fontSize: 14,
+    color: '#888',
+  },
+  dataType: {
+    fontSize: 14,
+    color: '#444',
+  },
+});
 
 export default History;

@@ -7,10 +7,16 @@ import useSpeakerPicker from './speakerPicker';
 import ActivityIndicatorLoading from './ActivityIndicatorLoading';
 import categoryComment from './categoryComment';
 
-// 타입 분석
 const Category = ({route}) => {
-  const [detailList, setDetailList] = useState(undefined);
+  const [detailList, setDetailList] = useState([]);
   const [speaker, setSpeaker] = useState([]);
+  const [type, setType] = useState('');
+  const [imageUrl, setImageUrl] = useState();
+  const {selpeaker, renderSpeakerPicker} = useSpeakerPicker(speaker);
+
+  const {isDarkMode} = useTheme();
+  const styles = analyzeStyle(isDarkMode);
+
   const typeKr = [
     '존불',
     '존맞',
@@ -32,86 +38,69 @@ const Category = ({route}) => {
     bottom: require('../../assets/images/type/bottom.png'),
   };
   const typeEn = ['pm', 'pg', 'pe', 'mg', 'me', 'ge', 'top', 'bottom'];
-  const [type, setType] = useState('');
-  const [imageUrl, setImageUrl] = useState();
-  const {selpeaker, renderSpeakerPicker} = useSpeakerPicker(speaker);
-  // console.log('selpeaker:', selpeaker);
 
-  const {isDarkMode} = useTheme();
-  const styles = analyzeStyle(isDarkMode);
   useEffect(() => {
     const fetchData = async () => {
-      const data = await loadDatail(route.params.historyKey);
-      setDetailList(data);
-      setSpeakerList(data);
-      const type = typeExract(data);
-      setType(type);
-      setImageUrl(typeEn[type]);
+      try {
+        const data = await loadDatail(route.params.historyKey);
+        setDetailList(data);
+        setSpeakerList(data);
+      } catch (error) {
+        console.error(error);
+      }
     };
+
     const setSpeakerList = data => {
-      const speakerList = [];
-      data.map(item => {
-        speakerList.push(item.speaker);
-      });
-      // console.log('speakerList:', speakerList);
+      const speakerList = data.map(item => item.speaker);
       setSpeaker(speakerList);
     };
+
     fetchData();
   }, [route.params.historyKey]);
 
   useEffect(() => {
-    if (detailList) {
-      const type = typeExract(detailList);
-      // console.log('type:', type);
+    if (detailList.length > 0) {
+      const type = typeExtract(detailList);
       setType(type);
       setImageUrl(typeEn[type]);
     }
-  }, [selpeaker]);
-  const typeExract = data => {
-    if (data) {
-      const scoreList = [];
-      data[selpeaker].detailInfo.map(item => {
-        // console.log('item:', item);
-        scoreList.push(item.detailScore);
-      });
-      const highScore = () => {
-        let max = 0;
-        let index = 0;
-        const arr = [];
-        for (i = 0; i < 2; i++) {
-          max = Math.max(...scoreList);
-          index = scoreList.indexOf(max);
-          arr.push(index);
-          scoreList.splice(index, 1, 0);
-        }
-        return arr.sort();
+  }, [detailList, selpeaker]);
+
+  const typeExtract = data => {
+    if (data && data[selpeaker]) {
+      const scoreList = data[selpeaker].detailInfo.map(
+        item => item.detailScore,
+      );
+      const highScoreIndexes = getHighScoreIndexes(scoreList);
+
+      const allScoresBelowFive = scoreList.every(score => score < 5); // 모든 점수가 5점 미만일 때
+      if (allScoresBelowFive) return 7; // 비화가
+
+      const sumList = scoreList.reduce((a, b) => a + b, 0); // 점수 합계
+      if (sumList >= 80) return 6; // 합계 80점 이상일 때 화가
+
+      const typeMap = {
+        '0,1': 0,
+        '0,2': 1,
+        '0,3': 2,
+        '1,2': 3,
+        '1,3': 4,
+        '2,3': 5,
       };
-      //타입 뽑기
-      const arr = highScore();
-      let sumList = scoreList.reduce((a, b) => a + b, 0);
-      if (sumList >= 80) {
-        return 6;
-      } else if (arr[0] === 0 && arr[1] === 1) {
-        return 0;
-      } else if (arr[0] === 0 && arr[1] === 2) {
-        return 1;
-      } else if (arr[0] === 0 && arr[1] === 3) {
-        return 2;
-      } else if (arr[0] === 1 && arr[1] === 2) {
-        return 3;
-      } else if (arr[0] === 1 && arr[1] === 3) {
-        return 4;
-      } else if (arr[0] === 2 && arr[1] === 3) {
-        return 5;
-      } else if (
-        scoreList[0] <= 5 &&
-        scoreList[1] <= 5 &&
-        scoreList[2] <= 5 &&
-        scoreList[3] <= 5
-      ) {
-        return 7;
-      }
+
+      return typeMap[highScoreIndexes.join(',')] ?? 7;
     }
+  };
+
+  const getHighScoreIndexes = scoreList => {
+    const indexes = [];
+    for (let i = 0; i < 2; i++) {
+      const max = Math.max(...scoreList);
+      const index = scoreList.indexOf(max);
+      indexes.push(index);
+      scoreList[index] = 0;
+    }
+    return indexes.sort();
   };
 
   return detailList ? (
@@ -126,7 +115,7 @@ const Category = ({route}) => {
       <View>
         <View style={styles.typeStyle}>
           <Text style={styles.typeTextStyle}>
-            {speaker[selpeaker]}님은 {typeKr[type]} 형입니다.
+            {speaker[selpeaker]}님은 {typeKr[type]}형입니다.
           </Text>
         </View>
 
