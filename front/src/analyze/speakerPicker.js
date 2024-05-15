@@ -15,7 +15,8 @@ const useSpeakerPicker = speaker => {
         <Picker
           selectedValue={selpeaker}
           onValueChange={(itemValue, itemIndex) => setSelpeaker(itemIndex)}
-          style={styles.pickerStyle}>
+          style={styles.pickerStyle}
+          itemStyle={styles.itempickerStyle}>
           {speaker.map((item, index) => (
             <Picker.Item label={item} value={index} key={toString(key++)} />
           ))}

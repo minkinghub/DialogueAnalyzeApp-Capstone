@@ -1,15 +1,15 @@
-import {View, Text, Image, ActivityIndicator} from 'react-native';
+import {View, Text, Image} from 'react-native';
 import analyzeStyle from './analyze.style';
 import {useTheme} from '@react-navigation/native';
 import {useEffect, useState} from 'react';
 import {loadDatail} from './loadData';
-import SpeakerPicker from './speakerPicker';
+import useSpeakerPicker from './speakerPicker';
+import ActivityIndicatorLoading from './ActivityIndicatorLoading';
+import categoryComment from './categoryComment';
+
 // 타입 분석
 const Category = ({route}) => {
-  const {isDarkMode} = useTheme();
-  const styles = analyzeStyle(isDarkMode);
-  const [detailList, setDetailList] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [detailList, setDetailList] = useState(undefined);
   const [speaker, setSpeaker] = useState([]);
   const typeKr = [
     '존불',
@@ -34,9 +34,11 @@ const Category = ({route}) => {
   const typeEn = ['pm', 'pg', 'pe', 'mg', 'me', 'ge', 'top', 'bottom'];
   const [type, setType] = useState('');
   const [imageUrl, setImageUrl] = useState();
-  const {selpeaker, renderSpeakerPicker} = SpeakerPicker(speaker);
-  console.log('selpeaker:', selpeaker);
+  const {selpeaker, renderSpeakerPicker} = useSpeakerPicker(speaker);
+  // console.log('selpeaker:', selpeaker);
 
+  const {isDarkMode} = useTheme();
+  const styles = analyzeStyle(isDarkMode);
   useEffect(() => {
     const fetchData = async () => {
       const data = await loadDatail(route.params.historyKey);
@@ -45,14 +47,13 @@ const Category = ({route}) => {
       const type = typeExract(data);
       setType(type);
       setImageUrl(typeEn[type]);
-      setIsLoading(false);
     };
     const setSpeakerList = data => {
       const speakerList = [];
       data.map(item => {
         speakerList.push(item.speaker);
       });
-      console.log('speakerList:', speakerList);
+      // console.log('speakerList:', speakerList);
       setSpeaker(speakerList);
     };
     fetchData();
@@ -61,7 +62,7 @@ const Category = ({route}) => {
   useEffect(() => {
     if (detailList) {
       const type = typeExract(detailList);
-      console.log('type:', type);
+      // console.log('type:', type);
       setType(type);
       setImageUrl(typeEn[type]);
     }
@@ -70,7 +71,7 @@ const Category = ({route}) => {
     if (data) {
       const scoreList = [];
       data[selpeaker].detailInfo.map(item => {
-        console.log('item:', item);
+        // console.log('item:', item);
         scoreList.push(item.detailScore);
       });
       const highScore = () => {
@@ -113,9 +114,7 @@ const Category = ({route}) => {
     }
   };
 
-  return isLoading ? (
-    <ActivityIndicator size="large" color="#0000ff" />
-  ) : (
+  return detailList ? (
     <View style={styles.container}>
       <View key="2100" style={styles.headerStyle}>
         <Text style={styles.headerTextStyle}>유형 분석 결과</Text>
@@ -131,7 +130,7 @@ const Category = ({route}) => {
           </Text>
         </View>
 
-        <View style={styles.lineStyle} />
+        <View style={styles.widthLine} />
         <View style={styles.imageViewStyle}>
           <Text style={styles.typeTextStyle}>당신의 유형에 맞는 이미지</Text>
           <Image
@@ -142,11 +141,13 @@ const Category = ({route}) => {
         <View style={styles.lineStyle} />
         <View style={styles.commentBox}>
           <Text style={styles.commentTextStyle}>
-            COMMENT @@@@@ 2@@@@@@@@ @@@@@@
+            {categoryComment[typeEn[type]]}
           </Text>
         </View>
       </View>
     </View>
+  ) : (
+    <ActivityIndicatorLoading />
   );
 };
 

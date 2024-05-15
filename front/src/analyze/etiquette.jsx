@@ -1,68 +1,40 @@
-import React, {useRef, useContext, useState, useEffect} from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  ActivityIndicator,
-} from 'react-native';
+import React, {useRef, useState, useEffect} from 'react';
+import {View, Text, TouchableOpacity, ScrollView} from 'react-native';
 import analyzeStyle from './analyze.style';
 import {useTheme} from '../ThemeContext';
-import {Picker} from '@react-native-picker/picker';
 import {loadDatail} from './loadData';
+import useSpeakerPicker from './speakerPicker';
+import ActivityIndicatorLoading from './ActivityIndicatorLoading';
 
 const Etiquette = ({route}) => {
   const scrollViewRef = useRef(null);
   const {isDarkMode} = useTheme();
   const styles = analyzeStyle(isDarkMode);
   const [CommentHeight, setCommentHeight] = useState(0); //ScrollToItem을 위한 변수, 값을 계산하기 위해 사용, 동적인 높이를 위해 사용
-  const [detailList, setDetailList] = useState([]);
-  const [selectedSpeaker, setSelectedSpeaker] = useState(0);
+  const [detailList, setDetailList] = useState(undefined);
   const [speaker, setSpeaker] = useState([]); //speaker 목록을 저장하기 위한 변수, Picker에 사용
-  const [isLoading, setIsLoading] = useState(true);
-  const [a, setA] = useState('a');
+
+  const {selpeaker, renderSpeakerPicker} = useSpeakerPicker(speaker);
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log('historykey1:', route.params.historyKey);
-      setA(a + 'c');
+      // console.log('historykey1:', route.params.historyKey);
       const data = await loadDatail(route.params.historyKey);
-      console.log('data:', data);
+      // console.log('data:', data);
       setDetailList(data);
-      setIsLoading(false);
       setSpeakerList(data);
     };
+    //새로 함수를 안만들고 진행시 비동기 문제 발생 해결하기 위해 data가 들어오면 실행시키기 위함
     const setSpeakerList = data => {
       const speakerList = [];
       data.map(item => {
         speakerList.push(item.speaker);
       });
-      console.log('speakerList:', speakerList);
+      // console.log('speakerList:', speakerList);
       setSpeaker(speakerList);
     };
     fetchData();
   }, [route.params.historyKey]);
-
-  const SpeakerPicker = () => {
-    let key = 3111;
-    if (speaker && speaker.length > 0) {
-      return (
-        <Picker
-          selectedValue={selectedSpeaker}
-          onValueChange={(itemValue, itemIndex) =>
-            setSelectedSpeaker(itemIndex)
-          }
-          style={styles.pickerStyle}>
-          {speaker.map((item, index) => (
-            <Picker.Item label={item} value={index} key={toString(key++)} />
-          ))}
-        </Picker>
-      );
-    } else {
-      // speaker가 비어있거나 정의되지 않은 경우, null 또는 로딩 표시 등을 반환
-      return null;
-    }
-  };
 
   const DrawTable = ({scrollViewRef}) => {
     //해당 standard의 comment를 이동하기 위한 함수
@@ -73,10 +45,10 @@ const Etiquette = ({route}) => {
         animated: true,
       });
     };
-    return (
+    return detailList ? (
       <View style={styles.tableView}>
         <View style={{flex: 5}}>
-          {detailList[selectedSpeaker]?.detailInfo.map((item, index) => (
+          {detailList[selpeaker]?.detailInfo.map((item, index) => (
             <TouchableOpacity
               key={index}
               style={{
@@ -97,7 +69,7 @@ const Etiquette = ({route}) => {
                   </Text>
                 </View>
               </View>
-              {index !== detailList[selectedSpeaker].detailInfo.length - 1 ? (
+              {index !== detailList[selpeaker].detailInfo.length - 1 ? (
                 <View style={styles.widthLine} />
               ) : null}
             </TouchableOpacity>
@@ -111,12 +83,12 @@ const Etiquette = ({route}) => {
           <View style={styles.widthLine} />
           <View style={styles.tableTotalScoreTextView}>
             <Text style={styles.tableTotalScoreText}>
-              {detailList[selectedSpeaker].totalScore}
+              {detailList[selpeaker].totalScore}
             </Text>
           </View>
         </View>
       </View>
-    );
+    ) : null;
   };
   //Standard Comment의 세로 길이를 계산하기 위한 함수
   const handleLayout = (index, event) => {
@@ -124,23 +96,21 @@ const Etiquette = ({route}) => {
     setCommentHeight(height);
     // console.log(index, '컴포넌트의 세로 길이:', height);
   };
-  return isLoading ? (
-    <ActivityIndicator size="large" color="#0000ff" />
-  ) : (
+  return detailList ? (
     <View key="3000" style={styles.container}>
       <View key="3100" style={styles.headerStyle}>
         <Text style={styles.headerTextStyle}>예절 분석 결과</Text>
         <View key="3110" style={{flex: 1}}>
-          <SpeakerPicker />
+          {/* <SpeakerPicker /> */}
+          {renderSpeakerPicker()}
         </View>
-        {console.log('a', a)}
       </View>
       {/* standard | score 테이블 그리기 */}
       <DrawTable scrollViewRef={scrollViewRef} />
       <View style={styles.widthLine} />
 
       <ScrollView key="3300" ref={scrollViewRef} style={{flex: 5}}>
-        {detailList[selectedSpeaker].detailInfo.map((item, labelIndex) => {
+        {detailList[selpeaker].detailInfo.map((item, labelIndex) => {
           const infoKey = item.label + labelIndex.toString();
           return (
             <View key={infoKey}>
@@ -165,8 +135,7 @@ const Etiquette = ({route}) => {
                 </View>
               </View>
 
-              {labelIndex !==
-              detailList[selectedSpeaker].detailInfo.length - 1 ? (
+              {labelIndex !== detailList[selpeaker].detailInfo.length - 1 ? (
                 <View style={styles.widthLine} />
               ) : null}
             </View>
@@ -174,6 +143,8 @@ const Etiquette = ({route}) => {
         })}
       </ScrollView>
     </View>
+  ) : (
+    <ActivityIndicatorLoading />
   );
 };
 

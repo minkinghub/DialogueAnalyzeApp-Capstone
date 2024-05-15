@@ -23,6 +23,13 @@ const styles = isDarkMode => {
     pickerStyle: {
       backgroundColor: theme.backgroundColor,
       color: theme.textColor,
+      borderColor: theme.borderColor,
+      borderWidth: 2,
+    },
+    itempickerStyle: {
+      color: '#0f33f3',
+      fontSize: 20,
+      textAlign: 'center',
     },
     //분석 결과 헤더 텍스트 스타일
     headerTextStyle: {
@@ -31,11 +38,11 @@ const styles = isDarkMode => {
     },
     //타입타이틀 스타일
     typeStyle: {
+      backgroundColor: theme.backgroundColor,
       borderVerticalWidth: 2,
       paddingVertical: 10,
       marginTop: 20,
       justifyContent: 'center',
-
       alignSelf: 'center',
     },
     //타입타이틀 텍스트 스타일

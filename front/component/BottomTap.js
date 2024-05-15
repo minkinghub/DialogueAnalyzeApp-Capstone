@@ -5,7 +5,7 @@ import Home from '../mainPage/Home'; // 홈 화면 컴포넌트 경로
 import Analyze from '../analyzePage/Analyze';
 import MyPage from '../src/myPage';
 import History from '../src/myPage/history';
-import {Category} from '../src/analyze';
+import {Category, Etiquette} from '../src/analyze';
 
 const Tab = createBottomTabNavigator();
 
@@ -36,11 +36,11 @@ function BottomTap() {
         component={MyPageStack}
         options={{tabBarLabel: '마이 페이지'}}
       />
-      {/* <Tab.Screen
+      <Tab.Screen
         name="Etiquette"
         component={Etiquette}
         options={{tabBarLabel: '에티켓', headerShown: false}}
-      /> */}
+      />
       <Tab.Screen
         name="Category"
         component={Category}
