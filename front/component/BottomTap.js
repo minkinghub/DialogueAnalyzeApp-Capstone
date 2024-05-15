@@ -1,7 +1,7 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
-import Home from '../mainPage/Home'; // 홈 화면 컴포넌트 경로
+// import Home from '../mainPage/Home'; // 홈 화면 컴포넌트 경로
 import Analyze from '../analyzePage/Analyze';
 import MyPage from '../src/myPage';
 import History from '../src/myPage/history';
@@ -24,8 +24,8 @@ function BottomTap() {
           borderTopStyle: 'solid',
         },
       }}
-      initialRouteName="Home">
-      <Tab.Screen name="Home" component={Home} options={{tabBarLabel: '홈'}} />
+      initialRouteName="Analyze">
+      {/* <Tab.Screen name="Home" component={Home} options={{tabBarLabel: '홈'}} /> */}
       <Tab.Screen
         name="Analyze"
         component={Analyze}
