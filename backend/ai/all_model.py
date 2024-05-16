@@ -12,12 +12,16 @@ grammar_model = T5ForConditionalGeneration.from_pretrained('./saved_model/gramma
 emotion_model = AutoModelForSequenceClassification.from_pretrained("./saved_model/emotion").to(device)
 moral_model = BertForSequenceClassification.from_pretrained('./saved_model/moral').to(device)
 politely_model = AutoModelForSequenceClassification.from_pretrained("./saved_model/politely").to(device)
+emotion_TF_model = AutoModelForSequenceClassification.from_pretrained("./saved_model/emotion_TF").to(device)
+moral_TF_model = AutoModelForSequenceClassification.from_pretrained("./saved_model/moral_TF").to(device)
 
 # 4개의 토크나이저 불러오기
 grammar_tokenizer = T5TokenizerFast.from_pretrained('./saved_model/grammar')
 emotion_tokenizer = AutoTokenizer.from_pretrained("./saved_model/emotion")
 moral_tokenizer = BertTokenizer.from_pretrained('./saved_model/moral')
 politely_tokenizer = AutoTokenizer.from_pretrained('beomi/kcbert-base')
+emotion_TF_tokenizer = AutoTokenizer.from_pretrained("./saved_model/emotion_TF")
+moral_TF_tokenizer = AutoTokenizer.from_pretrained("./saved_model/moral_TF")
 
 # 정제된 문자열 배열
 corrected_texts = [
@@ -63,7 +67,26 @@ for text in corrected_texts:
     corrected_texts_results.append(output_text)
     original_texts.append(text)
 
-# 감정 분석 모델
+# 감정 분석 1호기(긍정 혹은 부정)
+def sentence_predict_TF(sent):
+    emotion_TF_model.eval()
+    tokenized_sent = emotion_TF_tokenizer(
+        [sent],
+        return_tensors="pt",
+        max_length=128,
+        padding=True,
+        truncation=True,
+        add_special_tokens=True,
+    )
+    tokenized_sent = {k: v.to(device) for k, v in tokenized_sent.items()}
+    with torch.no_grad():
+        outputs = emotion_TF_model(**tokenized_sent)
+    logits = outputs.logits
+    probabilities = torch.softmax(logits, dim=1)
+    predicted_label = torch.argmax(probabilities, dim=1).item()
+    return predicted_label
+
+# 감정 분석 2호기(7가지 세부 감정)
 def sentence_predict(sent):
     emotion_model.eval()
     tokenized_sent = emotion_tokenizer(
@@ -115,19 +138,46 @@ class HateSpeechDataset(Dataset):
 test_dataset = HateSpeechDataset(corrected_texts_results, moral_tokenizer)
 test_loader = DataLoader(test_dataset, batch_size=16, shuffle=True)
 
-def moral_predict(dataloader):
+# moral 1호기(탐지 혹은 미탐지)
+def moral_predict_TF(sent):
+    moral_TF_model.eval()
+    tokenized_sent = moral_TF_tokenizer(
+        [sent],
+        return_tensors="pt",
+        max_length=128,
+        padding=True,
+        truncation=True,
+        add_special_tokens=True,
+    )
+    tokenized_sent = {k: v.to(device) for k, v in tokenized_sent.items()}
+    with torch.no_grad():
+        outputs = moral_TF_model(**tokenized_sent)
+    logits = outputs.logits
+    probabilities = torch.softmax(logits, dim=1)
+    predicted_label = torch.argmax(probabilities, dim=1).item()
+    return predicted_label
+
+# moral 2호기(6가지 감정 분류)
+def moral_predict(sent):
     moral_model.eval()
-    all_predictions = []
-    
-    for batch in test_loader:
-        batch = {k: v.to(device) for k, v in batch.items()}
-        with torch.no_grad():
-            outputs = moral_model(**batch)
-        logits = outputs.logits
-        batch_predictions = torch.argmax(logits, dim=1).tolist()
-        all_predictions.extend(batch_predictions)
-    
-    return all_predictions
+    tokenized_sent = moral_tokenizer(
+        [sent],
+        return_tensors="pt",
+        max_length=128,
+        padding=True,
+        truncation=True,
+        add_special_tokens=True,
+    )
+    tokenized_sent = {k: v.to(device) for k, v in tokenized_sent.items()}
+    with torch.no_grad():
+        outputs = moral_model(
+            input_ids=tokenized_sent["input_ids"],
+            attention_mask=tokenized_sent["attention_mask"],
+        )
+    logits = outputs[0]
+    logits = logits.detach().cpu()
+    result = logits.argmax(-1).numpy()[0]
+    return result
 
 # 존댓말 반말 검증 모델
 class FormalClassifier(object):
@@ -165,21 +215,40 @@ class FormalClassifier(object):
 # JSON 파일로 저장
 model_results = []
 for i, sentence in enumerate(corrected_texts_results):
-    grammar_result = corrected_texts_results[i]
-    emotion_result = sentence_predict(corrected_texts[i])
-    moral_result = moral_predict(sentence)
+    grammar = corrected_texts_results[i]
+    grammar_result = 1 if original_texts[i] == corrected_texts_results[i] else 0
 
-    politely_result = FormalClassifier().formal_percentage(corrected_texts[i])
+    # emotion_result = sentence_predict(corrected_texts[i])
+    emotion_result_TF = sentence_predict_TF(corrected_texts_results[i])
+    # 감정 분석 1호기는 감정 분석 2호기 결과가 0(부정)일 경우에만 실행
+    if emotion_result_TF == 0:
+        emotion_result = sentence_predict(corrected_texts_results[i])
+    else:
+        emotion_result = 7 # 0~6 범위의 값을 가지므로 7로 고정
+
+    #moral_result = moral_predict(sentence)
+    moral_result_TF = moral_predict_TF(corrected_texts_results[i])
+    # moral 또한 1호기 결과가 1(부정)일 경우에만 실행
+    if moral_result_TF == 1:
+        moral_result = moral_predict(corrected_texts_results[i])
+    else:
+        moral_result = 6 # 0~5 범위의 값을 가지므로 6으로 고정
+
+    politely_result = FormalClassifier().formal_percentage(corrected_texts_results[i])
     if politely_result > 0.5:
         politely_label = 1
     else:
         politely_label = 0
 
+    # 원문, 맞춤법 수정문, 맞춤법 수정 여부, 감정, 불쾌 발언, 존댓말 여부
     model_result = {
         "Text": corrected_texts[i],
+        "grammar_text": grammar,
         "grammar": grammar_result,
+        "emotion_TF": int(emotion_result_TF),
         "emotion": int(emotion_result),
-        "moral": moral_result[0],
+        "moral_TF": int(moral_result_TF),
+        "moral": int(moral_result),
         "politely": politely_label
     }
     model_results.append(model_result)
