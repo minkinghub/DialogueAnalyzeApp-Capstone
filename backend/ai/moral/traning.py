@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 
 # 데이터 로드
-df = pd.read_csv('data/output.csv')
+df = pd.read_csv('data/output2.csv')
 
 # KoBERT 토크나이저 로드
 tokenizer = BertTokenizer.from_pretrained('kykim/bert-kor-base')
@@ -53,7 +53,7 @@ train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 
 # 모델 로드 및 파인 튜닝
-model = BertForSequenceClassification.from_pretrained('kykim/bert-kor-base', num_labels=6)
+model = BertForSequenceClassification.from_pretrained('kykim/bert-kor-base', num_labels=2)
 model.cuda()
 
 optimizer = AdamW(model.parameters(), lr=2e-5)
