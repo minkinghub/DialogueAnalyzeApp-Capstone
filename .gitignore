@@ -9,7 +9,9 @@ backend/AItest/textdata
 backend/AItest/myenv
 backend/AItest/textModel
 backend/AImodels/model
+flaskServer/**/__pycache__
 flaskServer/myenv
+flaskServer/saved_model
 
 backend/AItest/*.csv
 

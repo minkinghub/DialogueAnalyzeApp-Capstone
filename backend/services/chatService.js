@@ -3,9 +3,6 @@ const { fullTextModelSave } = require('../models')
 const axios = require('axios')
 
 const analyzeTextService = async (userId, analysisType, opAge_range, content) => {
-    console.log("내용 해체 시작")
-    console.log(userId)
-
     const contentArray = content.split("\n"); // 줄바꿈을 기준으로 내용 자르기
     
     let count = 1; // 대화 순서
@@ -68,19 +65,23 @@ const analyzeTextService = async (userId, analysisType, opAge_range, content) =>
 
     const splittedList = splitArrayBySpeaker(saveArray, speakerArray);
 
-    // try-catch 써야하냐? 이거 래핑되어있지 않나
-    const labelingData = await requestAnalyzeText(splittedList)
-    console.log(labelingData)
-    return { massage: "으에에 "}
+    const arrayToRequestAnalysis = extractAnalysisNeedText(splittedList)
+
+    const analyzedList = await requestAnalyzeText(arrayToRequestAnalysis)
+    if(analyzedList == null) return null
+
+    mergeList(splittedList, analyzedList.data)
+
+    console.log(splittedList)
 
     const fullChat = [
         {
             speaker: speakerArray[0],
-            chatList: labelingData[0]
+            chatList: splittedList[0]
         },
         {
             speaker: speakerArray[1],
-            chatList: labelingData[1]
+            chatList: splittedList[1]
         }
     ]
 
@@ -95,9 +96,11 @@ const analyzeTextService = async (userId, analysisType, opAge_range, content) =>
     }
 
     if(analysisType) { // 타입 분석
+        console.log("타입 분석 데이터임")
         saveChatData.conversationType = classficationConversataionType() // 대화 타입
         saveChatData.detailList = null // 반대 값은 걍 null값 넣음
     } else { // 예절 분석
+        console.log("예절 분석 데이터임")
         saveChatData.conversationType = null // 마찬가지
         const detailList = calculateScore(fullChat)
         saveChatData.detailList = detailList
@@ -161,6 +164,21 @@ const textTypeClassificationKakao = (line) => { // 문자열 형식에 따라 �
     return result; // 0 : 대화 지속, 1 : 날짜 변경, 2 : 파일, 3: 일반 대화 시작, 4: 사진, 5: 이모티콘
 }
 
+const extractAnalysisNeedText = (splittedList) => {
+    const arrayToRequestAnalysis = []
+    for(let array of splittedList) {
+        const textArrayTemp = []
+        for(let text of array) {
+            if(text.analysisNeed == true) {
+                textArrayTemp.push(text.chatContent)
+            }
+        }
+        arrayToRequestAnalysis.push(textArrayTemp)
+    }
+
+    return arrayToRequestAnalysis
+}
+
 const extractExampleNumber = (numberRange) => { // 틀린 텍스트 범위 안에서 난수 뽑기 함수
     let firstNumber = Math.floor(Math.random() * numberRange);
     let secondNumber = Math.floor(Math.random() * numberRange);
@@ -183,7 +201,6 @@ const requestAnalyzeText = async (splittedList) => { // 분석 요청, 얘를 �
         })
         return response.data
     } catch (error) {
-        console.log(error)
         return null
     }
        
@@ -234,7 +251,7 @@ const splitArrayBySpeaker = (saveArray, speakerArray) => {
     }
 
     for(let text of saveArray) {
-        for (const [index, speaker] of speakerArray.entries()) {
+        for (let [index, speaker] of speakerArray.entries()) {
             if(text.speaker == speaker) {
                 delete text.speaker
                 list[index].push(text)
@@ -350,9 +367,42 @@ const classficationConversataionType = () => { // 타입 분류 함수
     return conversationType
 }
 
-const stringToBoolean = (str) => {
-    return str.toLowerCase() === 'true';
-}
+const mergeList = (splittedList, analyzedList) => {
+
+    for(let i = 0; i < splittedList.length; i++) {
+        let count = 0;
+        for(let j = 0; j < splittedList[i].length; j++) {
+            if(splittedList[i][j].analysisNeed == false) {
+                splittedList[i][j] = {
+                    ...splittedList[i][j],
+                    gramarChat: splittedList[i][j].chatContent,
+                    isPositive: null,
+                    isGrammar: null,
+                    isMoral: null,
+                    isPolite: null
+                }
+            } else {
+                splittedList[i][j] = {
+                    ...splittedList[i][j],
+                    ...analyzedList[i][count]
+                }
+                count++
+            }
+        }
+    }
+
+    // for(let i = 0; i < analyzedList.length; i++) {
+    //     for(let j = 0; j < analyzedList[i].indexArray.length; j++) {
+    //         const textIndex = analyzedList[i].indexArray[j]
+    //         const textResult = analyzedList[i].textArray[j]
+
+    //         splittedList[i].textArray[textIndex] = {
+    //             ...splittedList[i].textArray[textIndex],
+    //             ...textResult
+    //         }
+    //     }
+    // }
+} 
 
 module.exports = {
     analyzeTextService

@@ -9,15 +9,15 @@ const analyzeText = asyncWrap(async (req, res) => {
         const textContent = req.file.buffer.toString('utf-8')
         const opAge_range = req.body.opAge_range
         const userId = req.user.userId
-        const analysisType = req.body.analysisType
+        const analysisType = (typeof req.body.analysisType == Boolean) ? req.body.analysisType : req.body.analysisType == "true" ? true : false
         const result = await analyzeTextService(userId, analysisType, opAge_range, textContent)
         if(result == null) {
-            res.status(400).send("오류 발생")
+            res.status(400).send("데이터 처리 중 오류 발생")
         } else {
             res.status(200).send(result)
         }
     } else {
-        res.status(400).send("파일이 전송되지 않았습니다.")
+        res.status(400).send("요청 중 오류 발생")
     }
 })
 
