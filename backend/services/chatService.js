@@ -65,14 +65,9 @@ const analyzeTextService = async (userId, analysisType, opAge_range, content) =>
 
     const splittedList = splitArrayBySpeaker(saveArray, speakerArray);
 
-    const arrayToRequestAnalysis = extractAnalysisNeedText(splittedList)
+    // const arrayToRequestAnalysis = extractAnalysisNeedText(splittedList)
 
-    const analyzedList = await requestAnalyzeText(arrayToRequestAnalysis)
-    if(analyzedList == null) return null
-
-    mergeList(splittedList, analyzedList.data)
-
-    console.log(splittedList)
+    await requestAnalyzeText(splittedList)
 
     const fullChat = [
         {
@@ -89,18 +84,15 @@ const analyzeTextService = async (userId, analysisType, opAge_range, content) =>
         userId: userId,
         opAge: opAge_range,
         chatName: defineChatName(speakerArray),
-        uploadTime: new Date(),
         speakers: speakerArray,
         dataType: true, // 채팅 데이터와 음성 데이터 구분, 여기는 채팅 데이터 api임
         analysisType: analysisType, // 예절 분석과 타입 분석 구분, ture - 예절 / false - 타입
     }
 
     if(analysisType) { // 타입 분석
-        console.log("타입 분석 데이터임")
         saveChatData.conversationType = classficationConversataionType() // 대화 타입
         saveChatData.detailList = null // 반대 값은 걍 null값 넣음
     } else { // 예절 분석
-        console.log("예절 분석 데이터임")
         saveChatData.conversationType = null // 마찬가지
         const detailList = calculateScore(fullChat)
         saveChatData.detailList = detailList
@@ -110,6 +102,50 @@ const analyzeTextService = async (userId, analysisType, opAge_range, content) =>
     saveChatData.fullChatId = saveFullData
     const saveLiteData = await textModelSave(saveChatData)
     return { historyKey: saveLiteData._id.toString()}
+
+    // const analyzedList = await requestAnalyzeText(arrayToRequestAnalysis)
+    // if(analyzedList == null) return null
+
+    // mergeList(splittedList, analyzedList.data)
+
+    // console.log(splittedList)
+
+    // const fullChat = [
+    //     {
+    //         speaker: speakerArray[0],
+    //         chatList: splittedList[0]
+    //     },
+    //     {
+    //         speaker: speakerArray[1],
+    //         chatList: splittedList[1]
+    //     }
+    // ]
+
+    // const saveChatData = {
+    //     userId: userId,
+    //     opAge: opAge_range,
+    //     chatName: defineChatName(speakerArray),
+    //     uploadTime: new Date(),
+    //     speakers: speakerArray,
+    //     dataType: true, // 채팅 데이터와 음성 데이터 구분, 여기는 채팅 데이터 api임
+    //     analysisType: analysisType, // 예절 분석과 타입 분석 구분, ture - 예절 / false - 타입
+    // }
+
+    // if(analysisType) { // 타입 분석
+    //     console.log("타입 분석 데이터임")
+    //     saveChatData.conversationType = classficationConversataionType() // 대화 타입
+    //     saveChatData.detailList = null // 반대 값은 걍 null값 넣음
+    // } else { // 예절 분석
+    //     console.log("예절 분석 데이터임")
+    //     saveChatData.conversationType = null // 마찬가지
+    //     const detailList = calculateScore(fullChat)
+    //     saveChatData.detailList = detailList
+    // }
+
+    // const saveFullData = await fullTextModelSave({fullChat: fullChat})
+    // saveChatData.fullChatId = saveFullData
+    // const saveLiteData = await textModelSave(saveChatData)
+    // return { historyKey: saveLiteData._id.toString()}
 }
 
 const textTypeClassificationKakao = (line) => { // 문자열 형식에 따라 타입 분류 (카카오톡)
@@ -193,16 +229,16 @@ const extractExampleNumber = (numberRange) => { // 틀린 텍스트 범위 안�
 
 const requestAnalyzeText = async (splittedList) => { // 분석 요청, 얘를 여따 써야하는지 모르겠네, 음성도 여기에 쓰긴 할텐데
 
-    try { // 이거 감싸야 하나, 최상위에서 에러를 잡긴 하는데, 추후 수정 필요
-        const response = await axios.post('http://127.0.0.1:5001/analysis', {
-            requestArray: splittedList
-        }, {
-            'Content-Type':'application/json'
-        })
-        return response.data
-    } catch (error) {
-        return null
-    }
+    // try { // 이거 감싸야 하나, 최상위에서 에러를 잡긴 하는데, 추후 수정 필요
+    //     const response = await axios.post('http://127.0.0.1:5001/analysis', {
+    //         requestArray: splittedList
+    //     }, {
+    //         'Content-Type':'application/json'
+    //     })
+    //     return response.data
+    // } catch (error) {
+    //     return null
+    // }
        
     
     for(let j = 0; j < 2; j++) {
