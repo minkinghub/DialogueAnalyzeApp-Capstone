@@ -39,17 +39,17 @@ corrected_texts = [
     "출석부 12월 1일까지의 출결사항 및 근무일자 기재 후 필히 보내주시기 바랍니다.",
     "학교 담당자입니다.",
     "내일 회식 참석 전",
-    "또는 귀가 전",
-    "시발",
+    "또는 귀가 전까지 부탁드립니다.",
+    "시발 죽어 개새끼야",
     "난 너가 너무 싫어",
     "혐오스러워",
     "진짜 세상 다 안망하네~ 인생 좆같네 진짜",
     "싫다 진자 전부 다 귀찮다 이젠",
     "너가 너무 미워서 정말 시러",
-    "죽어",
-    "살아",
-    "행복",
-    "하... 슬프다 진짜",
+    "죽었으면 좋겠어 네가",
+    "살았으면 좋겠어 네가",
+    "행복해 정말로 기뻐",
+    "슬퍼요 불행해 유유",
 ]
 
 # 맞춤법 검증 모델
@@ -221,18 +221,30 @@ for i, sentence in enumerate(corrected_texts_results):
     # emotion_result = sentence_predict(corrected_texts[i])
     emotion_result_TF = sentence_predict_TF(corrected_texts_results[i])
     # 감정 분석 1호기는 감정 분석 2호기 결과가 0(부정)일 경우에만 실행
+    # if emotion_result_TF == 0:
+    #     emotion_result = sentence_predict(corrected_texts_results[i])
+    # else:
+    #     emotion_result = 7 # 0~6 범위의 값을 가지므로 7로 고정
+
+    # 감정 분석이 부정일 경우 세부 분석 시행
     if emotion_result_TF == 0:
-        emotion_result = sentence_predict(corrected_texts_results[i])
+        emotion_result_TF = sentence_predict(corrected_texts_results[i])
     else:
-        emotion_result = 7 # 0~6 범위의 값을 가지므로 7로 고정
+        emotion_result_TF = 100
 
     #moral_result = moral_predict(sentence)
     moral_result_TF = moral_predict_TF(corrected_texts_results[i])
-    # moral 또한 1호기 결과가 1(부정)일 경우에만 실행
-    if moral_result_TF == 1:
-        moral_result = moral_predict(corrected_texts_results[i])
+    # moral 또한 1호기 결과가 0(불쾌 발언 존재)일 경우에만 실행
+    # if moral_result_TF == 0:
+    #     moral_result = moral_predict(corrected_texts_results[i])
+    # else:
+    #     moral_result = 6 # 0~5 범위의 값을 가지므로 6으로 고정
+
+    # 불쾌 발언이 부정일 경우 세부 분석 시행
+    if moral_result_TF == 0:
+        moral_result_TF = moral_predict(corrected_texts_results[i])
     else:
-        moral_result = 6 # 0~5 범위의 값을 가지므로 6으로 고정
+        moral_result_TF = 100
 
     politely_result = FormalClassifier().formal_percentage(corrected_texts_results[i])
     if politely_result > 0.5:
@@ -245,10 +257,12 @@ for i, sentence in enumerate(corrected_texts_results):
         "Text": corrected_texts[i],
         "grammar_text": grammar,
         "grammar": grammar_result,
-        "emotion_TF": int(emotion_result_TF),
-        "emotion": int(emotion_result),
-        "moral_TF": int(moral_result_TF),
-        "moral": int(moral_result),
+        #"emotion_TF": int(emotion_result_TF),
+        #"emotion": int(emotion_result),
+        "emotion": int(emotion_result_TF),
+        #"moral_TF": int(moral_result_TF),
+        #"moral": int(moral_result),
+        "moral": int(moral_result_TF),
         "politely": politely_label
     }
     model_results.append(model_result)
