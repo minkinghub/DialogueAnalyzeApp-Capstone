@@ -8,7 +8,7 @@ import SendServer from '../component/API/login/SendServer ' //유저정보 전�
 
 const Login = () => {
   const navigation = useNavigation(); //네비게이션 객체
-  
+
   //카카오 로그인 버튼
   const kakaoLogin = async () => {
 
