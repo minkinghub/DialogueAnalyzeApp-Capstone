@@ -61,15 +61,7 @@ const analyzeTextService = async (userId, analysisType, opAge_range, content) =>
     }
 
     const speakerArray = extractSpeakerArray(saveArray)
-    if(speakerArray.length != 2) {
-        return {
-            speakerArray: speakerArray,
-            userId: userId,
-            analysisType: analysisType,
-            opAge_range: opAge_range,
-            saveArray: saveArray
-        }
-    }
+    if(speakerArray.length != 2) return null
 
     const splittedList = splitArrayBySpeaker(saveArray, speakerArray);
 
