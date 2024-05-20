@@ -99,7 +99,8 @@ const Analyze = () => {
           transparent={true} // 배경을 투명하게 할 것인지
           visible={modalVisible} // 모달의 표시 여부
       >
-          <View style={{margin: 20,
+          <View style={{
+                  margin: 20,
                   backgroundColor: theme.backgroundColor,
                   borderRadius: 20,
                   padding: 30,
@@ -108,24 +109,24 @@ const Analyze = () => {
                   elevation: 10
               }}>
 
-              <Text style={{marginBottom: 10, textAlign: "center", fontSize: 20,}}>처음이신가요?</Text>
-              <Text style={{textAlign: "center"}}>정확한 분석을 위해 당신의 성별과</Text>
-              <Text style={{marginBottom: 15, textAlign: "center"}}>생년월일을 입력해 주세요.</Text>
+              <Text style={{marginBottom: 10, textAlign: "center", fontSize: 20, color: theme.textColor}}>처음이신가요?</Text>
+              <Text style={{textAlign: "center", color: theme.textColor}}>정확한 분석을 위해 당신의 성별과</Text>
+              <Text style={{marginBottom: 15, textAlign: "center", color: theme.textColor}}>생년월일을 입력해 주세요.</Text>
 
               <View style={{flexDirection: 'row', marginBottom: 20,}}>
                   <TouchableOpacity
-                      style={{marginHorizontal: 10, alignItems: 'center',}}
+                      style={{marginHorizontal: 10, alignItems: 'center'}}
                       onPress={() => setGender('true')}
                   >
-                      <Text style={{fontSize: 16}}>
+                      <Text style={{fontSize: 16, color: theme.textColor}}>
                           {gender === 'true' ? '🔘 남성' : '⚪ 남성'}
                       </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                      style={{marginHorizontal: 10, alignItems: 'center',}}
+                      style={{marginHorizontal: 10, alignItems: 'center'}}
                       onPress={() => setGender('false')}
                   >
-                      <Text style={{fontSize: 16}}>
+                      <Text style={{fontSize: 16, color: theme.textColor}}>
                           {gender === 'false' ? '🔘 여성' : '⚪ 여성'}
                       </Text>
                   </TouchableOpacity>
@@ -142,11 +143,12 @@ const Analyze = () => {
                           textAlign: 'center',
                       }}
                       placeholder="YYYY"
+                      placeholderTextColor="gray"
                       keyboardType="numeric"
                       value={birthYear}
                       onChangeText={setBirthYear}
                   />
-                  <Text style={{fontSize: 15}}>년</Text>
+                  <Text style={{fontSize: 15, color: theme.textColor}}>년</Text>
                   <TextInput
                       style={{
                           height: 40,
@@ -158,11 +160,12 @@ const Analyze = () => {
                           marginHorizontal: 5,
                       }}
                       placeholder="MM"
+                      placeholderTextColor="gray"
                       keyboardType="numeric"
                       value={birthMonth}
                       onChangeText={setBirthMonth}
                   />
-                  <Text style={{fontSize: 15}}>월</Text>
+                  <Text style={{fontSize: 15, color: theme.textColor}}>월</Text>
                   <TextInput
                       style={{
                           height: 40,
@@ -173,11 +176,12 @@ const Analyze = () => {
                           textAlign: 'center',
                       }}
                       placeholder="DD"
+                      placeholderTextColor="gray"
                       keyboardType="numeric"
                       value={birthDay}
                       onChangeText={setBirthDay}
                   />
-                  <Text style={{fontSize: 15}}>일</Text>
+                  <Text style={{fontSize: 15, color: theme.textColor}}>일</Text>
               </View>
 
               <TouchableOpacity 
@@ -205,6 +209,7 @@ const Analyze = () => {
             alignItems: 'center',
             height: '10%',
             width: '90%',
+            marginTop: 10,
             borderRadius: 10,
             borderWidth: 1,
             borderColor: theme.borderColor,
@@ -257,7 +262,7 @@ const Analyze = () => {
           style={{
             justifyContent: 'center',
             alignItems: 'center',
-            height: '65%',
+            height: '60%',
             width: '100%',
           }}>
           <FileChoice onFileSelected={fileSelected} />
@@ -267,7 +272,7 @@ const Analyze = () => {
           style={{
             justifyContent: 'center',
             alignItems: 'center',
-            height: '20%',
+            height: '25%',
             width: '100%',
           }}>
 
@@ -277,7 +282,6 @@ const Analyze = () => {
               alignItems: 'center',
               padding: 10,
               width: '80%',
-              margin: 10,
               borderRadius: 10,
               borderWidth: 1,
             }}
