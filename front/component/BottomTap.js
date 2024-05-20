@@ -6,7 +6,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import Analyze from '../analyzePage/Analyze';
 import MyPage from '../src/myPage';
 import History from '../src/myPage/history';
-import {Category} from '../src/analyze';
+import {Category, Etiquette} from '../src/analyze';
 
 import myPageIcon from '../assets/images/TapbarIcons/user_light.png'
 import myPageIconActive from '../assets/images/TapbarIcons/user_black.png'
@@ -60,11 +60,11 @@ function BottomTap() {
           )
         }}
       />
-      {/* <Tab.Screen
+      <Tab.Screen
         name="Etiquette"
         component={Etiquette}
         options={{tabBarLabel: '에티켓', headerShown: false}}
-      /> */}
+      />
       <Tab.Screen
         name="Category"
         component={Category}

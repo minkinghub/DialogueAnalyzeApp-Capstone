@@ -12,7 +12,7 @@ const getDetail = async historyKey => {
         },
       },
     );
-    console.log('response.data:', response.data);
+    // console.log('response.data:', response.data);
 
     return response.data;
   } catch (error) {
@@ -23,7 +23,7 @@ const getDetail = async historyKey => {
 };
 
 const getHistory = async () => {
-  const response = await axiosAuthApi.post('user/history', {
+  const response = await axiosAuthApi.post('user/history/list', {
     headers: {
       'Content-Type': 'application/json',
     },
