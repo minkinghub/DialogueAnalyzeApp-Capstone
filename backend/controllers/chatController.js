@@ -7,7 +7,7 @@ const analyzeText = asyncWrap(async (req, res) => {
     console.log("파일 받기 과정 실행, 카카오 txt라고 가정")
 
     if(modelEndpoint == null) {
-        return res.status(400).send("GPU 서버 엔드포인트 없음")
+        return res.status(400).send("No Set GPU Endpoint")
     }
 
     // 보안 처리 필요, 일단 txt 내용 추출만 구현
@@ -17,10 +17,24 @@ const analyzeText = asyncWrap(async (req, res) => {
         const userId = req.user.userId
         const analysisType = (typeof req.body.analysisType == Boolean) ? req.body.analysisType : req.body.analysisType == "true" ? true : false
         const result = await analyzeTextService(userId, analysisType, opAge_range, content, modelEndpoint)
-        if(result == null) {
-            res.status(400).send("데이터 처리 중 오류 발생")
+        if(result.status != 0) {
+            let errorMessage = ""
+            switch(result.status) {
+                case 1:
+                    errorMessage = "GPU Server Connecting Error"
+                    modelEndpoint = null
+                    break
+                case 2:
+                    errorMessage = "Processing Data Error"
+                    break
+                default:
+                    errorMessage = "Unknown Error"
+                    break
+            }
+
+            return res.status(400).send({ errorMessage: errorMessage })
         } else {
-            res.status(200).send(result)
+            res.status(200).send({historyKey : result.historyKey})
         }
     } else {
         res.status(400).send("요청 중 오류 발생")
