@@ -18,7 +18,6 @@ const testService = async (testToken) => {
     //     signType: 1
     // })
 
-    
 };
 
 module.exports = {
