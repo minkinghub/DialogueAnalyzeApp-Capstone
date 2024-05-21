@@ -113,6 +113,7 @@ const analyzeTextService = async (userId, analysisType, opAge_range, content, mo
     const saveFullData = await fullTextModelSave({fullChat: fullChat})
     saveChatData.fullChatId = saveFullData
     const saveLiteData = await textModelSave(saveChatData)
+    console.log(saveLiteData)
     return { status : 0, historyKey: saveLiteData._id.toString()}
 }
 
@@ -317,8 +318,9 @@ const defineChatName = (speakerArray) => {
 
 const classficationConversataionType = (fullChat) => { // 타입 분류 함수
 
-    const list = [] // 일단은 점수 계산을 배껴서 씀, 나중에 모듈화 해야할 듯
+    const typeArray = [] // 일단은 점수 계산을 배껴서 씀, 나중에 모듈화 해야할 듯
     for(let splittedChat of fullChat) { // 대화 대상이 2명
+        const list = []
         let totalText = 0
         const standardArray = ["polite", "moral", "grammar", "positive"] // 라벨
         const notTextCount = [0, 0, 0, 0] // 순서대로 polite, moral, grammar, positive 카운트
@@ -346,36 +348,37 @@ const classficationConversataionType = (fullChat) => { // 타입 분류 함수
             if(totalText != 0) detailScore = Math.floor(((totalText - count) / totalText) * 25)
             list.push({ label : standardArray[index], score: detailScore })
         }
-    }
 
-    let conversationType = 8;
+        let conversationType = 8;
 
-    
-    if (list.every(score => score.score >= 20)) { // 모든 점수가 20점 이상일 경우
-        conversationType = 0;
-    } else if (list.every(score => score.score <= 5)) { // 모든 점수가 5점 이하일 경우
-        conversationType = 7;
-    } else { // 나머지
-        // 높은 점수 2개씩 뽑아서 분기
-        const sortedList = [...list].sort((a, b) => b.score - a.score);
-        const highestScores = sortedList.slice(0, 2);
+        if (list.every(score => score.score >= 20)) { // 모든 점수가 20점 이상일 경우
+            conversationType = 0;
+        } else if (list.every(score => score.score <= 5)) { // 모든 점수가 5점 이하일 경우
+            conversationType = 7;
+        } else { // 나머지
+            // 높은 점수 2개씩 뽑아서 분기
+            const sortedList = [...list].sort((a, b) => b.score - a.score);
+            const highestScores = sortedList.slice(0, 2);
 
-        if ((highestScores[0].label == "positive" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "positive")) {
-            conversationType = 1; // 불감
-        } else if ((highestScores[0].label == "grammar" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "grammar")) {
-            conversationType = 2; // 불맞
-        } else if ((highestScores[0].label == "polite" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "polite")) {
-            conversationType = 3; // 불존
-        } else if ((highestScores[0].label == "grammar" && highestScores[1].label == "polite") || (highestScores[0].label == "polite" && highestScores[1].label == "grammar")) {
-            conversationType = 4; // 맞존
-        } else if ((highestScores[0].label == "positive" && highestScores[1].label == "grammar") || (highestScores[0].label == "polite" && highestScores[1].label == "grammar")) {
-            conversationType = 5; // 맞감
-        } else if ((highestScores[0].label == "positive" && highestScores[1].label == "polite") || (highestScores[0].label == "polite" && highestScores[1].label == "positive")) {
-            conversationType = 6; // 존감
+            if ((highestScores[0].label == "positive" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "positive")) {
+                conversationType = 1; // 불감
+            } else if ((highestScores[0].label == "grammar" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "grammar")) {
+                conversationType = 2; // 불맞
+            } else if ((highestScores[0].label == "polite" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "polite")) {
+                conversationType = 3; // 불존
+            } else if ((highestScores[0].label == "grammar" && highestScores[1].label == "polite") || (highestScores[0].label == "polite" && highestScores[1].label == "grammar")) {
+                conversationType = 4; // 맞존
+            } else if ((highestScores[0].label == "positive" && highestScores[1].label == "grammar") || (highestScores[0].label == "polite" && highestScores[1].label == "grammar")) {
+                conversationType = 5; // 맞감
+            } else if ((highestScores[0].label == "positive" && highestScores[1].label == "polite") || (highestScores[0].label == "polite" && highestScores[1].label == "positive")) {
+                conversationType = 6; // 존감
+            }
         }
+
+        typeArray.push({speaker: splittedChat.speaker, type: conversationType})
     }
 
-    return conversationType
+    return typeArray
 }
 
 const mergeList = (splittedList, analyzedList) => {

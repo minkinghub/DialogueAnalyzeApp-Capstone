@@ -8,7 +8,7 @@ const textSchema = new mongoose.Schema({
     uploadTime: Date,
     dataType: Boolean,
     analysisType: Boolean,
-    conversationType: Number,
+    conversationType: Array,
     totalScore: Number,
     detailList: Array,
     fullChatId: { type: Schema.Types.ObjectId, ref: 'fullChats' },
