@@ -47,6 +47,7 @@ async function removeToken(userId) {
 }
 
 async function verifyToken(token) {
+
     try {
         const decoded = await new Promise((resolve, reject) => {
             jwt.verify(token, JWT_SECRET, (err, decoded) => {
