@@ -101,13 +101,13 @@ const analyzeTextService = async (userId, analysisType, opAge_range, content, mo
         analysisType: analysisType, // 예절 분석과 타입 분석 구분, ture - 예절 / false - 타입
     }
 
-    if(analysisType) { // 타입 분석
-        saveChatData.conversationType = classficationConversataionType(fullChat) // 대화 타입
-        saveChatData.detailList = null // 반대 값은 걍 null값 넣음
-    } else { // 예절 분석
+    if(analysisType) { // 예절 분석
         saveChatData.conversationType = null // 마찬가지
         const detailList = calculateScore(fullChat)
         saveChatData.detailList = detailList
+    } else { // 타입 분석
+        saveChatData.conversationType = classficationConversataionType(fullChat) // 대화 타입
+        saveChatData.detailList = null // 반대 값은 걍 null값 넣음
     }
 
     const saveFullData = await fullTextModelSave({fullChat: fullChat})
