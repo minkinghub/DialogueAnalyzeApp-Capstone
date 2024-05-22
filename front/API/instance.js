@@ -7,7 +7,7 @@ const baseURL = 'http://35.216.126.98:8080/api/';
 //axiosinstance
 const axiosAuthApi = axios.create({
   baseURL,
-  timeout: 600000,
+  timeout: 1800000,
 });
 
 axiosAuthApi.interceptors.request.use(
