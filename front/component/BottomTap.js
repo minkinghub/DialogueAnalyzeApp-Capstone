@@ -2,11 +2,15 @@ import React from 'react';
 import { Image } from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
+import {useContext} from 'react';
+import {darkTheme, lightTheme} from '../src/myPage/theme/theme.styles'; //테마 변경
+
 // import Home from '../mainPage/Home'; // 홈 화면 컴포넌트 경로
 import Analyze from '../analyzePage/Analyze';
 import MyPage from '../src/myPage';
 import History from '../src/myPage/history';
 import {Category, Etiquette} from '../src/analyze';
+import ThemeContext from '../src/ThemeContext';
 
 import myPageIcon from '../assets/images/TapbarIcons/user_light.png'
 import myPageIconActive from '../assets/images/TapbarIcons/user_black.png'
@@ -16,6 +20,10 @@ import analyzeIconActive from '../assets/images/TapbarIcons/analytics_black.png'
 const Tab = createBottomTabNavigator();
 
 function BottomTap() {
+  const DarkMode = useContext(ThemeContext);
+  const isDarkMode = DarkMode.isDarkMode; //테마 설정
+  const theme = isDarkMode ? darkTheme : lightTheme;
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -36,14 +44,20 @@ function BottomTap() {
         name="Analyze"
         component={Analyze}
         options={{
-          tabBarLabel: '채팅 분석', 
-          headerTitle: 'Chat Analysis',
+          tabBarLabel: '대화 분석', 
+          headerTitle: 'Conversation Analysis', 
           tabBarIcon: ({ focused }) => (
             <Image
               source={focused ? analyzeIconActive : analyzeIcon}
               style={{ width: 35, height: 35 }}
             />
-          )
+          ),
+          headerStyle: {
+            backgroundColor: theme.backgroundColor,
+            borderBottomColor: theme.borderColor,
+            borderBottomWidth: 1,
+          },
+          headerTintColor: theme.textColor,
         }}
       />
       <Tab.Screen
@@ -57,7 +71,13 @@ function BottomTap() {
               source={focused ? myPageIconActive : myPageIcon}
               style={{ width: 35, height: 35 }}
             />
-          )
+          ),
+          headerStyle: {
+            backgroundColor: theme.backgroundColor,
+            borderBottomColor: theme.borderColor,
+            borderBottomWidth: 1,
+          },
+          headerTintColor: theme.textColor,
         }}
       />
       <Tab.Screen

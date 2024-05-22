@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, SafeAreaView, TouchableOpacity, Alert, Modal, TextInput} from 'react-native';
+import {View, Text, SafeAreaView, TouchableOpacity, Alert, Modal, TextInput, ScrollView} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-import { GetToken } from '../component/tokenData/GetToken';
-import GenDateToServer from '../component/API/GenDateToServer';
+import { GetToken } from '../component/tokenData/GetToken'; //전역관리 토큰 호출
+import GenDateToServer from '../component/API/GenDateToServer'; //성별, 생년월일 서버연동
 import {useContext} from 'react';
 import ThemeContext from '../src/ThemeContext';
 import FileChoice from '../component/analyze/FileChoice'; //파일 선택 컴포넌트 경로
@@ -17,27 +17,29 @@ const Analyze = () => {
   const [birthMonth, setBirthMonth] = useState(''); //생월
   const [birthDay, setBirthDay] = useState(''); //생일
 
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [mannerFileSend, setMannerFileSend] = useState(false);
-  const [generalFileSend, setGeneralFileSend] = useState(false);
-  const [opAge_range, setOpAge_range] = useState('20');
+  const [selectedFile, setSelectedFile] = useState(null); //선택 파일
+  const [mannerFileSend, setMannerFileSend] = useState(false); //예절분석 동작
+  const [generalFileSend, setGeneralFileSend] = useState(false); //타입분석 동작
+  const [opAge_range, setOpAge_range] = useState('20'); //상대방 나이 지정
   const DarkMode = useContext(ThemeContext);
-  const isDarkMode = DarkMode.isDarkMode;
+  const isDarkMode = DarkMode.isDarkMode; //테마 설정
   const theme = isDarkMode ? darkTheme : lightTheme;
 
+  //isFirst 호출
   useEffect(() => {
     const checkIsFirst = async () => {
         const loadedTokens = await GetToken();
         if (loadedTokens) {
             setIsFirst(loadedTokens);
         } else {
-            console.log('No tokens were loaded'); // 토큰이 없는 경우 메시지 출력
+            console.log('No tokens were loaded');
         }
     };
 
     checkIsFirst();
   }, []);
 
+  //isFIrst: ture일 경우 모달 출력
   useEffect(() => {
     if(isFirst.isFirst === "true"){
       setModalVisible(true);
@@ -57,6 +59,7 @@ const Analyze = () => {
     else Alert.alert("안내", "생년월일을 입력해 주세요.");
   };
 
+  //선택 파일, 분석 동작 초기화
   const resetMannerFileSend = () => {
     setMannerFileSend(false);
     setSelectedFile(null);
@@ -66,9 +69,8 @@ const Analyze = () => {
     setSelectedFile(null);
   }
 
-  //파일 선택
+  //선택 파일 저장
   const fileSelected = file => {
-    setMannerFileSend(false);
     setSelectedFile(file[0]);
   };
 
@@ -203,6 +205,7 @@ const Analyze = () => {
           alignItems: 'center',
           backgroundColor: theme.backgroundColor,
         }}>
+          
         <View
           style={{
             justifyContent: 'center',
@@ -213,12 +216,19 @@ const Analyze = () => {
             borderRadius: 10,
             borderWidth: 1,
             borderColor: theme.borderColor,
+            padding: 10,
           }}>
-          <Text style={{color: theme.textColor}}>
-            {selectedFile
-              ? '선택한 파일 : ' + selectedFile.name
-              : '선택한 파일 없음'}
-          </Text>
+            <ScrollView
+              horizontal
+              contentContainerStyle={{ alignItems: 'center' }}
+              showsHorizontalScrollIndicator={true}
+            >
+              <Text style={{color: theme.textColor, fontSize: 17}}>
+                {selectedFile
+                  ? '선택한 파일 : ' + selectedFile.name
+                  : '선택한 파일 없음'}
+              </Text>
+            </ScrollView>
         </View>
 
         <View

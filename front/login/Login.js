@@ -37,7 +37,12 @@ const Login = () => {
   return (
       <SafeAreaView style={{flex: 1, backgroundColor: '#fff',}}>
         <View style={{justifyContent: 'center', alignItems: 'center', height: '10%', backgroundColor: '#f2cd79'}}>
-          <Text style={{fontSize: 30}}>LOGO</Text>
+          <Text style={{
+            fontSize: 30,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            letterSpacing: 2,
+          }}>대화성향 분석 앱</Text>
         </View>
         
         <View style={{justifyContent: 'center', alignItems: 'center', height: '90%', backgroundColor: '#f2cd79'}}>
@@ -45,7 +50,7 @@ const Login = () => {
           <View style={{
             justifyContent: 'center', 
             alignItems: 'center', 
-            height: '90%', 
+            height: '95%', 
             width:'90%', 
             backgroundColor: 'white', 
             borderRadius: 20,
