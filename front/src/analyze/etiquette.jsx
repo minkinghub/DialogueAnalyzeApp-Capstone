@@ -18,11 +18,11 @@ const Etiquette = ({route}) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // console.log('historykey1:', route.params.historyKey);
+      console.log('historykey1:', route.params.historyKey);
       const data = await loadDatail(route.params.historyKey);
-      // console.log('data:', data);
-      setDetailList(data);
-      setSpeakerList(data);
+      console.log('data:', data.detailList);
+      setDetailList(data.detailList);
+      setSpeakerList(data.detailList);
     };
     //새로 함수를 안만들고 진행시 비동기 문제 발생 해결하기 위해 data가 들어오면 실행시키기 위함
     const setSpeakerList = data => {
@@ -111,6 +111,7 @@ const Etiquette = ({route}) => {
 
       <ScrollView key="3300" ref={scrollViewRef} style={{flex: 5}}>
         {detailList[selpeaker].detailInfo.map((item, labelIndex) => {
+          console.log(item.label, ': ', item);
           const infoKey = item.label + labelIndex.toString();
           return (
             <View key={infoKey}>

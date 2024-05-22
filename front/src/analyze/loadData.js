@@ -3,8 +3,8 @@ import {getDetail, getHistory} from '../../API';
 const loadDatail = async historyKey => {
   try {
     const result = await getDetail(historyKey);
-    // console.log('result:', result.detailList);
-    return result.detailList;
+    console.log('loadDetail:', result);
+    return result;
   } catch (error) {
     console.error('Error getDetail data:', error);
   }

@@ -1,6 +1,6 @@
 import {View, Text, Image} from 'react-native';
 import analyzeStyle from './analyze.style';
-import {useTheme} from '@react-navigation/native';
+import {useTheme} from '../ThemeContext';
 import {useEffect, useState} from 'react';
 import {loadDatail} from './loadData';
 import useSpeakerPicker from './speakerPicker';
@@ -10,48 +10,53 @@ import categoryComment from './categoryComment';
 const Category = ({route}) => {
   const [detailList, setDetailList] = useState([]);
   const [speaker, setSpeaker] = useState([]);
-  const [type, setType] = useState('');
-  const [imageUrl, setImageUrl] = useState();
+  const [imageUrl, setImageUrl] = useState('');
   const {selpeaker, renderSpeakerPicker} = useSpeakerPicker(speaker);
 
   const {isDarkMode} = useTheme();
   const styles = analyzeStyle(isDarkMode);
-
+  const selpeakerType = detailList[selpeaker]?.type;
   const typeKr = [
-    '존불',
-    '존맞',
-    '존감',
-    '불맞',
-    '불감',
-    '맞감',
     '화가',
+    '불감', // EM형 1
+    '불맞', // GM형 2
+    '불존', // PM형 3
+    '맞존', // GP형 4
+    '맞감', // EG형 5
+    '존감', // EP형 6
     '비화가',
   ];
   const imageMap = {
-    pm: require('../../assets/images/type/pm.png'),
-    pg: require('../../assets/images/type/pg.png'),
-    pe: require('../../assets/images/type/pe.png'),
-    mg: require('../../assets/images/type/mg.png'),
-    me: require('../../assets/images/type/me.png'),
-    ge: require('../../assets/images/type/ge.png'),
     top: require('../../assets/images/type/top.png'),
+    em: require('../../assets/images/type/em.png'),
+    gm: require('../../assets/images/type/gm.png'),
+    pm: require('../../assets/images/type/pm.png'),
+    gp: require('../../assets/images/type/gp.png'),
+    eg: require('../../assets/images/type/eg.png'),
+    ep: require('../../assets/images/type/ep.png'),
     bottom: require('../../assets/images/type/bottom.png'),
   };
-  const typeEn = ['pm', 'pg', 'pe', 'mg', 'me', 'ge', 'top', 'bottom'];
+  const typeEn = ['top', 'em', 'gm', 'pm', 'gp', 'eg', 'ep', 'bottom'];
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await loadDatail(route.params.historyKey);
-        setDetailList(data);
-        setSpeakerList(data);
+        console.log('category data:', data.conversationType);
+        setDetailList(data.conversationType);
+        setSpeakerList(data.conversationType);
       } catch (error) {
         console.error(error);
       }
     };
-
+    //참여한 화자의 데이터 가져오기
     const setSpeakerList = data => {
-      const speakerList = data.map(item => item.speaker);
+      const speakerList = [];
+      const typeList = [];
+      data.map(item => {
+        speakerList.push(item.speaker);
+        typeList.push(item.type);
+      });
       setSpeaker(speakerList);
     };
 
@@ -60,50 +65,12 @@ const Category = ({route}) => {
 
   useEffect(() => {
     if (detailList.length > 0) {
-      const type = typeExtract(detailList);
-      setType(type);
-      setImageUrl(typeEn[type]);
+      setImageUrl(typeEn[selpeakerType]);
+      console.log('selpeakerType:', selpeakerType);
     }
   }, [detailList, selpeaker]);
 
-  const typeExtract = data => {
-    if (data && data[selpeaker]) {
-      const scoreList = data[selpeaker].detailInfo.map(
-        item => item.detailScore,
-      );
-      const highScoreIndexes = getHighScoreIndexes(scoreList);
-
-      const allScoresBelowFive = scoreList.every(score => score < 5); // 모든 점수가 5점 미만일 때
-      if (allScoresBelowFive) return 7; // 비화가
-
-      const sumList = scoreList.reduce((a, b) => a + b, 0); // 점수 합계
-      if (sumList >= 80) return 6; // 합계 80점 이상일 때 화가
-
-      const typeMap = {
-        '0,1': 0,
-        '0,2': 1,
-        '0,3': 2,
-        '1,2': 3,
-        '1,3': 4,
-        '2,3': 5,
-      };
-
-      return typeMap[highScoreIndexes.join(',')] ?? 7;
-    }
-  };
-
-  const getHighScoreIndexes = scoreList => {
-    const indexes = [];
-    for (let i = 0; i < 2; i++) {
-      const max = Math.max(...scoreList);
-      const index = scoreList.indexOf(max);
-      indexes.push(index);
-      scoreList[index] = 0;
-    }
-    return indexes.sort();
-  };
-
-  return detailList ? (
+  return detailList && imageUrl ? (
     <View style={styles.container}>
       <View key="2100" style={styles.headerStyle}>
         <Text style={styles.headerTextStyle}>유형 분석 결과</Text>
@@ -115,7 +82,7 @@ const Category = ({route}) => {
       <View>
         <View style={styles.typeStyle}>
           <Text style={styles.typeTextStyle}>
-            {speaker[selpeaker]}님은 {typeKr[type]}형입니다.
+            {speaker[selpeaker]}님은 {typeKr[selpeakerType]}형입니다.
           </Text>
         </View>
 
@@ -130,7 +97,7 @@ const Category = ({route}) => {
         <View style={styles.lineStyle} />
         <View style={styles.commentBox}>
           <Text style={styles.commentTextStyle}>
-            {categoryComment[typeEn[type]]}
+            {categoryComment[typeEn[selpeakerType]]}
           </Text>
         </View>
       </View>

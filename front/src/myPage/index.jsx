@@ -1,18 +1,26 @@
 import React from 'react';
-import {Button, Text, View, SafeAreaView} from 'react-native';
+import {Text, View, SafeAreaView, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import ThemeSwitch from './theme/themeSwitch';
+import {useTheme} from '../ThemeContext';
+import myPageStyle from './MyPage.style';
+
 const MyPage = () => {
   const navigation = useNavigation();
+  const {isDarkMode} = useTheme();
+  const styles = myPageStyle(isDarkMode);
+
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.container}>
       <View>
-        <Text>MyPage!</Text>
-        <ThemeSwitch />
-        <Button
-          title="Go to History"
-          onPress={() => navigation.navigate('history')}
-        />
+        <View style={styles.Switch}>
+          <ThemeSwitch />
+        </View>
+        <TouchableOpacity
+          style={{backgroundColor: 'gray', padding: 10}}
+          onPress={() => navigation.navigate('history')}>
+          <Text>기록보기</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

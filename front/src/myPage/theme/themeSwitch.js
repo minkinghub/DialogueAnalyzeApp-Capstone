@@ -1,16 +1,31 @@
-import {Switch, Text, View} from 'react-native';
+import {StyleSheet, Switch, Text, View} from 'react-native';
 import {useTheme} from '../../ThemeContext';
+import {darkTheme, lightTheme} from './theme.styles';
 const ThemeSwitch = () => {
   //true면 다크, flase면 라이트
   const {isDarkMode, toggleTheme} = useTheme();
+  const theme = isDarkMode ? darkTheme : lightTheme;
+  const styles = StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 2,
+      padding: 5,
+      backgroundColor: theme.backgroundColor,
+      borderColor: theme.borderColor,
+    },
+    textsty: {
+      color: theme.textColor,
+      fontSize: 16,
+    },
+  });
   console.log('switch: ', isDarkMode);
   return (
-    <View
-      style={{flexDirection: 'row', alignItems: 'flex-end', borderWidth: 2}}>
-      <Text>Light Theme</Text>
+    <View style={styles.container}>
+      <Text style={styles.textsty}>Light Theme</Text>
       <Switch value={isDarkMode} onValueChange={toggleTheme} />
-
-      <Text>Dark Theme</Text>
+      <Text style={styles.textsty}>Dark Theme</Text>
     </View>
   );
 };
