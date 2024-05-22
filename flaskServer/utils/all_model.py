@@ -1,31 +1,17 @@
 import torch
 from torch.utils.data import Dataset, DataLoader
-# from transformers import T5ForConditionalGeneration, T5TokenizerFast
-# from transformers import AutoTokenizer, AutoModelForSequenceClassification
-# from transformers import BertTokenizer, BertForSequenceClassification
 from .cleaner import clean
 
-# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# grammar_model = T5ForConditionalGeneration.from_pretrained('./saved_model/grammar')
-# emotion_model = AutoModelForSequenceClassification.from_pretrained("./saved_model/emotion").to(device)
-# moral_model = BertForSequenceClassification.from_pretrained('./saved_model/moral').to(device)
-# politely_model = AutoModelForSequenceClassification.from_pretrained("./saved_model/politely").to(device)
-
-# # 4개의 토크나이저 불러오기
-# grammar_tokenizer = T5TokenizerFast.from_pretrained('./saved_model/grammar')
-# emotion_tokenizer = AutoTokenizer.from_pretrained("./saved_model/emotion")
-# moral_tokenizer = BertTokenizer.from_pretrained('./saved_model/moral')
-# politely_tokenizer = AutoTokenizer.from_pretrained('beomi/kcbert-base')
-
-def analyzeAllModel(corrected_texts, device, grammar_model, emotion_model, moral_model, politely_model, grammar_tokenizer, emotion_tokenizer, moral_tokenizer, politely_tokenizer): # 정제된 문자열 배열
+def analyzeAllModel(corrected_texts, device, grammar_model, emotion_TF_model, emotion_model, moral_TF_model, moral_model, politely_model, grammar_tokenizer, emotion_TF_tokenizer, emotion_tokenizer, moral_TF_tokenizer, moral_tokenizer, politely_tokenizer):
 
     # 맞춤법 검증 모델
     corrected_texts_results = []
     original_texts = []
     for text in corrected_texts:
         input_text = "맞춤법을 고쳐주세요: " + text
+        input_ids = grammar_tokenizer(input_text, return_tensors='pt').input_ids.to(device)
         output_text = grammar_model.generate(
-            input_ids=grammar_tokenizer(input_text, return_tensors='pt').input_ids,
+            input_ids=input_ids,
             max_length=128,
             num_beams=5,
             early_stopping=True
@@ -34,7 +20,26 @@ def analyzeAllModel(corrected_texts, device, grammar_model, emotion_model, moral
         corrected_texts_results.append(output_text)
         original_texts.append(text)
 
-    # 감정 분석 모델
+    # 감정 분석 1호기(긍정 혹은 부정)
+    def sentence_predict_TF(sent):
+        emotion_TF_model.eval()
+        tokenized_sent = emotion_TF_tokenizer(
+            [sent],
+            return_tensors="pt",
+            max_length=128,
+            padding=True,
+            truncation=True,
+            add_special_tokens=True,
+        )
+        tokenized_sent = {k: v.to(device) for k, v in tokenized_sent.items()}
+        with torch.no_grad():
+            outputs = emotion_TF_model(**tokenized_sent)
+        logits = outputs.logits
+        probabilities = torch.softmax(logits, dim=1)
+        predicted_label = torch.argmax(probabilities, dim=1).item()
+        return predicted_label
+
+    # 감정 분석 2호기(7가지 세부 감정)
     def sentence_predict(sent):
         emotion_model.eval()
         tokenized_sent = emotion_tokenizer(
@@ -51,7 +56,7 @@ def analyzeAllModel(corrected_texts, device, grammar_model, emotion_model, moral
                 input_ids=tokenized_sent["input_ids"],
                 attention_mask=tokenized_sent["attention_mask"],
             )
-        logits = outputs[0]
+        logits = outputs.logits
         logits = logits.detach().cpu()
         result = logits.argmax(-1).numpy()[0]
         return result
@@ -86,19 +91,46 @@ def analyzeAllModel(corrected_texts, device, grammar_model, emotion_model, moral
     test_dataset = HateSpeechDataset(corrected_texts_results, moral_tokenizer)
     test_loader = DataLoader(test_dataset, batch_size=16, shuffle=True)
 
-    def moral_predict(dataloader):
+    # moral 1호기(탐지 혹은 미탐지)
+    def moral_predict_TF(sent):
+        moral_TF_model.eval()
+        tokenized_sent = moral_TF_tokenizer(
+            [sent],
+            return_tensors="pt",
+            max_length=128,
+            padding=True,
+            truncation=True,
+            add_special_tokens=True,
+        )
+        tokenized_sent = {k: v.to(device) for k, v in tokenized_sent.items()}
+        with torch.no_grad():
+            outputs = moral_TF_model(**tokenized_sent)
+        logits = outputs.logits
+        probabilities = torch.softmax(logits, dim=1)
+        predicted_label = torch.argmax(probabilities, dim=1).item()
+        return predicted_label
+
+    # moral 2호기(6가지 감정 분류)
+    def moral_predict(sent):
         moral_model.eval()
-        all_predictions = []
-        
-        for batch in test_loader:
-            batch = {k: v.to(device) for k, v in batch.items()}
-            with torch.no_grad():
-                outputs = moral_model(**batch)
-            logits = outputs.logits
-            batch_predictions = torch.argmax(logits, dim=1).tolist()
-            all_predictions.extend(batch_predictions)
-        
-        return all_predictions
+        tokenized_sent = moral_tokenizer(
+            [sent],
+            return_tensors="pt",
+            max_length=128,
+            padding=True,
+            truncation=True,
+            add_special_tokens=True,
+        )
+        tokenized_sent = {k: v.to(device) for k, v in tokenized_sent.items()}
+        with torch.no_grad():
+            outputs = moral_model(
+                input_ids=tokenized_sent["input_ids"],
+                attention_mask=tokenized_sent["attention_mask"],
+            )
+        logits = outputs.logits
+        logits = logits.detach().cpu()
+        result = logits.argmax(-1).numpy()[0]
+        return result
 
     # 존댓말 반말 검증 모델
     class FormalClassifier(object):
@@ -107,12 +139,10 @@ def analyzeAllModel(corrected_texts, device, grammar_model, emotion_model, moral
             inputs = politely_tokenizer(
                 text, return_tensors="pt", max_length=64, truncation=True, padding="max_length")
             input_ids = inputs["input_ids"].to(device)
-            token_type_ids = inputs["token_type_ids"].to(device)
             attention_mask = inputs["attention_mask"].to(device)
 
             model_inputs = {
                 "input_ids": input_ids,
-                "token_type_ids": token_type_ids,
                 "attention_mask": attention_mask,
             }
             return torch.softmax(politely_model(**model_inputs).logits, dim=-1)
@@ -136,27 +166,37 @@ def analyzeAllModel(corrected_texts, device, grammar_model, emotion_model, moral
     # JSON 파일로 저장
     model_results = []
     for i, sentence in enumerate(corrected_texts_results):
-        grammar_result = 1 if (corrected_texts[i] == corrected_texts_results[i]) else 0
-        emotion_result = sentence_predict(corrected_texts[i])
-        moral_result = moral_predict(sentence)
+        grammar = corrected_texts_results[i]
+        grammar_result = 1 if original_texts[i] == corrected_texts_results[i] else 0
 
-        politely_result = FormalClassifier().formal_percentage(corrected_texts[i])
-        if politely_result > 0.5:
-            politely_label = 1
+        emotion_result_TF = sentence_predict_TF(corrected_texts_results[i])
+
+        # 감정 분석이 부정일 경우 세부 분석 시행
+        if emotion_result_TF == 0:
+            emotion_result_TF = sentence_predict(corrected_texts_results[i])
         else:
-            politely_label = 0
+            emotion_result_TF = 100
 
+        moral_result_TF = moral_predict_TF(corrected_texts_results[i])
+
+        # 불쾌 발언이 부정일 경우 세부 분석 시행
+        if moral_result_TF == 0:
+            moral_result_TF = moral_predict(corrected_texts_results[i])
+        else:
+            moral_result_TF = 100
+
+        politely_result = FormalClassifier().formal_percentage(corrected_texts_results[i])
+        politely_label = 1 if politely_result > 0.5 else 0
+
+        # 원문, 맞춤법 수정문, 맞춤법 수정 여부, 감정, 불쾌 발언, 존댓말 여부
         model_result = {
-            "chatContent": corrected_texts[i],
-            "grammarChat" : corrected_texts_results[i],
-            "isGrammar": grammar_result,
-            "isPositive": int(emotion_result),
-            "isMoral": moral_result[0],
-            "isPolite": politely_label
+            "Text": corrected_texts[i],
+            "grammar_text": grammar,
+            "grammar": grammar_result,
+            "emotion": int(emotion_result_TF),
+            "moral": int(moral_result_TF),
+            "politely": politely_label
         }
         print(model_result)
         model_results.append(model_result)
-
     return model_results
-# with open("model_results.json", "w", encoding="utf-8") as f:
-#     json.dump(model_results, f, ensure_ascii=False, indent=2)
