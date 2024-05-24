@@ -19,7 +19,7 @@ moral_TF_model = AutoModelForSequenceClassification.from_pretrained("./saved_mod
 grammar_tokenizer = T5TokenizerFast.from_pretrained('./saved_model/grammar')
 emotion_tokenizer = AutoTokenizer.from_pretrained("./saved_model/emotion")
 moral_tokenizer = BertTokenizer.from_pretrained('./saved_model/moral')
-politely_tokenizer = AutoTokenizer.from_pretrained('beomi/kcbert-base')
+politely_tokenizer = AutoTokenizer.from_pretrained('./saved_model/politely')
 emotion_TF_tokenizer = AutoTokenizer.from_pretrained("./saved_model/emotion_TF")
 moral_TF_tokenizer = AutoTokenizer.from_pretrained("./saved_model/moral_TF")
 
@@ -50,6 +50,7 @@ corrected_texts = [
     "살았으면 좋겠어 네가",
     "행복해 정말로 기뻐",
     "슬퍼요 불행해 유유",
+    "안 되는 분",
 ]
 
 # 맞춤법 검증 모델
@@ -231,6 +232,9 @@ for i, sentence in enumerate(corrected_texts_results):
         emotion_result_TF = sentence_predict(corrected_texts_results[i])
     else:
         emotion_result_TF = 100
+
+    # if emotion_result_TF == 2:
+    #     emotion_result_TF = 1
 
     #moral_result = moral_predict(sentence)
     moral_result_TF = moral_predict_TF(corrected_texts_results[i])
