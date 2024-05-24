@@ -20,7 +20,7 @@ const ThemeSwitch = () => {
       fontSize: 16,
     },
   });
-  console.log('switch: ', isDarkMode);
+  console.log('switch: ', isDarkMode ? 'dark' : 'light');
   return (
     <View style={styles.container}>
       <Text style={styles.textsty}>Light Theme</Text>

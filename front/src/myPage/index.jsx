@@ -3,7 +3,7 @@ import {Text, View, SafeAreaView, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import ThemeSwitch from './theme/themeSwitch';
 import {useTheme} from '../ThemeContext';
-import myPageStyle from './MyPage.style';
+import myPageStyle from './stylesFile/MyPage.style';
 
 const MyPage = () => {
   const navigation = useNavigation();

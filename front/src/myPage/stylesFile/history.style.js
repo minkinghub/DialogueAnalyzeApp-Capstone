@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native';
-import {darkTheme, lightTheme} from '../myPage/theme/theme.styles';
+import {darkTheme, lightTheme} from '../theme/theme.styles';
 
 const historyStyle = isDarkMode => {
   const theme = isDarkMode ? darkTheme : lightTheme;

@@ -1,11 +1,10 @@
 import {useEffect, useState} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, Text, TouchableOpacity, ScrollView} from 'react-native';
 import {loadList} from '../analyze/loadData';
 import ActivityIndicatorLoading from '../analyze/ActivityIndicatorLoading';
-import {ScrollView} from 'react-native-gesture-handler';
 import {useNavigation} from '@react-navigation/native';
 import {useTheme} from '../ThemeContext';
-import historyStyle from './history.style';
+import historyStyle from './stylesFile/history.style';
 
 const History = () => {
   const navigation = useNavigation(); // 네비게이션 객체
@@ -21,7 +20,7 @@ const History = () => {
       );
       setHistoryList(sortedData);
 
-      console.log('data:', data);
+      // console.log('data:', data);
     };
     fetchData();
   }, []);
