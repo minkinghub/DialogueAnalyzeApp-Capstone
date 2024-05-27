@@ -59,14 +59,18 @@ const Analyze = () => {
     else Alert.alert("안내", "생년월일을 입력해 주세요.");
   };
 
+  const resetFile = () => {
+    setSelectedFile(null);
+  }
+
   //선택 파일, 분석 동작 초기화
   const resetMannerFileSend = () => {
     setMannerFileSend(false);
-    setSelectedFile(null);
+    // setSelectedFile(null);
   }
   const resetGeneralFileSend = () => {
     setGeneralFileSend(false);
-    setSelectedFile(null);
+    // setSelectedFile(null);
   }
 
   //선택 파일 저장
@@ -94,8 +98,8 @@ const Analyze = () => {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-      {mannerFileSend && <FileSendServer selectedFile={selectedFile} opAge_range={opAge_range} analysisType={true} onCompleted={resetMannerFileSend}/>}
-      {generalFileSend && <FileSendServer selectedFile={selectedFile} opAge_range={opAge_range} analysisType={false} onCompleted={resetGeneralFileSend}/>}
+      {mannerFileSend && <FileSendServer selectedFile={selectedFile} opAge_range={opAge_range} analysisType={true} onCompleted={resetMannerFileSend} resetFile={resetFile}/>}
+      {generalFileSend && <FileSendServer selectedFile={selectedFile} opAge_range={opAge_range} analysisType={false} onCompleted={resetGeneralFileSend} resetFile={resetFile}/>}
 
       <Modal
           transparent={true} // 배경을 투명하게 할 것인지

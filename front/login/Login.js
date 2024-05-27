@@ -9,6 +9,10 @@ import SendServer from '../component/API/login/SendServer ' //유저정보 전�
 const Login = () => {
   const navigation = useNavigation(); //네비게이션 객체
 
+  // const handleLogin = () => {
+  //   console.log("Login");
+  // };
+
   //카카오 로그인 버튼
   const kakaoLogin = async () => {
 
@@ -31,7 +35,7 @@ const Login = () => {
             console.log(`Login Fail(code:${error.code})`, error.message);
         }
     }
-};
+  };
   
 
   return (
@@ -60,6 +64,12 @@ const Login = () => {
             <TouchableOpacity onPress={kakaoLogin}>
               <Image source={require('../assets/images/kakao_login_medium_wide.png')}/>
             </TouchableOpacity>
+            {/* <TouchableOpacity style={{marginTop: 10}} onPress={handleLogin}>
+              <Image style={{width: 300, height: 50, resizeMode: 'contain'}} source={require('../assets/images/naver_login.png')}/>
+            </TouchableOpacity>
+            <TouchableOpacity style={{marginTop: 10}} onPress={handleLogin}>
+              <Image style={{width: 300, height: 50, resizeMode: 'contain'}} source={require('../assets/images/google_signin.png')}/>
+            </TouchableOpacity> */}
           </View>
             
         </View>

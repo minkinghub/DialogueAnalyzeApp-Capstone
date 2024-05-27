@@ -3,7 +3,7 @@ import { View, Text, ActivityIndicator} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {uploadFile} from '../../../API';
 
-const FileSendServer = ({ selectedFile, opAge_range, analysisType, onCompleted }) => {
+const FileSendServer = ({ selectedFile, opAge_range, analysisType, onCompleted, resetFile}) => {
     const navigation = useNavigation(); //네비게이션 객체
     const [isLoading, setIsLoading] = useState(false); // 로딩 상태
 
@@ -23,8 +23,10 @@ const FileSendServer = ({ selectedFile, opAge_range, analysisType, onCompleted }
 
             if (analysisType === true) {
               navigation.navigate('Etiquette', { historyKey: res.data.historyKey });
+              resetFile();
             } else {
               navigation.navigate('Category', { historyKey: res.data.historyKey });
+              resetFile();
             }
           } catch (error) {
               if (error.response) {
