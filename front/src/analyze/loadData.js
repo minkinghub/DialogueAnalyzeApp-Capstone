@@ -3,10 +3,12 @@ import {getDetail, getHistory} from '../../API';
 const loadDatail = async historyKey => {
   try {
     const result = await getDetail(historyKey);
-    // console.log('result:', result.detailList);
-    return result.detailList;
+    // console.log('loadDetail:', result);
+    return result;
+    //예절분석: result.detailList
+    //타입분석: result.conversationType
   } catch (error) {
-    console.error('Error getDetail data:', error);
+    console.error('Error getDetail result:', error);
   }
 };
 const loadList = async () => {
@@ -14,7 +16,7 @@ const loadList = async () => {
     const result = await getHistory();
     return result;
   } catch (error) {
-    console.error('Error load data:', error);
+    console.error('Error loadList result:', error);
   }
 };
 

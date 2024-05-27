@@ -1,13 +1,16 @@
 import {useEffect, useState} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, Text, TouchableOpacity, ScrollView} from 'react-native';
 import {loadList} from '../analyze/loadData';
 import ActivityIndicatorLoading from '../analyze/ActivityIndicatorLoading';
-import {ScrollView} from 'react-native-gesture-handler';
 import {useNavigation} from '@react-navigation/native';
+import {useTheme} from '../ThemeContext';
+import historyStyle from './stylesFile/history.style';
 
 const History = () => {
   const navigation = useNavigation(); // 네비게이션 객체
   const [historyList, setHistoryList] = useState(null);
+  const {isDarkMode} = useTheme();
+  const styles = historyStyle(isDarkMode);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -17,14 +20,14 @@ const History = () => {
       );
       setHistoryList(sortedData);
 
-      console.log('data:', data);
+      // console.log('data:', data);
     };
     fetchData();
   }, []);
 
   const handlePress = item => {
-    const type = item.dataType ? 'Category' : 'Etiquette';
-    navigation.push(type, {
+    const analyzeType = item.analysisType ? 'Etiquette' : 'Category';
+    navigation.push(analyzeType, {
       historyKey: item._id,
     });
   };
@@ -51,7 +54,12 @@ const History = () => {
       {historyList === null ? (
         <ActivityIndicatorLoading />
       ) : historyList.length === 0 ? (
-        <Text>데이터가 없습니다.</Text>
+        <View style={styles.errorView}>
+          <Text style={styles.errorTextTitle}>데이터가 없습니다. </Text>
+          <Text style={styles.errorText}>
+            {'\n'}대화 분석 페이지에서{'\n'} 분석을 진행해주세요.
+          </Text>
+        </View>
       ) : (
         <ScrollView>
           {historyList.map((item, index) => (
@@ -59,9 +67,18 @@ const History = () => {
               key={index}
               style={styles.item}
               onPress={() => handlePress(item)}>
-              <Text>{item.chatName}</Text>
-              <Text>{formatDate(item.uploadTime)}</Text>
-              {/* <Text>{item.dataType ? '예절분석' : '타입분석'}</Text> */}
+              <View style={styles.itemTitle}>
+                <Text style={styles.itemTitleName}>{item.chatName}</Text>
+                <View style={styles.itemTitleTypeView}>
+                  <Text style={styles.itemTitleType}>
+                    {item.analysisType ? '예절분석' : '타입분석'}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.itemTime}>
+                <Text>{formatDate(item.uploadTime)}</Text>
+                {/* {console.log('item:', item.uploadTime)} */}
+              </View>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -69,35 +86,4 @@ const History = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  item: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  chatName: {
-    fontSize: 16,
-  },
-  uploadTime: {
-    fontSize: 14,
-    color: '#888',
-  },
-  dataType: {
-    fontSize: 14,
-    color: '#444',
-  },
-});
-
 export default History;
