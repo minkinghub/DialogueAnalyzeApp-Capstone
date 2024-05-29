@@ -197,6 +197,14 @@
     "grammar": 1,
     "emotion": 100,
     "moral": 100,
+    "politely": 1
+  },
+  {
+    "Text": "안 되는 분",
+    "grammar_text": "안 되는 분",
+    "grammar": 1,
+    "emotion": 4,
+    "moral": 100,
     "politely": 0
   }
 ]
