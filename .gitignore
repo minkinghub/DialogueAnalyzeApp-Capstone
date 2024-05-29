@@ -8,7 +8,8 @@ backend/AItest/chromedriver-win64
 backend/AItest/textdata
 backend/AItest/myenv
 backend/AItest/textModel
-backend/AImodels/models 
+backend/AImodels/model
+flaskServer/myenv
 
 backend/AItest/*.csv
 

@@ -16,12 +16,12 @@ function uploadFile() {
             historyKey: "6637a2c4879a1a77270b4f4c"
         }
 
-        const token = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjMzNGQ2NzI4OGVlZDQyNGViNTkwNjAiLCJpYXQiOjE3MTQ5OTcwOTMsImV4cCI6MTcxNjIwNjY5M30.ZY-RVL2pHjBc-wR1bx8apfHf9BzfEZaj70wxD-V72S8';
+        const token = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjMwY2RmZjk2MDc4NTg4OGM3MmIyNWUiLCJpYXQiOjE3MTUxNTAwMjUsImV4cCI6MTcxNjM1OTYyNX0.RcHsj3P-Ge2M7FcFQCWDPLrPoE0HAVoEB6z7w9Nhv-g';
 
-        axios.post('http://35.216.126.98:8080/api/user/history/detail', historyData, {
+        axios.post('http://localhost:8080/api/upload/analyze/text', formData, {
             headers: {
-                'Content-Type': 'application/json',
-                // 'Content-Type': 'multipart/form-data',
+                // 'Content-Type': 'application/json',
+                'Content-Type': 'multipart/form-data',
                 'Authorization': token
             }
         })
