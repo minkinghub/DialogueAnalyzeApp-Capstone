@@ -6,7 +6,7 @@ const base64 = require('base-64');
 const NGROK_NAME = process.env.NGROK_NAME
 const NGROK_PASSWORD = process.env.NGROK_PASSWORD
 
-const analyzeTextService = async (userId, analysisType, opAge_range, content, modelEndpoint) => {
+const analyzeTextService = async (userId, content, modelEndpoint) => {
 
     const checkGPUserver = await GPUServerChecking(modelEndpoint)
     if(checkGPUserver == null) return { status : 1 }
@@ -93,27 +93,20 @@ const analyzeTextService = async (userId, analysisType, opAge_range, content, mo
 
     const saveChatData = {
         userId: userId,
-        opAge: opAge_range,
         chatName: defineChatName(speakerArray),
         uploadTime: new Date(),
         speakers: speakerArray,
         dataType: true, // 채팅 데이터와 음성 데이터 구분, 여기는 채팅 데이터 api임
-        analysisType: analysisType, // 예절 분석과 타입 분석 구분, ture - 예절 / false - 타입
     }
 
-    if(analysisType) { // 예절 분석
-        saveChatData.conversationType = null // 마찬가지
-        const detailList = calculateScore(fullChat)
-        saveChatData.detailList = detailList
-    } else { // 타입 분석
-        saveChatData.conversationType = classficationConversataionType(fullChat) // 대화 타입
-        saveChatData.detailList = null // 반대 값은 걍 null값 넣음
-    }
-
+    const detailList = calculateScore(fullChat)
+    saveChatData.detailList = detailList
+    
+    // DB 저장
     const saveFullData = await fullTextModelSave({fullChat: fullChat})
     saveChatData.fullChatId = saveFullData
     const saveLiteData = await textModelSave(saveChatData)
-    console.log(saveLiteData)
+
     return { status : 0, historyKey: saveLiteData._id.toString()}
 }
 
@@ -123,6 +116,8 @@ const textTypeClassificationKakao = (line) => { // 문자열 형식에 따라 �
     const picturePattern = "사진" // 일반 대화에서 사진 구분
     const emotePattern = "이모티콘" // 일반 대화에서 이모티콘 구분
     const datePattern = /^-{15}\s+(\d{4})년\s+(\d{1,2})월\s+(\d{1,2})일\s+(\S)요일\s+-{15}\r$/ // 날짜 변경 
+    const remittancePattern = "" // 송금 메세지 구분
+    const deletedPattern = "삭제된 메시지입니다." // 삭제된 메세지 구분
 
     let type = 0
     let result
@@ -254,16 +249,16 @@ const calculateScore = (fullChat) => { // 점수 계산 함수
         for(let [index, text] of splittedChat.chatList.entries()) { // 전체 채팅 리스트를 반복
             if(text.analyzeResult != null) {
                 totalText++ // null 값을 가진 대화는 점수 기준에 포함되어선 안됨
-                if(text.analyzeResult.isPolite == 0) { // 존댓말
+                if(text.analyzeResult.isPolite == 0) { // 반말 감지
                     notTextCount[0].push(index)
                 } 
-                if(text.analyzeResult.isMoral != 100) { // 문제 없음 제외
+                if(text.analyzeResult.isMoral != 100) { // 불쾌 발언 감지
                     notTextCount[1].push(index)
                 }
-                if(text.analyzeResult.isGrammar == 0) { // 문법
+                if(text.analyzeResult.isGrammar == 0) { // 틀린 문법 감지
                     notTextCount[2].push(index)
                 }
-                if(text.analyzeResult.isPositive != 100) { // 긍부정
+                if(text.analyzeResult.isPositive != 100) { // 부정 감지
                     notTextCount[3].push(index)
                 }
             }
@@ -273,11 +268,11 @@ const calculateScore = (fullChat) => { // 점수 계산 함수
         while(count < 4) {
             let detailScore = 0
             if(totalText != 0) { // 0으로 나누면 안됨
-                detailScore = Math.floor(((totalText - notTextCount[count].length) / totalText) * 25)
+                detailScore = Math.floor((notTextCount[count].length / totalText) * 100)
             }
             
             exampleText = null
-            if(detailScore < 25 && notTextCount[count].length >= 1) { // 2개 미만이면 무한 반복임
+            if(detailScore < 100 && notTextCount[count].length >= 1) { // 2개 미만이면 무한 반복임
                 exampleText = []
                 for(let i of notTextCount[count]) {
                     exampleText.push({
@@ -295,15 +290,16 @@ const calculateScore = (fullChat) => { // 점수 계산 함수
             detailInfo.push(detail)
             count++
         }
-        let totalScore = 0;
-        for(let detail of detailInfo) {
-            totalScore += detail.detailScore
-        }
+
         list.push({
             speaker: splittedChat.speaker,
-            detailInfo: detailInfo,
-            totalScore: totalScore
+            detailInfo: detailInfo.sort((a,b) => a.detailScore - b.detailScore) // 정렬해서 넣으면 타입 분류할 때 편함
         })
+    } // 여기 까지 비율 계산과 틀린 텍스트 추출
+    
+    
+    for(let speaker of list) {
+        speaker.conversationType = classficationConversataionType(speaker.detailInfo)
     }
 
     return list
@@ -316,69 +312,41 @@ const defineChatName = (speakerArray) => {
     return chatName
 }
 
-const classficationConversataionType = (fullChat) => { // 타입 분류 함수
-
-    const typeArray = [] // 일단은 점수 계산을 배껴서 씀, 나중에 모듈화 해야할 듯
-    for(let splittedChat of fullChat) { // 대화 대상이 2명
-        const list = []
-        let totalText = 0
-        const standardArray = ["polite", "moral", "grammar", "positive"] // 라벨
-        const notTextCount = [0, 0, 0, 0] // 순서대로 polite, moral, grammar, positive 카운트
-
-        for(let text of splittedChat.chatList) { // 전체 채팅 리스트를 반복
-            if(text.analyzeResult != null) {
-                totalText++ // null 값을 가진 대화는 점수 기준에 포함되어선 안됨
-                if(text.analyzeResult.isPolite == 0) { // 존댓말
-                    notTextCount[0]++
-                } 
-                if(text.analyzeResult.isMoral != 100) { // 문제 없음 제외
-                    notTextCount[1]++
-                }
-                if(text.analyzeResult.isGrammar == 0) { // 문법
-                    notTextCount[2]++
-                }
-                if(text.analyzeResult.isPositive != 100) { // 긍부정
-                    notTextCount[3]++
-                }
-            }
-        }
-
-        for(let [index, count] of notTextCount.entries()) {
-            detailScore = 0
-            if(totalText != 0) detailScore = Math.floor(((totalText - count) / totalText) * 25)
-            list.push({ label : standardArray[index], score: detailScore })
-        }
-
-        let conversationType = 8;
-
-        if (list.every(score => score.score >= 20)) { // 모든 점수가 20점 이상일 경우
-            conversationType = 0;
-        } else if (list.every(score => score.score <= 5)) { // 모든 점수가 5점 이하일 경우
-            conversationType = 7;
-        } else { // 나머지
-            // 높은 점수 2개씩 뽑아서 분기
-            const sortedList = [...list].sort((a, b) => b.score - a.score);
-            const highestScores = sortedList.slice(0, 2);
-
-            if ((highestScores[0].label == "positive" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "positive")) {
-                conversationType = 1; // 불감
-            } else if ((highestScores[0].label == "grammar" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "grammar")) {
-                conversationType = 2; // 불맞
-            } else if ((highestScores[0].label == "polite" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "polite")) {
-                conversationType = 3; // 불존
-            } else if ((highestScores[0].label == "grammar" && highestScores[1].label == "polite") || (highestScores[0].label == "polite" && highestScores[1].label == "grammar")) {
-                conversationType = 4; // 맞존
-            } else if ((highestScores[0].label == "positive" && highestScores[1].label == "grammar") || (highestScores[0].label == "polite" && highestScores[1].label == "grammar")) {
-                conversationType = 5; // 맞감
-            } else if ((highestScores[0].label == "positive" && highestScores[1].label == "polite") || (highestScores[0].label == "polite" && highestScores[1].label == "positive")) {
-                conversationType = 6; // 존감
-            }
-        }
-
-        typeArray.push({speaker: splittedChat.speaker, type: conversationType})
+const classficationConversataionType = (calculateScoreList) => { // 타입 분류 함수
+    const list = []
+    for(let i = 0; i < calculateScoreList.length; i++) {
+        list.push({
+            label : calculateScoreList[i].label,
+            detailScore : calculateScoreList[i].detailScore
+        })
     }
 
-    return typeArray
+    let conversationType = 8;
+
+    if (list.every(score => score.detailScore >= 20)) { // 모든 점수가 20점 이상일 경우
+        conversationType = 0;
+    } else if (list.every(score => score.detailScore <= 5)) { // 모든 점수가 5점 이하일 경우
+        conversationType = 7;
+    } else { // 나머지
+        // 높은 점수 2개씩 뽑아서 분기, 정렬은 점수 계산 쪽에서 이미 했음
+        const highestScores = list.slice(0, 2);
+
+        if ((highestScores[0].label == "positive" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "positive")) {
+            conversationType = 1; // 불감
+        } else if ((highestScores[0].label == "grammar" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "grammar")) {
+            conversationType = 2; // 불맞
+        } else if ((highestScores[0].label == "polite" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "polite")) {
+            conversationType = 3; // 불존
+        } else if ((highestScores[0].label == "grammar" && highestScores[1].label == "polite") || (highestScores[0].label == "polite" && highestScores[1].label == "grammar")) {
+            conversationType = 4; // 맞존
+        } else if ((highestScores[0].label == "positive" && highestScores[1].label == "grammar") || (highestScores[0].label == "polite" && highestScores[1].label == "grammar")) {
+            conversationType = 5; // 맞감
+        } else if ((highestScores[0].label == "positive" && highestScores[1].label == "polite") || (highestScores[0].label == "polite" && highestScores[1].label == "positive")) {
+            conversationType = 6; // 존감
+        }
+    }
+
+    return conversationType
 }
 
 const mergeList = (splittedList, analyzedList) => {

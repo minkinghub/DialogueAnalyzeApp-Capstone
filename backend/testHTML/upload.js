@@ -18,7 +18,7 @@ function uploadFile() {
             historyKey: "6637a2c4879a1a77270b4f4c"
         }
 
-        const token = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjMwY2RmZjk2MDc4NTg4OGM3MmIyNWUiLCJpYXQiOjE3MTUxNTAwMjUsImV4cCI6MTcxNjM1OTYyNX0.RcHsj3P-Ge2M7FcFQCWDPLrPoE0HAVoEB6z7w9Nhv-g';
+        const token = 'MTk5OTAzMDJtaW5qdWtpbmchQA==';
 
         axios.post('http://localhost:8080/api/upload/analyze/text', formData, {
             headers: {
