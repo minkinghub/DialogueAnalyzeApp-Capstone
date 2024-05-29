@@ -228,7 +228,7 @@ for i, sentence in enumerate(corrected_texts_results):
     #     emotion_result = 7 # 0~6 범위의 값을 가지므로 7로 고정
 
     # 감정 분석이 부정일 경우 세부 분석 시행
-    if emotion_result_TF == 0:
+    if emotion_result_TF == 0 or emotion_result_TF == 1:
         emotion_result_TF = sentence_predict(corrected_texts_results[i])
     else:
         emotion_result_TF = 100
