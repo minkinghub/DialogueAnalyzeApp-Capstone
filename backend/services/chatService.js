@@ -1,10 +1,15 @@
 const { textModelSave } = require('../models')
 const { fullTextModelSave } = require('../models')
 const axios = require('axios')
+const base64 = require('base-64');
 
-const analyzeTextService = async (userId, analysisType, opAge_range, content) => {
-    console.log("내용 해체 시작")
-    console.log(userId)
+const NGROK_NAME = process.env.NGROK_NAME
+const NGROK_PASSWORD = process.env.NGROK_PASSWORD
+
+const analyzeTextService = async (userId, content, modelEndpoint) => {
+
+    const checkGPUserver = await GPUServerChecking(modelEndpoint)
+    if(checkGPUserver == null) return { status : 1 }
 
     const contentArray = content.split("\n"); // 줄바꿈을 기준으로 내용 자르기
     
@@ -64,49 +69,45 @@ const analyzeTextService = async (userId, analysisType, opAge_range, content) =>
     }
 
     const speakerArray = extractSpeakerArray(saveArray)
-    if(speakerArray.length != 2) return null
+    if(speakerArray.length != 2) return { status : 2 }
 
     const splittedList = splitArrayBySpeaker(saveArray, speakerArray);
 
-    // try-catch 써야하냐? 이거 래핑되어있지 않나
-    const labelingData = await requestAnalyzeText(splittedList)
-    console.log(labelingData)
-    return { massage: "으에에 "}
+    const arrayToRequestAnalysis = extractAnalysisNeedText(splittedList)
+
+    const analyzedList = await requestAnalyzeText(arrayToRequestAnalysis, modelEndpoint)
+    if(analyzedList == null) return null
+
+    mergeList(splittedList, analyzedList)
 
     const fullChat = [
         {
             speaker: speakerArray[0],
-            chatList: labelingData[0]
+            chatList: splittedList[0]
         },
         {
             speaker: speakerArray[1],
-            chatList: labelingData[1]
+            chatList: splittedList[1]
         }
     ]
 
     const saveChatData = {
         userId: userId,
-        opAge: opAge_range,
         chatName: defineChatName(speakerArray),
         uploadTime: new Date(),
         speakers: speakerArray,
         dataType: true, // 채팅 데이터와 음성 데이터 구분, 여기는 채팅 데이터 api임
-        analysisType: analysisType, // 예절 분석과 타입 분석 구분, ture - 예절 / false - 타입
     }
 
-    if(analysisType) { // 타입 분석
-        saveChatData.conversationType = classficationConversataionType() // 대화 타입
-        saveChatData.detailList = null // 반대 값은 걍 null값 넣음
-    } else { // 예절 분석
-        saveChatData.conversationType = null // 마찬가지
-        const detailList = calculateScore(fullChat)
-        saveChatData.detailList = detailList
-    }
-
+    const detailList = calculateScore(fullChat)
+    saveChatData.detailList = detailList
+    
+    // DB 저장
     const saveFullData = await fullTextModelSave({fullChat: fullChat})
     saveChatData.fullChatId = saveFullData
     const saveLiteData = await textModelSave(saveChatData)
-    return { historyKey: saveLiteData._id.toString()}
+
+    return { status : 0, historyKey: saveLiteData._id.toString()}
 }
 
 const textTypeClassificationKakao = (line) => { // 문자열 형식에 따라 타입 분류 (카카오톡)
@@ -115,6 +116,8 @@ const textTypeClassificationKakao = (line) => { // 문자열 형식에 따라 �
     const picturePattern = "사진" // 일반 대화에서 사진 구분
     const emotePattern = "이모티콘" // 일반 대화에서 이모티콘 구분
     const datePattern = /^-{15}\s+(\d{4})년\s+(\d{1,2})월\s+(\d{1,2})일\s+(\S)요일\s+-{15}\r$/ // 날짜 변경 
+    const remittancePattern = "" // 송금 메세지 구분
+    const deletedPattern = "삭제된 메시지입니다." // 삭제된 메세지 구분
 
     let type = 0
     let result
@@ -161,57 +164,48 @@ const textTypeClassificationKakao = (line) => { // 문자열 형식에 따라 �
     return result; // 0 : 대화 지속, 1 : 날짜 변경, 2 : 파일, 3: 일반 대화 시작, 4: 사진, 5: 이모티콘
 }
 
-const extractExampleNumber = (numberRange) => { // 틀린 텍스트 범위 안에서 난수 뽑기 함수
-    let firstNumber = Math.floor(Math.random() * numberRange);
-    let secondNumber = Math.floor(Math.random() * numberRange);
-
-    // 숫자 안겹치게 함
-    while (firstNumber === secondNumber) {
-        secondNumber = Math.floor(Math.random() * numberRange);
+const extractAnalysisNeedText = (splittedList) => {
+    const arrayToRequestAnalysis = []
+    for(let array of splittedList) {
+        const textArrayTemp = []
+        for(let text of array) {
+            if(text.analysisNeed == true) {
+                textArrayTemp.push(text.chatContent)
+            }
+        }
+        arrayToRequestAnalysis.push(textArrayTemp)
     }
 
-    return { firstNumber, secondNumber }
+    return arrayToRequestAnalysis
 }
 
-const requestAnalyzeText = async (splittedList) => { // 분석 요청, 얘를 여따 써야하는지 모르겠네, 음성도 여기에 쓰긴 할텐데
+// const extractExampleNumber = (numberRange) => { // 틀린 텍스트 범위 안에서 난수 뽑기 함수
+//     let firstNumber = Math.floor(Math.random() * numberRange);
+//     let secondNumber = Math.floor(Math.random() * numberRange);
+
+//     // 숫자 안겹치게 함
+//     while (firstNumber === secondNumber) {
+//         secondNumber = Math.floor(Math.random() * numberRange);
+//     }
+
+//     return { firstNumber, secondNumber }
+// }
+
+const requestAnalyzeText = async (splittedList, modelEndpoint) => { // 분석 요청, 얘를 여따 써야하는지 모르겠네, 음성도 여기에 쓰긴 할텐데)
 
     try { // 이거 감싸야 하나, 최상위에서 에러를 잡긴 하는데, 추후 수정 필요
-        const response = await axios.post('http://127.0.0.1:5001/analysis', {
+        const response = await axios.post(`${modelEndpoint}/analysis`, {
             requestArray: splittedList
         }, {
-            'Content-Type':'application/json'
+            headers : {
+            'Content-Type':'application/json',
+            'Authorization': 'Basic ' + base64.encode(NGROK_NAME + ":" + NGROK_PASSWORD)
+            }
         })
-        return response.data
+        return response.data.data
     } catch (error) {
-        console.log(error)
         return null
     }
-       
-    
-    for(let j = 0; j < 2; j++) {
-        for(let i = 0; i < splittedList[j].length; i++) { // 일단 임시로 내가 랜덤으로 넣음
-            const Rnumber = Math.floor(Math.random() * 6);
-            let isPolite, isGrammar, isPositive
-            let isMoral = Rnumber
-    
-            if(Rnumber < 3) {
-                isPolite = true
-                isGrammar = true
-                isPositive = true
-            } else {
-                isPolite = false
-                isGrammar = false
-                isPositive = false
-            }
-    
-            splittedList[j][i].isPolite = isPolite
-            splittedList[j][i].isMoral = isMoral
-            splittedList[j][i].isGrammar = isGrammar
-            splittedList[j][i].isPositive = isPositive
-        }
-    }
-
-    return
 }
 
 const extractSpeakerArray = (saveArray) => {
@@ -234,7 +228,7 @@ const splitArrayBySpeaker = (saveArray, speakerArray) => {
     }
 
     for(let text of saveArray) {
-        for (const [index, speaker] of speakerArray.entries()) {
+        for (let [index, speaker] of speakerArray.entries()) {
             if(text.speaker == speaker) {
                 delete text.speaker
                 list[index].push(text)
@@ -247,71 +241,45 @@ const splitArrayBySpeaker = (saveArray, speakerArray) => {
 const calculateScore = (fullChat) => { // 점수 계산 함수
     const list = []
     for(let splittedChat of fullChat) { // 대화 대상이 2명
-        const totalText = splittedChat.chatList.length
+        let totalText = 0
         const standardArray = ["polite", "moral", "grammar", "positive"]
         const notTextCount = [[], [], [], []] // 인덱스만 저장해서 효율을 높이려고 함, 지금 배열 하나 하나 객체가 너무 큼
         const detailInfo = [] // 반환 배열
 
-        let textCount = 0;
-        for(let text of splittedChat.chatList) { // 전체 채팅 리스트를 반복
-            if(!text.isPolite) { // 존댓말
-                notTextCount[0].push(textCount)
-            } 
-            if(text.isMoral != 0) { // 문제 없음 제외
-                notTextCount[1].push(textCount)
+        for(let [index, text] of splittedChat.chatList.entries()) { // 전체 채팅 리스트를 반복
+            if(text.analyzeResult != null) {
+                totalText++ // null 값을 가진 대화는 점수 기준에 포함되어선 안됨
+                if(text.analyzeResult.isPolite == 0) { // 반말 감지
+                    notTextCount[0].push(index)
+                } 
+                if(text.analyzeResult.isMoral != 100) { // 불쾌 발언 감지
+                    notTextCount[1].push(index)
+                }
+                if(text.analyzeResult.isGrammar == 0) { // 틀린 문법 감지
+                    notTextCount[2].push(index)
+                }
+                if(text.analyzeResult.isPositive != 100) { // 부정 감지
+                    notTextCount[3].push(index)
+                }
             }
-            if(!text.isGrammar) { // 문법
-                notTextCount[2].push(textCount)
-            }
-            if(!text.isPositive) { // 긍부정
-                notTextCount[3].push(textCount)
-            }
-            textCount++;
         }
 
         let count = 0;
         while(count < 4) {
             let detailScore = 0
             if(totalText != 0) { // 0으로 나누면 안됨
-                detailScore = Math.floor(((totalText - notTextCount[count].length) / totalText) * 25)
+                detailScore = Math.floor((notTextCount[count].length / totalText) * 100)
             }
             
             exampleText = null
-            if(detailScore < 25 && notTextCount[count].length > 2) { // 2개 이하면 무한 반복임
+            if(detailScore < 100 && notTextCount[count].length >= 1) { // 2개 미만이면 무한 반복임
                 exampleText = []
-                const { firstNumber, secondNumber } = extractExampleNumber(notTextCount[count].length)
-                if(count == 0) { // 존댓말, 나도 이렇게 나누기 싫다... 왜 배열로 안했을까
+                for(let i of notTextCount[count]) {
                     exampleText.push({
-                        isStandard: splittedChat.chatList[notTextCount[count][firstNumber]].isPolite,
-                    })
-                    exampleText.push({
-                        isStandard: splittedChat.chatList[notTextCount[count][secondNumber]].isPolite,
-                    })
-                } else if (count == 1) { // 도덕성, 이게 만악의 근원인듯
-                    exampleText.push({
-                        isStandard: splittedChat.chatList[notTextCount[count][firstNumber]].isMoral,
-                    })
-                    exampleText.push({
-                        isStandard: splittedChat.chatList[notTextCount[count][secondNumber]].isMoral,
-                    })
-                } else if (count == 2) { // 문법
-                    exampleText.push({
-                        isStandard: splittedChat.chatList[notTextCount[count][firstNumber]].isGrammar,
-                    })
-                    exampleText.push({
-                        isStandard: splittedChat.chatList[notTextCount[count][secondNumber]].isGrammar,
-                    })
-                } else if (count == 3) { // 긍부정
-                    exampleText.push({
-                        isStandard: splittedChat.chatList[notTextCount[count][firstNumber]].isPositive,
-                    })
-                    exampleText.push({
-                        isStandard: splittedChat.chatList[notTextCount[count][secondNumber]].isPositive,
+                        isStandard : splittedChat.chatList[i].analyzeResult.isPolite,
+                        chatContent : splittedChat.chatList[i].chatContent
                     })
                 }
-
-                exampleText[0].chatContent = splittedChat.chatList[notTextCount[count][firstNumber]].chatContent
-                exampleText[1].chatContent = splittedChat.chatList[notTextCount[count][secondNumber]].chatContent
             }
 
             const detail = {
@@ -322,15 +290,16 @@ const calculateScore = (fullChat) => { // 점수 계산 함수
             detailInfo.push(detail)
             count++
         }
-        let totalScore = 0;
-        for(let detail of detailInfo) {
-            totalScore += detail.detailScore
-        }
+
         list.push({
             speaker: splittedChat.speaker,
-            detailInfo: detailInfo,
-            totalScore: totalScore
+            detailInfo: detailInfo.sort((a,b) => a.detailScore - b.detailScore) // 정렬해서 넣으면 타입 분류할 때 편함
         })
+    } // 여기 까지 비율 계산과 틀린 텍스트 추출
+    
+    
+    for(let speaker of list) {
+        speaker.conversationType = classficationConversataionType(speaker.detailInfo)
     }
 
     return list
@@ -343,15 +312,88 @@ const defineChatName = (speakerArray) => {
     return chatName
 }
 
-const classficationConversataionType = () => { // 타입 분류 함수
+const classficationConversataionType = (calculateScoreList) => { // 타입 분류 함수
+    const list = []
+    for(let i = 0; i < calculateScoreList.length; i++) {
+        list.push({
+            label : calculateScoreList[i].label,
+            detailScore : calculateScoreList[i].detailScore
+        })
+    }
 
-    const conversationType = Math.floor(Math.random() * 8)
+    let conversationType = 8;
+
+    if (list.every(score => score.detailScore >= 20)) { // 모든 점수가 20점 이상일 경우
+        conversationType = 0;
+    } else if (list.every(score => score.detailScore <= 5)) { // 모든 점수가 5점 이하일 경우
+        conversationType = 7;
+    } else { // 나머지
+        // 높은 점수 2개씩 뽑아서 분기, 정렬은 점수 계산 쪽에서 이미 했음
+        const highestScores = list.slice(0, 2);
+
+        if ((highestScores[0].label == "positive" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "positive")) {
+            conversationType = 1; // 불감
+        } else if ((highestScores[0].label == "grammar" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "grammar")) {
+            conversationType = 2; // 불맞
+        } else if ((highestScores[0].label == "polite" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "polite")) {
+            conversationType = 3; // 불존
+        } else if ((highestScores[0].label == "grammar" && highestScores[1].label == "polite") || (highestScores[0].label == "polite" && highestScores[1].label == "grammar")) {
+            conversationType = 4; // 맞존
+        } else if ((highestScores[0].label == "positive" && highestScores[1].label == "grammar") || (highestScores[0].label == "polite" && highestScores[1].label == "grammar")) {
+            conversationType = 5; // 맞감
+        } else if ((highestScores[0].label == "positive" && highestScores[1].label == "polite") || (highestScores[0].label == "polite" && highestScores[1].label == "positive")) {
+            conversationType = 6; // 존감
+        }
+    }
 
     return conversationType
 }
 
-const stringToBoolean = (str) => {
-    return str.toLowerCase() === 'true';
+const mergeList = (splittedList, analyzedList) => {
+
+    for(let i = 0; i < splittedList.length; i++) {
+        let count = 0;
+        for(let j = 0; j < splittedList[i].length; j++) {
+            if(splittedList[i][j].analysisNeed == false) {
+                splittedList[i][j] = {
+                    ...splittedList[i][j],
+                    analyzeResult : null
+                    // gramarChat: splittedList[i][j].chatContent,
+                    // isPositive: null,
+                    // isGrammar: null,
+                    // isMoral: null,
+                    // isPolite: null
+                }
+            } else {
+                splittedList[i][j] = {
+                    ...splittedList[i][j],
+                    analyzeResult: {
+                        gramarChat: analyzedList[i][count].gramarChat,
+                        isPolite: analyzedList[i][count].isPolite,
+                        isMoral: analyzedList[i][count].isMoral,
+                        isGrammar: analyzedList[i][count].isGrammar,
+                        isPositive: analyzedList[i][count].isPositive
+                    }
+                }
+                count++
+            }
+        }
+    }
+}
+
+const GPUServerChecking = async (modelEndpoint) => {
+    try { // 이거 감싸야 하나, 최상위에서 에러를 잡긴 하는데, 추후 수정 필요
+        const response = await axios.post(`${modelEndpoint}/`, {
+        }, {
+            headers : {
+            'Content-Type':'application/json',
+            'Authorization': 'Basic ' + base64.encode(NGROK_NAME + ":" + NGROK_PASSWORD)
+            }
+        })
+        return response.data
+    } catch (error) {
+        return null
+    }
 }
 
 module.exports = {
