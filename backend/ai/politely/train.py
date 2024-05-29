@@ -82,6 +82,9 @@ class FormalClassifier:
         trainer.train()
         trainer.evaluate()
 
+        self.model.save_pretrained("./saved_model")
+        self.tokenizer.save_pretrained("./saved_model")
+
 
 if __name__ == "__main__":
     model = FormalClassifier()

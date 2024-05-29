@@ -1,16 +1,29 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+const exampleTextSchema = new mongoose.Schema({
+    isStandard: Number,
+    chatContent: String,
+}, { _id: false });
+
+const detailInfoSchema = new mongoose.Schema({
+    label: String,
+    detailScore: Number,
+    exampleText: [exampleTextSchema]
+}, { _id: false });
+
+const detailListSchema = new mongoose.Schema({
+    speaker: String,
+    conversationType: Number,
+    detailInfo: [detailInfoSchema],
+}, { _id: false });
+
 const textSchema = new mongoose.Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User' },
     chatName: String,
-    opAge: Number,
     uploadTime: Date,
     dataType: Boolean,
-    analysisType: Boolean,
-    conversationType: Array,
-    totalScore: Number,
-    detailList: Array,
+    detailList: [detailListSchema],
     fullChatId: { type: Schema.Types.ObjectId, ref: 'fullChats' },
 }, { versionKey: false })
 

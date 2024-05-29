@@ -7,8 +7,8 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from utils import clean
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = AutoModelForSequenceClassification.from_pretrained('./saved_model/save').to(device)
-tokenizer = AutoTokenizer.from_pretrained('beomi/kcbert-base')
+model = AutoModelForSequenceClassification.from_pretrained('./saved_model').to(device)
+tokenizer = AutoTokenizer.from_pretrained('./saved_model')
 
 class FormalClassifier(object):
     def predict(self, text: str):

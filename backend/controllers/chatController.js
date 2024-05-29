@@ -13,10 +13,11 @@ const analyzeText = asyncWrap(async (req, res) => {
     // 보안 처리 필요, 일단 txt 내용 추출만 구현
     if (req.file && req.file.buffer) {
         const content = req.file.buffer.toString('utf-8')
-        const opAge_range = req.body.opAge_range
+        // const opAge_range = req.body.opAge_range // 필요 없어짐
         const userId = req.user.userId
-        const analysisType = (typeof req.body.analysisType == Boolean) ? req.body.analysisType : req.body.analysisType == "true" ? true : false
-        const result = await analyzeTextService(userId, analysisType, opAge_range, content, modelEndpoint)
+        // const analysisType = (typeof req.body.analysisType == Boolean) ? req.body.analysisType : req.body.analysisType == "true" ? true : false
+        // 예절 분석 / 타입 분석
+        const result = await analyzeTextService(userId, content, modelEndpoint)
         if(result.status != 0) {
             let errorMessage = ""
             switch(result.status) {

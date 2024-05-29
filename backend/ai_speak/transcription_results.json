@@ -1,0 +1,40 @@
+{
+    "results_without_filter": {
+        "utterances": [
+            {
+                "start_at": 1038,
+                "duration": 9615,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "아 음, 제가 음 집에 가려고 어 하는데 음 말이죠 음."
+            },
+            {
+                "start_at": 13058,
+                "duration": 7720,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "그 뭐냐, 부채가 제 눈앞에 떨어져서 음 에서 아팠어요."
+            }
+        ],
+        "verified": false
+    },
+    "results_with_filter": {
+        "utterances": [
+            {
+                "start_at": 1038,
+                "duration": 8245,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "제가 집에 가려고 하는데 말이죠."
+            },
+            {
+                "start_at": 13058,
+                "duration": 7720,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "뭐냐, 부채가 제 눈앞에 떨어져서 에서 아팠어요."
+            }
+        ],
+        "verified": false
+    }
+}
