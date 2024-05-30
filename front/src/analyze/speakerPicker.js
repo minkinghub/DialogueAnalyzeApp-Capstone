@@ -1,12 +1,12 @@
 import {Picker} from '@react-native-picker/picker';
-import analyzeStyle from './analyze.style';
 import {useTheme} from '../ThemeContext';
 import {useState} from 'react';
+import speakerPickerStyles from './stylesFile/speakerPicker.style';
 
 const useSpeakerPicker = speaker => {
   const [selpeaker, setSelpeaker] = useState(0);
   const {isDarkMode} = useTheme();
-  const styles = analyzeStyle(isDarkMode);
+  const styles = speakerPickerStyles(isDarkMode);
 
   const renderSpeakerPicker = () => {
     let key = 2111;
@@ -15,7 +15,8 @@ const useSpeakerPicker = speaker => {
         <Picker
           selectedValue={selpeaker}
           onValueChange={(itemValue, itemIndex) => setSelpeaker(itemIndex)}
-          style={styles.pickerStyle}>
+          style={styles.pickerStyle}
+          itemStyle={styles.itempickerStyle}>
           {speaker.map((item, index) => (
             <Picker.Item label={item} value={index} key={toString(key++)} />
           ))}

@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, SafeAreaView, TouchableOpacity, Alert, Modal, TextInput} from 'react-native';
+import {View, Text, SafeAreaView, TouchableOpacity, Alert, Modal, TextInput, ScrollView} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-import { GetToken } from '../component/tokenData/GetToken';
-import GenDateToServer from '../component/API/GenDateToServer';
+import { GetToken } from '../component/tokenData/GetToken'; //전역관리 토큰 호출
+import GenDateToServer from '../component/API/GenDateToServer'; //성별, 생년월일 서버연동
 import {useContext} from 'react';
 import ThemeContext from '../src/ThemeContext';
 import FileChoice from '../component/analyze/FileChoice'; //파일 선택 컴포넌트 경로
@@ -16,28 +16,29 @@ const Analyze = () => {
   const [birthYear, setBirthYear] = useState(''); //생년
   const [birthMonth, setBirthMonth] = useState(''); //생월
   const [birthDay, setBirthDay] = useState(''); //생일
+  const [dataType, setDataType] = useState(''); //데이터 타입 true/false
 
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [mannerFileSend, setMannerFileSend] = useState(false);
-  const [generalFileSend, setGeneralFileSend] = useState(false);
-  const [opAge_range, setOpAge_range] = useState('20');
+  const [selectedFile, setSelectedFile] = useState(null); //선택 파일
+  const [mannerFileSend, setMannerFileSend] = useState(false); //예절분석 동작
   const DarkMode = useContext(ThemeContext);
-  const isDarkMode = DarkMode.isDarkMode;
+  const isDarkMode = DarkMode.isDarkMode; //테마 설정
   const theme = isDarkMode ? darkTheme : lightTheme;
 
+  //isFirst 호출
   useEffect(() => {
     const checkIsFirst = async () => {
         const loadedTokens = await GetToken();
         if (loadedTokens) {
             setIsFirst(loadedTokens);
         } else {
-            console.log('No tokens were loaded'); // 토큰이 없는 경우 메시지 출력
+            console.log('No tokens were loaded');
         }
     };
 
     checkIsFirst();
   }, []);
 
+  //isFIrst: ture일 경우 모달 출력
   useEffect(() => {
     if(isFirst.isFirst === "true"){
       setModalVisible(true);
@@ -57,23 +58,24 @@ const Analyze = () => {
     else Alert.alert("안내", "생년월일을 입력해 주세요.");
   };
 
+  const resetFile = () => {
+    setSelectedFile(null);
+    setDataType('');
+  }
+
+  //선택 파일, 분석 동작 초기화
   const resetMannerFileSend = () => {
     setMannerFileSend(false);
-    setSelectedFile(null);
-  }
-  const resetGeneralFileSend = () => {
-    setGeneralFileSend(false);
-    setSelectedFile(null);
   }
 
-  //파일 선택
-  const fileSelected = file => {
-    setMannerFileSend(false);
-    setSelectedFile(file[0]);
+  //선택 파일 저장
+  const fileSelected = res => {
+    setSelectedFile(res[0]);
+    setDataType(res[1]);
   };
 
-  //예절분석 버튼
-  const handleMannerAnalysis = (selectedFile, opAge_range) => {
+  //대화분석 버튼
+  const handleMannerAnalysis = (selectedFile) => {
     if (selectedFile === null) {
       Alert.alert('안내', '파일이 선택되지 않았습니다.');
     } else {
@@ -81,19 +83,9 @@ const Analyze = () => {
     }
   };
 
-  //타입분석 버튼
-  const handleGeneralAnalysis = (selectedFile, opAge_range) => {
-    if (selectedFile === null) {
-      Alert.alert('안내', '파일이 선택되지 않았습니다.');
-    } else {
-      setGeneralFileSend(true);
-    }
-  };
-
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-      {mannerFileSend && <FileSendServer selectedFile={selectedFile} opAge_range={opAge_range} analysisType={true} onCompleted={resetMannerFileSend}/>}
-      {generalFileSend && <FileSendServer selectedFile={selectedFile} opAge_range={opAge_range} analysisType={false} onCompleted={resetGeneralFileSend}/>}
+      {mannerFileSend && <FileSendServer selectedFile={selectedFile} onCompleted={resetMannerFileSend} resetFile={resetFile}/>}
 
       <Modal
           transparent={true} // 배경을 투명하게 할 것인지
@@ -203,58 +195,29 @@ const Analyze = () => {
           alignItems: 'center',
           backgroundColor: theme.backgroundColor,
         }}>
+          
+        <FileChoice onFileSelected={fileSelected} />
+
         <View
           style={{
             justifyContent: 'center',
             alignItems: 'center',
-            height: '10%',
-            width: '90%',
-            marginTop: 10,
-            borderRadius: 10,
-            borderWidth: 1,
-            borderColor: theme.borderColor,
+            height: '70%',
+            width: '100%',
           }}>
-          <Text style={{color: theme.textColor}}>
-            {selectedFile
-              ? '선택한 파일 : ' + selectedFile.name
-              : '선택한 파일 없음'}
-          </Text>
-        </View>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            height: '5%',
-            width: '90%',
-          }}>
-          <Text style={{fontSize: 15, color: theme.textColor}}>
-            상대방 연령 선택{' '}
-          </Text>
           <View
             style={{
-              borderWidth: 1,
-              borderRadius: 5,
-              borderColor: theme.borderColor,
-              height: 30,
-              width: 120,
-              justifyContent: 'center',
-            }}>
-            <Picker
-              selectedValue={opAge_range}
-              onValueChange={(itemValue, itemIndex) =>
-                setOpAge_range(itemValue)
-              }
-              style={{
-                height: '100%',
-                width: '100%',
-                color: theme.textColor,
-              }}>
-              <Picker.Item label="20대" value="20" />
-              <Picker.Item label="30대" value="30" />
-              <Picker.Item label="40대" value="40" />
-              <Picker.Item label="50대 이상" value="50" />
-            </Picker>
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: theme.backgroundColor,
+                width: '80%',
+                height: '90%',
+                borderRadius: 15,
+                borderWidth: 2,
+                borderColor: theme.borderColor
+            }}
+        >
+            <Text style={{color: theme.textColor, fontSize: 15}}>내용 미리보기</Text>
           </View>
         </View>
 
@@ -262,45 +225,23 @@ const Analyze = () => {
           style={{
             justifyContent: 'center',
             alignItems: 'center',
-            height: '60%',
-            width: '100%',
-          }}>
-          <FileChoice onFileSelected={fileSelected} />
-        </View>
-
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '25%',
+            height: '20%',
             width: '100%',
           }}>
 
           <TouchableOpacity
             style={{
               backgroundColor: '#DDA0DD',
+              justifyContent: 'center',
               alignItems: 'center',
               padding: 10,
+              height: '50%',
               width: '80%',
               borderRadius: 10,
               borderWidth: 1,
             }}
-            onPress={() => handleMannerAnalysis(selectedFile, opAge_range)}>
-            <Text style={{color: 'white', fontSize: 20}}>예절 분석</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={{
-              backgroundColor: '#DDA0DD',
-              alignItems: 'center',
-              padding: 10,
-              width: '80%',
-              margin: 10,
-              borderRadius: 10,
-              borderWidth: 1,
-            }}
-            onPress={() => handleGeneralAnalysis(selectedFile, opAge_range)}>
-            <Text style={{color: 'white', fontSize: 20}}>타입 분석</Text>
+            onPress={() => handleMannerAnalysis(selectedFile)}>
+            <Text style={{color: 'white', fontSize: 22}}>대화 분석</Text>
           </TouchableOpacity>
         </View>
       </View>

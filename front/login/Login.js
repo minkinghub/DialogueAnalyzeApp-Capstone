@@ -8,7 +8,11 @@ import SendServer from '../component/API/login/SendServer ' //유저정보 전�
 
 const Login = () => {
   const navigation = useNavigation(); //네비게이션 객체
-  
+
+  // const handleLogin = () => {
+  //   console.log("Login");
+  // };
+
   //카카오 로그인 버튼
   const kakaoLogin = async () => {
 
@@ -31,13 +35,18 @@ const Login = () => {
             console.log(`Login Fail(code:${error.code})`, error.message);
         }
     }
-};
+  };
   
 
   return (
       <SafeAreaView style={{flex: 1, backgroundColor: '#fff',}}>
         <View style={{justifyContent: 'center', alignItems: 'center', height: '10%', backgroundColor: '#f2cd79'}}>
-          <Text style={{fontSize: 30}}>LOGO</Text>
+          <Text style={{
+            fontSize: 30,
+            fontWeight: 'bold',
+            textAlign: 'center',
+            letterSpacing: 2,
+          }}>대화성향 분석 앱</Text>
         </View>
         
         <View style={{justifyContent: 'center', alignItems: 'center', height: '90%', backgroundColor: '#f2cd79'}}>
@@ -45,7 +54,7 @@ const Login = () => {
           <View style={{
             justifyContent: 'center', 
             alignItems: 'center', 
-            height: '90%', 
+            height: '95%', 
             width:'90%', 
             backgroundColor: 'white', 
             borderRadius: 20,
@@ -55,6 +64,12 @@ const Login = () => {
             <TouchableOpacity onPress={kakaoLogin}>
               <Image source={require('../assets/images/kakao_login_medium_wide.png')}/>
             </TouchableOpacity>
+            {/* <TouchableOpacity style={{marginTop: 10}} onPress={handleLogin}>
+              <Image style={{width: 300, height: 50, resizeMode: 'contain'}} source={require('../assets/images/naver_login.png')}/>
+            </TouchableOpacity>
+            <TouchableOpacity style={{marginTop: 10}} onPress={handleLogin}>
+              <Image style={{width: 300, height: 50, resizeMode: 'contain'}} source={require('../assets/images/google_signin.png')}/>
+            </TouchableOpacity> */}
           </View>
             
         </View>
