@@ -1,4 +1,6 @@
-import { View, Text,  } from "react-native";
+import {useEffect} from 'react';
+import {View, Text} from 'react-native';
+import {loadList} from '../analyze/loadData';
 
 /* 분석 결과 보여주는 페이지
 타입분석, 예절 분석결과 보여줘야함
@@ -8,11 +10,19 @@ analyze폴더에 타입분석, 예절분석에 맞는 페이지로 이동 후 �
 */
 
 const History = () => {
-    return (
-        <View>
-            <Text>분석 결과</Text>
-        </View>
-    );
-}
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await loadList();
+      console.log('data:', data);
+    };
+    fetchData();
+  }, []);
+
+  return (
+    <View>
+      <Text>분석 결과</Text>
+    </View>
+  );
+};
 
 export default History;
