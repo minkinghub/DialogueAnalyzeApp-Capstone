@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { TouchableOpacity, Text, Alert, ScrollView } from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
+import RNFS from 'react-native-fs';
 import {useContext} from 'react';
 import ThemeContext from '../../src/ThemeContext';
 import { darkTheme, lightTheme } from '../../src/myPage/theme/theme.styles';
@@ -21,11 +22,22 @@ const FileChoice = ( {onFileSelected} ) => {
 
             //파일 검사
             const isTxtFile = res[0].type === 'text/plain' || res[0].name.endsWith('.txt');
-            const isAudioFile = res[0].type.startsWith('audio/') || res[0].name.endsWith('.mp3') || res[0].name.endsWith('.wav');
+            const isAudioFile = res[0].type.startsWith('audio/') || 
+                                res[0].name.endsWith('.mp3') || 
+                                res[0].name.endsWith('.mp4') || 
+                                res[0].name.endsWith('.wav') || 
+                                res[0].name.endsWith('.m4a') || 
+                                res[0].name.endsWith('.amr') || 
+                                res[0].name.endsWith('.flac');
 
             if (isTxtFile) {
                 // 텍스트 파일이 선택 되었을 경우
                 res[1] = true; //dataType = true
+
+                const filePath = res[0].uri;
+                const fileContent = await RNFS.readFile(filePath, 'utf8');
+                res[2] = fileContent;
+
                 onFileSelected(res);
             } else if (isAudioFile) {
                 // 음성 파일이 선택 되었을 경우
@@ -51,7 +63,7 @@ const FileChoice = ( {onFileSelected} ) => {
             alignItems: 'center',
             height: '10%',
             width: '90%',
-            marginTop: 10,
+            marginTop: 5,
             borderRadius: 10,
             borderWidth: 1,
             borderStyle: 'dashed',
@@ -59,17 +71,12 @@ const FileChoice = ( {onFileSelected} ) => {
             padding: 10,
             }} onPress={fileChoice}
         >
-            <ScrollView
-                horizontal
-                contentContainerStyle={{ alignItems: 'center' }}
-                showsHorizontalScrollIndicator={true}
-            >
-                <Text style={{color: theme.textColor, fontSize: 17}}>
-                {selectedFile
-                    ? '선택한 파일 : ' + selectedFile[0].name
-                    : '선택한 파일 없음'}
-                </Text>
-            </ScrollView>
+            <Text style={{color: theme.textColor, fontSize: 17}}>
+            {selectedFile
+                ? '선택한 파일 : ' + selectedFile[0].name
+                : '선택한 파일 없음'}
+            </Text>
+            
         </TouchableOpacity>
     );
 };

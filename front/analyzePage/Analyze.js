@@ -17,6 +17,7 @@ const Analyze = () => {
   const [birthMonth, setBirthMonth] = useState(''); //생월
   const [birthDay, setBirthDay] = useState(''); //생일
   const [dataType, setDataType] = useState(''); //데이터 타입 true/false
+  const [fileContent,setFileContent] = useState(''); //파일 내용
 
   const [selectedFile, setSelectedFile] = useState(null); //선택 파일
   const [mannerFileSend, setMannerFileSend] = useState(false); //예절분석 동작
@@ -61,6 +62,7 @@ const Analyze = () => {
   const resetFile = () => {
     setSelectedFile(null);
     setDataType('');
+    setFileContent('');
   }
 
   //선택 파일, 분석 동작 초기화
@@ -72,6 +74,8 @@ const Analyze = () => {
   const fileSelected = res => {
     setSelectedFile(res[0]);
     setDataType(res[1]);
+    setFileContent(res[2]);
+    // console.log("sss",res[0], res[1], res[2]);
   };
 
   //대화분석 버튼
@@ -85,7 +89,7 @@ const Analyze = () => {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-      {mannerFileSend && <FileSendServer selectedFile={selectedFile} onCompleted={resetMannerFileSend} resetFile={resetFile}/>}
+      {mannerFileSend && <FileSendServer selectedFile={selectedFile} dataType={dataType} onCompleted={resetMannerFileSend} resetFile={resetFile}/>}
 
       <Modal
           transparent={true} // 배경을 투명하게 할 것인지
@@ -124,7 +128,7 @@ const Analyze = () => {
                   </TouchableOpacity>
               </View>
               
-              <View style={{ flexDirection: 'row', marginBottom: 20,justifyContent: 'center', alignItems: 'center' }}>
+              <View style={{ flexDirection: 'row', marginBottom: 20, justifyContent: 'center', alignItems: 'center' }}>
                   <TextInput
                       style={{
                           height: 40,
@@ -189,12 +193,55 @@ const Analyze = () => {
           </View>
       </Modal>
 
+
       <View
         style={{
           justifyContent: 'center',
           alignItems: 'center',
           backgroundColor: theme.backgroundColor,
-        }}>
+        }}
+      >
+        <View style={{ flexDirection: 'row', height: '5%', alignItems: 'flex-start', width: '90%'}}>
+          
+          <View
+            style={{
+              height: '60%',
+              width: '20%',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: 10,
+              backgroundColor: dataType === true ? '#E6E6FA' : '#FFFFFF',
+              borderTopLeftRadius: 20,
+              borderBottomLeftRadius: 20,
+              borderWidth: 1,
+              borderColor: theme.borderColor,
+              alignSelf: 'flex-start'
+            }}
+          >
+            <Text style={{ fontSize: 15, color: dataType === true ? '#4B0082' : '#FFFFFF' }}>
+              텍스트
+            </Text>
+          </View>
+          <View
+            style={{
+              height: '60%',
+              width: '20%',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: 10,
+              backgroundColor: dataType === false ? '#E6E6FA' : '#FFFFFF',
+              borderTopRightRadius: 20,
+              borderBottomRightRadius: 20,
+              borderWidth: 1,
+              borderColor: theme.borderColor,
+              alignSelf: 'flex-start'
+            }}
+          >
+            <Text style={{ fontSize: 15, color: dataType === false ? '#4B0082' : '#FFFFFF' }}>
+              음성
+            </Text>
+          </View>
+        </View>
           
         <FileChoice onFileSelected={fileSelected} />
 
@@ -202,22 +249,35 @@ const Analyze = () => {
           style={{
             justifyContent: 'center',
             alignItems: 'center',
-            height: '70%',
+            height: '65%',
             width: '100%',
           }}>
+          <Text style={{color: theme.textColor, marginTop: 10}}>미리보기</Text>
           <View
             style={{
                 justifyContent: 'center',
                 alignItems: 'center',
                 backgroundColor: theme.backgroundColor,
                 width: '80%',
-                height: '90%',
+                height: '95%',
                 borderRadius: 15,
                 borderWidth: 2,
+                padding: 10,
                 borderColor: theme.borderColor
             }}
-        >
-            <Text style={{color: theme.textColor, fontSize: 15}}>내용 미리보기</Text>
+          >
+            <ScrollView
+              contentContainerStyle={{ 
+                flexGrow: 1, 
+                justifyContent: 'center', 
+                alignItems: 'center' 
+              }} 
+              showsHorizontalScrollIndicator={true}
+            >
+              <Text style={{color: theme.textColor, fontSize: 15}}>
+                {dataType === false ? "음성 파일은 미리보기가 불가능 합니다." : (fileContent ? fileContent : "텍스트 파일이 선택되지 않았습니다.")}
+              </Text>
+            </ScrollView>
           </View>
         </View>
 
@@ -231,7 +291,7 @@ const Analyze = () => {
 
           <TouchableOpacity
             style={{
-              backgroundColor: '#DDA0DD',
+              backgroundColor: '#E6E6FA',
               justifyContent: 'center',
               alignItems: 'center',
               padding: 10,
@@ -241,7 +301,7 @@ const Analyze = () => {
               borderWidth: 1,
             }}
             onPress={() => handleMannerAnalysis(selectedFile)}>
-            <Text style={{color: 'white', fontSize: 22}}>대화 분석</Text>
+            <Text style={{color: '#4B0082', fontSize: 22}}>대화 분석</Text>
           </TouchableOpacity>
         </View>
       </View>
