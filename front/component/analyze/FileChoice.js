@@ -74,7 +74,7 @@ const FileChoice = ( {onFileSelected} ) => {
             <Text style={{color: theme.textColor, fontSize: 17}}>
             {selectedFile
                 ? '선택한 파일 : ' + selectedFile[0].name
-                : '선택한 파일 없음'}
+                : '파일 선택 [터치]'}
             </Text>
             
         </TouchableOpacity>

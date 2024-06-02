@@ -275,7 +275,7 @@ const Analyze = () => {
               showsHorizontalScrollIndicator={true}
             >
               <Text style={{color: theme.textColor, fontSize: 15}}>
-                {dataType === false ? "음성 파일은 미리보기가 불가능 합니다." : (fileContent ? fileContent : "텍스트 파일이 선택되지 않았습니다.")}
+                {dataType === false ? "음성 파일은 미리보기가 불가능 합니다." : (fileContent ? fileContent : "파일이 선택되지 않았습니다.")}
               </Text>
             </ScrollView>
           </View>

@@ -40,7 +40,7 @@ const Login = () => {
 
   return (
       <SafeAreaView style={{flex: 1, backgroundColor: '#fff',}}>
-        <View style={{justifyContent: 'center', alignItems: 'center', height: '10%', backgroundColor: '#f2cd79'}}>
+        <View style={{justifyContent: 'center', alignItems: 'center', height: '20%', backgroundColor: '#FFFDD0'}}>
           <Text style={{
             fontSize: 30,
             fontWeight: 'bold',
@@ -49,12 +49,13 @@ const Login = () => {
           }}>대화성향 분석 앱</Text>
         </View>
         
-        <View style={{justifyContent: 'center', alignItems: 'center', height: '90%', backgroundColor: '#f2cd79'}}>
+        <View style={{justifyContent: 'center', alignItems: 'center', height: '80%', backgroundColor: '#FFFDD0'}}>
 
           <View style={{
             justifyContent: 'center', 
-            alignItems: 'center', 
-            height: '95%', 
+            alignItems: 'center',
+            borderWidth: 1,
+            height: '90%', 
             width:'90%', 
             backgroundColor: 'white', 
             borderRadius: 20,
@@ -64,12 +65,6 @@ const Login = () => {
             <TouchableOpacity onPress={kakaoLogin}>
               <Image source={require('../assets/images/kakao_login_medium_wide.png')}/>
             </TouchableOpacity>
-            {/* <TouchableOpacity style={{marginTop: 10}} onPress={handleLogin}>
-              <Image style={{width: 300, height: 50, resizeMode: 'contain'}} source={require('../assets/images/naver_login.png')}/>
-            </TouchableOpacity>
-            <TouchableOpacity style={{marginTop: 10}} onPress={handleLogin}>
-              <Image style={{width: 300, height: 50, resizeMode: 'contain'}} source={require('../assets/images/google_signin.png')}/>
-            </TouchableOpacity> */}
           </View>
             
         </View>
