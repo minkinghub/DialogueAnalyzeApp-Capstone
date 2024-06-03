@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, SafeAreaView, TouchableOpacity, Alert, Modal, TextInput, ScrollView} from 'react-native';
-import {Picker} from '@react-native-picker/picker';
 import { GetToken } from '../component/tokenData/GetToken'; //전역관리 토큰 호출
 import GenDateToServer from '../component/API/GenDateToServer'; //성별, 생년월일 서버연동
 import {useContext} from 'react';
@@ -16,11 +15,11 @@ const Analyze = () => {
   const [birthYear, setBirthYear] = useState(''); //생년
   const [birthMonth, setBirthMonth] = useState(''); //생월
   const [birthDay, setBirthDay] = useState(''); //생일
+  const [dataType, setDataType] = useState(''); //데이터 타입 true/false
+  const [fileContent,setFileContent] = useState(''); //파일 내용
 
   const [selectedFile, setSelectedFile] = useState(null); //선택 파일
   const [mannerFileSend, setMannerFileSend] = useState(false); //예절분석 동작
-  const [generalFileSend, setGeneralFileSend] = useState(false); //타입분석 동작
-  const [opAge_range, setOpAge_range] = useState('20'); //상대방 나이 지정
   const DarkMode = useContext(ThemeContext);
   const isDarkMode = DarkMode.isDarkMode; //테마 설정
   const theme = isDarkMode ? darkTheme : lightTheme;
@@ -61,25 +60,25 @@ const Analyze = () => {
 
   const resetFile = () => {
     setSelectedFile(null);
+    setDataType('');
+    setFileContent('');
   }
 
   //선택 파일, 분석 동작 초기화
   const resetMannerFileSend = () => {
     setMannerFileSend(false);
-    // setSelectedFile(null);
-  }
-  const resetGeneralFileSend = () => {
-    setGeneralFileSend(false);
-    // setSelectedFile(null);
   }
 
   //선택 파일 저장
-  const fileSelected = file => {
-    setSelectedFile(file[0]);
+  const fileSelected = res => {
+    setSelectedFile(res[0]);
+    setDataType(res[1]);
+    setFileContent(res[2]);
+    // console.log("sss",res[0], res[1], res[2]);
   };
 
-  //예절분석 버튼
-  const handleMannerAnalysis = (selectedFile, opAge_range) => {
+  //대화분석 버튼
+  const handleMannerAnalysis = (selectedFile) => {
     if (selectedFile === null) {
       Alert.alert('안내', '파일이 선택되지 않았습니다.');
     } else {
@@ -87,19 +86,9 @@ const Analyze = () => {
     }
   };
 
-  //타입분석 버튼
-  const handleGeneralAnalysis = (selectedFile, opAge_range) => {
-    if (selectedFile === null) {
-      Alert.alert('안내', '파일이 선택되지 않았습니다.');
-    } else {
-      setGeneralFileSend(true);
-    }
-  };
-
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-      {mannerFileSend && <FileSendServer selectedFile={selectedFile} opAge_range={opAge_range} analysisType={true} onCompleted={resetMannerFileSend} resetFile={resetFile}/>}
-      {generalFileSend && <FileSendServer selectedFile={selectedFile} opAge_range={opAge_range} analysisType={false} onCompleted={resetGeneralFileSend} resetFile={resetFile}/>}
+      {mannerFileSend && <FileSendServer selectedFile={selectedFile} dataType={dataType} onCompleted={resetMannerFileSend} resetFile={resetFile}/>}
 
       <Modal
           transparent={true} // 배경을 투명하게 할 것인지
@@ -138,7 +127,7 @@ const Analyze = () => {
                   </TouchableOpacity>
               </View>
               
-              <View style={{ flexDirection: 'row', marginBottom: 20,justifyContent: 'center', alignItems: 'center' }}>
+              <View style={{ flexDirection: 'row', marginBottom: 20, justifyContent: 'center', alignItems: 'center' }}>
                   <TextInput
                       style={{
                           height: 40,
@@ -203,72 +192,91 @@ const Analyze = () => {
           </View>
       </Modal>
 
+
       <View
         style={{
           justifyContent: 'center',
           alignItems: 'center',
           backgroundColor: theme.backgroundColor,
-        }}>
+        }}
+      >
+        <View style={{ flexDirection: 'row', height: '5%', alignItems: 'flex-start', width: '90%'}}>
           
+          <View
+            style={{
+              height: '60%',
+              width: '20%',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: 10,
+              backgroundColor: dataType === true ? '#E6E6FA' : '#FFFFFF',
+              borderTopLeftRadius: 20,
+              borderBottomLeftRadius: 20,
+              borderWidth: 1,
+              borderColor: theme.borderColor,
+              alignSelf: 'flex-start'
+            }}
+          >
+            <Text style={{ fontSize: 15, color: dataType === true ? '#4B0082' : '#FFFFFF' }}>
+              텍스트
+            </Text>
+          </View>
+          <View
+            style={{
+              height: '60%',
+              width: '20%',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: 10,
+              backgroundColor: dataType === false ? '#E6E6FA' : '#FFFFFF',
+              borderTopRightRadius: 20,
+              borderBottomRightRadius: 20,
+              borderWidth: 1,
+              borderColor: theme.borderColor,
+              alignSelf: 'flex-start'
+            }}
+          >
+            <Text style={{ fontSize: 15, color: dataType === false ? '#4B0082' : '#FFFFFF' }}>
+              음성
+            </Text>
+          </View>
+        </View>
+          
+        <FileChoice onFileSelected={fileSelected} />
+
         <View
           style={{
             justifyContent: 'center',
             alignItems: 'center',
-            height: '10%',
-            width: '90%',
-            marginTop: 10,
-            borderRadius: 10,
-            borderWidth: 1,
-            borderColor: theme.borderColor,
-            padding: 10,
+            height: '65%',
+            width: '100%',
           }}>
-            <ScrollView
-              horizontal
-              contentContainerStyle={{ alignItems: 'center' }}
-              showsHorizontalScrollIndicator={true}
-            >
-              <Text style={{color: theme.textColor, fontSize: 17}}>
-                {selectedFile
-                  ? '선택한 파일 : ' + selectedFile.name
-                  : '선택한 파일 없음'}
-              </Text>
-            </ScrollView>
-        </View>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            height: '5%',
-            width: '90%',
-          }}>
-          <Text style={{fontSize: 15, color: theme.textColor}}>
-            상대방 연령 선택{' '}
-          </Text>
+          <Text style={{color: theme.textColor, marginTop: 10}}>미리보기</Text>
           <View
             style={{
-              borderWidth: 1,
-              borderRadius: 5,
-              borderColor: theme.borderColor,
-              height: 30,
-              width: 120,
-              justifyContent: 'center',
-            }}>
-            <Picker
-              selectedValue={opAge_range}
-              onValueChange={(itemValue, itemIndex) =>
-                setOpAge_range(itemValue)
-              }
-              style={{
-                height: '100%',
-                width: '100%',
-                color: theme.textColor,
-              }}>
-              <Picker.Item label="20대" value="20" />
-              <Picker.Item label="30대" value="30" />
-              <Picker.Item label="40대" value="40" />
-              <Picker.Item label="50대 이상" value="50" />
-            </Picker>
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: theme.backgroundColor,
+                width: '80%',
+                height: '95%',
+                borderRadius: 15,
+                borderWidth: 2,
+                padding: 10,
+                borderColor: theme.borderColor
+            }}
+          >
+            <ScrollView
+              contentContainerStyle={{ 
+                flexGrow: 1, 
+                justifyContent: 'center', 
+                alignItems: 'center' 
+              }} 
+              showsHorizontalScrollIndicator={true}
+            >
+              <Text style={{color: theme.textColor, fontSize: 15}}>
+                {dataType === false ? "음성 파일은 미리보기가 불가능 합니다." : (fileContent ? fileContent : "파일이 선택되지 않았습니다.")}
+              </Text>
+            </ScrollView>
           </View>
         </View>
 
@@ -276,45 +284,23 @@ const Analyze = () => {
           style={{
             justifyContent: 'center',
             alignItems: 'center',
-            height: '60%',
-            width: '100%',
-          }}>
-          <FileChoice onFileSelected={fileSelected} />
-        </View>
-
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '25%',
+            height: '20%',
             width: '100%',
           }}>
 
           <TouchableOpacity
             style={{
-              backgroundColor: '#DDA0DD',
+              backgroundColor: '#E6E6FA',
+              justifyContent: 'center',
               alignItems: 'center',
               padding: 10,
+              height: '50%',
               width: '80%',
               borderRadius: 10,
               borderWidth: 1,
             }}
-            onPress={() => handleMannerAnalysis(selectedFile, opAge_range)}>
-            <Text style={{color: 'white', fontSize: 20}}>예절 분석</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={{
-              backgroundColor: '#DDA0DD',
-              alignItems: 'center',
-              padding: 10,
-              width: '80%',
-              margin: 10,
-              borderRadius: 10,
-              borderWidth: 1,
-            }}
-            onPress={() => handleGeneralAnalysis(selectedFile, opAge_range)}>
-            <Text style={{color: 'white', fontSize: 20}}>타입 분석</Text>
+            onPress={() => handleMannerAnalysis(selectedFile)}>
+            <Text style={{color: '#4B0082', fontSize: 22}}>대화 분석</Text>
           </TouchableOpacity>
         </View>
       </View>
