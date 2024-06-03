@@ -43,14 +43,13 @@ const historyStyle = isDarkMode => {
     itemTitle: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      fontSize: 16,
-      color: theme.textColor,
       alignItems: 'center',
     },
     itemTitleName: {
-      fontSize: 20,
-      fontWeight: 'bold',
+      fontSize: 18,
+
       color: theme.textColor,
+      width: '68%',
     },
     itemTitleTypeView: {
       backgroundColor: theme.backgroundColor,
@@ -58,6 +57,8 @@ const historyStyle = isDarkMode => {
       borderWidth: 2,
       borderRadius: 5,
       padding: 5,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     itemTitleType: {
       fontSize: 16,
