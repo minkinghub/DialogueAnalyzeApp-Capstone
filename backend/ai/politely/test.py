@@ -1,7 +1,7 @@
 import pandas as pd
-import transformers
 import torch
-from pathlib import Path
+import matplotlib.pyplot as plt
+import sklearn.metrics as accuracy_score
 
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from utils import clean
@@ -44,8 +44,8 @@ class FormalClassifier(object):
 
 if __name__ == "__main__":
     # CSV 파일에서 'corrected' 열의 무작위 20개 문장을 선택
-    df = pd.read_csv('./data/typos_test.csv')
-    random_sentences = df['corrected'].sample(n=20)
+    df = pd.read_csv('./data/test.tsv', sep='\t')
+    random_sentences = df['sentence'].sample(n=20)
 
     classifier = FormalClassifier()
     

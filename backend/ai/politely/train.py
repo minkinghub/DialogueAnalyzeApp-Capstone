@@ -1,5 +1,3 @@
-# 존댓말 반말
-
 from transformers import TrainingArguments
 from transformers import Trainer
 from datasets import load_metric
@@ -7,9 +5,11 @@ import numpy as np
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from datasets.dataset_dict import DatasetDict
 from datasets import Dataset
+from transformers.trainer_callback import TrainerCallback
 
 import torch
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from typing import Final
 from pathlib import Path
@@ -21,7 +21,28 @@ print(device)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+class CustomTrainerCallback(TrainerCallback):
+    def __init__(self, formal_classifier):
+        self.formal_classifier = formal_classifier
 
+    def on_train_begin(self, args, state, control, **kwargs):
+        self.formal_classifier.train_loss_values = []
+        self.formal_classifier.train_acc_values = []
+        self.formal_classifier.val_loss_values = []
+        self.formal_classifier.val_acc_values = []
+        return control
+
+    def on_log(self, args, state, control, **kwargs):
+        logs = kwargs.get("logs", {})
+        if "loss" in logs:
+            self.formal_classifier.train_loss_values.append(logs["loss"])
+        if "eval_loss" in logs:
+            self.formal_classifier.val_loss_values.append(logs["eval_loss"])
+        if "eval_accuracy" in logs:
+            self.formal_classifier.val_acc_values.append(logs["eval_accuracy"])
+        return control
+
+    
 class FormalClassifier:
     def __init__(self):
         self.model_name = "beomi/kcbert-base"
@@ -32,6 +53,11 @@ class FormalClassifier:
         self.batch_size: Final[int] = 32
         self.max_len: Final[int] = 64
         self.dataLoader()
+
+        self.train_loss_values = []
+        self.train_acc_values = []
+        self.val_loss_values = []
+        self.val_acc_values = []
 
     def tokenize_function(self, examples):
         return self.tokenizer(examples["sentence"], padding="max_length", truncation=True, max_length=self.max_len)
@@ -63,13 +89,13 @@ class FormalClassifier:
 
     def train(self):
         training_args = TrainingArguments("./saved_model",
-                                          per_device_train_batch_size=self.batch_size,
-                                          num_train_epochs=2,
-                                          learning_rate=3e-05,
-                                          save_strategy="epoch",
-                                          evaluation_strategy="epoch",
-                                          fp16=True,
-                                          )
+                                        per_device_train_batch_size=self.batch_size,
+                                        num_train_epochs=2,
+                                        learning_rate=3e-05,
+                                        save_strategy="epoch",
+                                        evaluation_strategy="epoch",
+                                        fp16=True,
+                                        )
 
         trainer = Trainer(
             model=self.model,
@@ -77,6 +103,7 @@ class FormalClassifier:
             train_dataset=self.train_dataset,
             eval_dataset=self.dev_dataset,
             compute_metrics=self.compute_metrics,
+            callbacks=[CustomTrainerCallback(self)],
         )
 
         trainer.train()
@@ -85,6 +112,33 @@ class FormalClassifier:
         self.model.save_pretrained("./saved_model")
         self.tokenizer.save_pretrained("./saved_model")
 
+        # 학습 과정 중 loss와 accuracy 그래프 그리기
+        self.plot_loss_and_accuracy()
+
+
+    def plot_loss_and_accuracy(self):
+        plt.figure(figsize=(12, 6))
+
+        # 훈련 loss 그래프
+        plt.subplot(1, 2, 1)
+        plt.plot(self.train_loss_values, label="Train Loss")
+        plt.plot(self.val_loss_values, label="Validation Loss")
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.title("Loss Curves")
+        plt.legend()
+
+        # 훈련 accuracy 그래프
+        plt.subplot(1, 2, 2)
+        plt.plot(self.train_acc_values, label="Train Accuracy")
+        plt.plot(self.val_acc_values, label="Validation Accuracy")
+        plt.xlabel("Epoch")
+        plt.ylabel("Accuracy")
+        plt.title("Accuracy Curves")
+        plt.legend()
+
+        plt.savefig("loss_and_accuracy.png")
+        plt.show()
 
 if __name__ == "__main__":
     model = FormalClassifier()
