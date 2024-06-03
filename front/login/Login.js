@@ -9,9 +9,9 @@ import SendServer from '../component/API/login/SendServer ' //유저정보 전�
 const Login = () => {
   const navigation = useNavigation(); //네비게이션 객체
 
-  // const handleLogin = () => {
-  //   console.log("Login");
-  // };
+  const handleLogin = () => {
+    console.log("Login");
+  };
 
   //카카오 로그인 버튼
   const kakaoLogin = async () => {
@@ -65,8 +65,27 @@ const Login = () => {
             <TouchableOpacity onPress={kakaoLogin}>
               <Image source={require('../assets/images/kakao_login_medium_wide.png')}/>
             </TouchableOpacity>
+
+            <TouchableOpacity style={{
+              flexDirection: 'row',
+              justifyContent: 'center', 
+              alignItems: 'center',
+              height: 43,
+              width: 300,
+              borderWidth: 1,
+              borderRadius: 5,
+              borderColor: '#EDEDEF',
+              backgroundColor: '#03C75A',
+              marginTop: 10,
+            }} onPress={handleLogin}>
+              <View style={{marginLeft: 10, width: '35%'}}>
+                <Image style={{height: 35, width: 35}} resizeMode="contain" source={require('../assets/images/naver_iconG.png')}/>
+              </View>
+              <View style={{width: '65%'}}>
+                <Text style={{color: '#FBFEFC', fontWeight: 'bold'}}>   네이버 로그인</Text>
+              </View>
+            </TouchableOpacity>
           </View>
-            
         </View>
       </SafeAreaView>
   );

@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, SafeAreaView, TouchableOpacity, Alert, Modal, TextInput, ScrollView} from 'react-native';
-import {Picker} from '@react-native-picker/picker';
 import { GetToken } from '../component/tokenData/GetToken'; //전역관리 토큰 호출
 import GenDateToServer from '../component/API/GenDateToServer'; //성별, 생년월일 서버연동
 import {useContext} from 'react';
