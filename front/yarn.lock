@@ -2251,6 +2251,11 @@ ajv@^6.12.4:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
+android@^0.0.8:
+  version "0.0.8"
+  resolved "https://registry.npmjs.org/android/-/android-0.0.8.tgz"
+  integrity sha512-cMasrXpHR6APDMSTu5JNMTL37GjYbcC9Uz2cyExSnr0f6XanNhPW3+iavHqRmfNW0QlM4kjZQa2epTjpyZcdjQ==
+
 anser@^1.4.9:
   version "1.4.10"
   resolved "https://registry.npmjs.org/anser/-/anser-1.4.10.tgz"
