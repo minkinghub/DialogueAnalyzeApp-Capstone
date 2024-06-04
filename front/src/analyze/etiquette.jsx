@@ -64,16 +64,9 @@ const Etiquette = ({route}) => {
       <View style={styles.tableView}>
         <Text style={styles.tableComment}>기준 클릭시 상세 내용으로 이동</Text>
         <View style={styles.tableTitleView}>
+          <Text style={styles.tableTitle}>있음</Text>
           <Text style={styles.tableTitle}>사용 빈도 </Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              width: '70%',
-            }}>
-            <Text style={styles.tableTitle}>부정</Text>
-            <Text style={styles.tableTitle}>긍정</Text>
-          </View>
+          <Text style={styles.tableTitle}>없음</Text>
         </View>
         {detailList[selpeaker]?.detailInfo.map((item, index) => (
           <TouchableOpacity
@@ -96,19 +89,36 @@ const Etiquette = ({route}) => {
               </Text>
             </View>
             <View style={styles.lableScoreTextView}>
-              <Text style={styles.lableScoreText}>{item.detailScore}</Text>
+              <Text style={styles.lableScoreText}>{item.detailScore}%</Text>
               <View style={styles.scoreBar}>
+                <View style={styles.scoreBarWaring}>
+                  <View
+                    style={[
+                      styles.scoreBarNotWaring,
+                      {
+                        width: 100 - item.detailScore + '%',
+                      },
+                    ]}
+                  />
+                </View>
+
                 <View
-                  style={[
-                    styles.scoreBarWaring,
-                    {
-                      width: item.detailScore + '%',
-                    },
-                  ]}
-                />
+                  style={{
+                    flexDirection: 'row',
+                    flex: 1,
+                  }}>
+                  <View
+                    style={[
+                      styles.scoreBarGood,
+                      {
+                        width: 100 - item.detailScore + '%',
+                      },
+                    ]}
+                  />
+                </View>
               </View>
               <Text style={styles.lableScoreText}>
-                {100 - item.detailScore}
+                {100 - item.detailScore}%
               </Text>
             </View>
           </TouchableOpacity>
@@ -160,6 +170,7 @@ const Etiquette = ({route}) => {
           scrollEventThrottle={16}>
           {detailList[selpeaker].detailInfo.map((infoItem, labelIndex) => {
             const infoKey = infoItem.label + labelIndex.toString();
+            // const info = infoItem.exampleText.length;
             return (
               <View
                 key={infoKey}
@@ -171,6 +182,11 @@ const Etiquette = ({route}) => {
                   </Text>
                 </View>
                 <View style={styles.commentExView}>
+                  {infoItem.exampleText ? (
+                    <Text style={styles.commentExCount}>
+                      발견된 표현 갯수: {infoItem.exampleText.length}
+                    </Text>
+                  ) : null}
                   {infoItem.exampleText ? (
                     infoItem.exampleText.map((item, index) => {
                       const key = infoKey + index.toString();

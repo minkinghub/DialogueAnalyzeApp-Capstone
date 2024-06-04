@@ -6,7 +6,7 @@ const labelKr = item => {
   } else if (item === 'grammar') {
     return '틀린 맞춤법';
   } else if (item === 'positive') {
-    return '부정적 감정';
+    return '감정 여부';
   }
 };
 
