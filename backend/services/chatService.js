@@ -1,113 +1,162 @@
 const { textModelSave } = require('../models')
 const { fullTextModelSave } = require('../models')
+const FormData = require('form-data');
+const sleep = require('sleep-promise');
 const axios = require('axios')
 const base64 = require('base-64');
 
 const NGROK_NAME = process.env.NGROK_NAME
 const NGROK_PASSWORD = process.env.NGROK_PASSWORD
+const RETURN_ZERO_CLIENT_ID = process.env.RETURN_ZERO_CLIENT_ID
+const RETURN_ZERO_CLIENT_SECRET = process.env.RETURN_ZERO_CLIENT_SECRET
 
-const analyzeTextService = async (userId, content, modelEndpoint) => {
+const analyzeTextService = async (userId, content, dataType, fileExtension, modelEndpoint) => {
+    const speakerNumber = 2
 
-    const checkGPUserver = await GPUServerChecking(modelEndpoint)
+    const checkGPUserver = await GPUServerChecking(modelEndpoint) // GPU 서버 확인
     if(checkGPUserver == null) return { status : 1 }
 
-    const contentArray = content.split("\n"); // 줄바꿈을 기준으로 내용 자르기
+    if(dataType == true) {
+        const contentArray = content.split("\n"); // 줄바꿈을 기준으로 내용 자르기
     
-    let count = 1; // 대화 순서
-    let nowDate = { // 대화 날짜
-        year: 2000,
-        month: 0,
-        day: 1
-    } 
-    let preText = null // 이전 대화
-
-    const saveArray = []
-
-    for(let line of contentArray) {
-        let result = textTypeClassificationKakao(line)
-        let analysisNeed = false
-        if(result.type == 1) {
-            nowDate = {
-                year: result.year,
-                month: result.month,
-                day: result.day
-            }
-        } else if (result.type == 0) {
-            if(nowDate == null || preText == null) {
-                continue
-            }
-            analysisNeed = true
-            const time = new Date(nowDate.year, nowDate.month, nowDate.day, preText.hour, preText.minute)
-            // 위에 모델 이용 분석 함수 들어가면 됨
-            const chatDetail = {
-                count: count,
-                speaker: preText.speaker,
-                chatTime: time,
-                analysisNeed: analysisNeed,
-                chatType: result.type,
-                chatContent: result.text,
-            }
-            saveArray.push(chatDetail)
-            count++
-        } else {
-            preText = result
-            if(result.type == 3) {
+        let count = 1; // 대화 순서
+        let nowDate = { // 대화 날짜
+            year: 2000,
+            month: 0,
+            day: 1
+        } 
+        let preText = null // 이전 대화
+    
+        const saveArray = []
+    
+        for(let line of contentArray) {
+            let result = textTypeClassificationKakao(line)
+            let analysisNeed = false
+            if(result.type == 1) {
+                nowDate = {
+                    year: result.year,
+                    month: result.month,
+                    day: result.day
+                }
+            } else if (result.type == 0) {
+                if(nowDate == null || preText == null) {
+                    continue
+                }
                 analysisNeed = true
+                const time = new Date(nowDate.year, nowDate.month, nowDate.day, preText.hour, preText.minute)
+                // 위에 모델 이용 분석 함수 들어가면 됨
+                const chatDetail = {
+                    count: count,
+                    speaker: preText.speaker,
+                    chatTime: time,
+                    analysisNeed: analysisNeed,
+                    chatType: result.type,
+                    chatContent: result.text,
+                }
+                saveArray.push(chatDetail)
+                count++
+            } else {
+                preText = result
+                if(result.type == 3) {
+                    analysisNeed = true
+                }
+                const time = new Date(nowDate.year, nowDate.month, nowDate.day, result.hour, result.minute)
+                const chatDetail = {
+                    count: count,
+                    speaker: result.speaker,
+                    chatTime: time,
+                    analysisNeed: analysisNeed,
+                    chatType: result.type,
+                    chatContent: result.text,
+                }
+                saveArray.push(chatDetail)
+                count++
             }
-            const time = new Date(nowDate.year, nowDate.month, nowDate.day, result.hour, result.minute)
-            const chatDetail = {
-                count: count,
-                speaker: result.speaker,
-                chatTime: time,
-                analysisNeed: analysisNeed,
-                chatType: result.type,
-                chatContent: result.text,
-            }
-            saveArray.push(chatDetail)
-            count++
         }
-    }
-
-    const speakerArray = extractSpeakerArray(saveArray)
-    if(speakerArray.length != 2) return { status : 2 }
-
-    const splittedList = splitArrayBySpeaker(saveArray, speakerArray);
-
-    const arrayToRequestAnalysis = extractAnalysisNeedText(splittedList)
-
-    const analyzedList = await requestAnalyzeText(arrayToRequestAnalysis, modelEndpoint)
-    if(analyzedList == null) return null
-
-    mergeList(splittedList, analyzedList)
-
-    const fullChat = [
-        {
-            speaker: speakerArray[0],
-            chatList: splittedList[0]
-        },
-        {
-            speaker: speakerArray[1],
-            chatList: splittedList[1]
-        }
-    ]
-
-    const saveChatData = {
-        userId: userId,
-        chatName: defineChatName(speakerArray),
-        uploadTime: new Date(),
-        speakers: speakerArray,
-        dataType: true, // 채팅 데이터와 음성 데이터 구분, 여기는 채팅 데이터 api임
-    }
-
-    const detailList = calculateScore(fullChat)
-    saveChatData.detailList = detailList
     
-    // DB 저장
-    const saveFullData = await fullTextModelSave({fullChat: fullChat})
-    saveChatData.fullChatId = saveFullData
-    const saveLiteData = await textModelSave(saveChatData)
+        const speakerArray = extractSpeakerArray(saveArray)
+        if(speakerArray.length != 2) return { status : 2 }
+    
+        const splittedList = splitArrayBySpeaker(saveArray, speakerArray, dataType);
+        const arrayToRequestAnalysis = extractAnalysisNeedText(splittedList)
 
-    return { status : 0, historyKey: saveLiteData._id.toString()}
+        const analyzedList = await requestAnalyzeText(arrayToRequestAnalysis, modelEndpoint)
+        if(analyzedList == null) return null
+    
+        mergeList(splittedList, analyzedList)
+    
+        const fullChat = [
+            {
+                speaker: speakerArray[0],
+                chatList: splittedList[0]
+            },
+            {
+                speaker: speakerArray[1],
+                chatList: splittedList[1]
+            }
+        ]
+    
+        const saveChatData = {
+            userId: userId,
+            chatName: defineChatName(speakerArray),
+            dataType,
+            uploadTime: new Date(),
+            speakers: speakerArray,
+            dataType: true, // 채팅 데이터와 음성 데이터 구분, 여기는 채팅 데이터
+        }
+    
+        const detailList = calculateScore(fullChat)
+        saveChatData.detailList = detailList
+        
+        // DB 저장
+        const saveFullData = await fullTextModelSave({fullChat: fullChat})
+        saveChatData.fullChatId = saveFullData
+        const saveLiteData = await textModelSave(saveChatData)
+    
+        return { status : 0, historyKey: saveLiteData._id.toString()}
+    } else {
+        const voiceContent = await requestAnalyzeVoice(content, fileExtension, speakerNumber)
+        const speakerArray = extractSpeakerArray(voiceContent)
+
+        const splittedList = splitArrayBySpeaker(voiceContent, speakerArray);
+        const arrayToRequestAnalysis = extractAnalysisNeedText(splittedList)
+
+        const analyzedList = await requestAnalyzeText(arrayToRequestAnalysis, modelEndpoint)
+        if(analyzedList == null) return null
+
+        mergeList(splittedList, analyzedList)
+
+        const fullChat = [
+            {
+                speaker: speakerArray[0].toString(),
+                chatList: splittedList[0]
+            },
+            {
+                speaker: speakerArray[1].toString(),
+                chatList: splittedList[1]
+            }
+        ]
+    
+        const saveChatData = {
+            userId: userId,
+            chatName: defineChatName(speakerArray),
+            dataType,
+            uploadTime: new Date(),
+            speakers: speakerArray,
+            dataType: false, // 채팅 데이터와 음성 데이터 구분, 여기는 음성 데이터
+        }
+    
+        const detailList = calculateScore(fullChat)
+        saveChatData.detailList = detailList
+        console.log(saveChatData)
+
+        // DB 저장
+        const saveFullData = await fullTextModelSave({fullChat: fullChat})
+        saveChatData.fullChatId = saveFullData
+        const saveLiteData = await textModelSave(saveChatData)
+    
+        return { status : 0, historyKey: saveLiteData._id.toString()}
+    }
 }
 
 const textTypeClassificationKakao = (line) => { // 문자열 형식에 따라 타입 분류 (카카오톡)
@@ -116,8 +165,9 @@ const textTypeClassificationKakao = (line) => { // 문자열 형식에 따라 �
     const picturePattern = "사진" // 일반 대화에서 사진 구분
     const emotePattern = "이모티콘" // 일반 대화에서 이모티콘 구분
     const datePattern = /^-{15}\s+(\d{4})년\s+(\d{1,2})월\s+(\d{1,2})일\s+(\S)요일\s+-{15}\r$/ // 날짜 변경 
-    const remittancePattern = "" // 송금 메세지 구분
     const deletedPattern = "삭제된 메시지입니다." // 삭제된 메세지 구분
+    const remittancePattern = /\d+원을 보냈습니다\./; // 송금
+    const collectionPattern = /\d+원을 받았습니다\./; // 수금
 
     let type = 0
     let result
@@ -132,7 +182,6 @@ const textTypeClassificationKakao = (line) => { // 문자열 형식에 따라 �
         const day = parseInt(match[3], 10); // 일
 
         result = {type: type, year: year, month: month, day: day}
-    
     } else if (line.match(generalPattern)) { // 일반 대화 시작
         const match = line.match(generalPattern);
         if(match[4].startsWith(filePattern)) { // 파일인 경우
@@ -144,6 +193,15 @@ const textTypeClassificationKakao = (line) => { // 문자열 형식에 따라 �
         } else if(match[4] == emotePattern) {
             type = 5
             text = "이모티콘"
+        } else if(match[4] == deletedPattern) {
+            type = 6
+            text = "삭제된 메시지"
+        } else if(match[4].match(remittancePattern)) {
+            type = 7
+            text = "송금"
+        } else if(match[4].match(collectionPattern)) {
+            type = 8
+            text = "수금"
         } else {
             type = 3
             text = match[4]
@@ -158,7 +216,7 @@ const textTypeClassificationKakao = (line) => { // 문자열 형식에 따라 �
 
     } else { // 일반 대화 지속
         type = 0
-        result = {type: type, text: line}
+        result = { type: type, text: line }
     }
     
     return result; // 0 : 대화 지속, 1 : 날짜 변경, 2 : 파일, 3: 일반 대화 시작, 4: 사진, 5: 이모티콘
@@ -238,6 +296,7 @@ const splitArrayBySpeaker = (saveArray, speakerArray) => {
     return list
 }
 
+
 const calculateScore = (fullChat) => { // 점수 계산 함수
     const list = []
     for(let splittedChat of fullChat) { // 대화 대상이 2명
@@ -245,21 +304,68 @@ const calculateScore = (fullChat) => { // 점수 계산 함수
         const standardArray = ["polite", "moral", "grammar", "positive"]
         const notTextCount = [[], [], [], []] // 인덱스만 저장해서 효율을 높이려고 함, 지금 배열 하나 하나 객체가 너무 큼
         const detailInfo = [] // 반환 배열
+        const standardCount = [
+            [0, 0], // 반말, 존댓말
+            [0, 0, 0, 0, 0, 0], // 불쾌 발언, 순서 대로 문제 없음, 차별, 학대, 폭력, 혐오, 검열
+            [0, 0], // 맞춤법 문제 있음, 맞춤법 문제 없음
+            [0, 0, 0, 0, 0, 0, 0] // 감정 쪽, 수정 필요
+        ]
 
         for(let [index, text] of splittedChat.chatList.entries()) { // 전체 채팅 리스트를 반복
-            if(text.analyzeResult != null) {
-                totalText++ // null 값을 가진 대화는 점수 기준에 포함되어선 안됨
+            if(text.analyzeResult != null) { // null 값을 가진 대화는 점수 기준에 포함되어선 안됨
+                totalText++ 
                 if(text.analyzeResult.isPolite == 0) { // 반말 감지
                     notTextCount[0].push(index)
-                } 
-                if(text.analyzeResult.isMoral != 100) { // 불쾌 발언 감지
+                    standardCount[0][0]++
+                } else {
+                    standardCount[0][1]++
+                }
+
+                if((text.analyzeResult.isMoral == 100) || (text.analyzeResult.isMoral == 0)) { // 불쾌 발언 미감지
+                    standardCount[1][0]++
+                } else { // 불쾌 발언 감지
+                    if(text.analyzeResult.isMoral == 1) standardCount[1][1]++
+                    else if(text.analyzeResult.isMoral == 2) standardCount[1][2]++
+                    else if(text.analyzeResult.isMoral == 3) standardCount[1][3]++
+                    else if(text.analyzeResult.isMoral == 4) standardCount[1][4]++
+                    else standardCount[1][5]++
+
                     notTextCount[1].push(index)
                 }
+
                 if(text.analyzeResult.isGrammar == 0) { // 틀린 문법 감지
                     notTextCount[2].push(index)
+                    standardCount[2][0]++
+                } else {
+                    standardCount[2][1]++
                 }
-                if(text.analyzeResult.isPositive != 100) { // 부정 감지
-                    notTextCount[3].push(index)
+
+                if((text.analyzeResult.isPositive == 100) && (text.analyzeResult.isPositive == 4)) { // 중립 제외, 긍정도인가?
+                    standardCount[3][0]++
+                } else { // 이 부분은 수정이 필요할 수 있음
+                    let finalPositive = 1
+                    if(text.analyzeResult.isPositive == 0)  { // 프론트 측 요구사항으로 중립 통합, 하나씩 뒤로 미룸
+                        finalPositive = 1 // 두려움
+                    }
+                    else if(text.analyzeResult.isPositive == 1) {
+                        finalPositive = 2 // 놀람
+                    }
+                    else if(text.analyzeResult.isPositive == 2) {
+                        finalPositive = 3 // 화남
+                    }
+                    else if(text.analyzeResult.isPositive == 3) {
+                        finalPositive = 4 // 슬픔
+                    }
+                    else {
+                        finalPositive = text.analyzeResult.isPositive // 역겨움, 행복함은 중립 뒤여서 변화 없음
+                    }
+
+                    if(finalPositive == 1) standardCount[3][1]++
+                    else if(finalPositive == 2) standardCount[3][2]++
+                    else if(finalPositive == 3) standardCount[3][3]++
+                    else if(finalPositive == 4) standardCount[3][4]++
+                    else if(finalPositive == 5) standardCount[3][5]++
+                    else if(finalPositive == 6) standardCount[3][6]++
                 }
             }
         }
@@ -284,16 +390,18 @@ const calculateScore = (fullChat) => { // 점수 계산 함수
 
             const detail = {
                 label: standardArray[count], // 기준 명
+                standardCount: standardCount[count],
                 detailScore: detailScore, // 기준에 따른 점수
                 exampleText: exampleText // 예시 배열
             }
+
             detailInfo.push(detail)
             count++
         }
 
         list.push({
             speaker: splittedChat.speaker,
-            detailInfo: detailInfo.sort((a,b) => a.detailScore - b.detailScore) // 정렬해서 넣으면 타입 분류할 때 편함
+            detailInfo: detailInfo
         })
     } // 여기 까지 비율 계산과 틀린 텍스트 추출
     
@@ -313,40 +421,75 @@ const defineChatName = (speakerArray) => {
 }
 
 const classficationConversataionType = (calculateScoreList) => { // 타입 분류 함수
-    const list = []
-    for(let i = 0; i < calculateScoreList.length; i++) {
-        list.push({
-            label : calculateScoreList[i].label,
-            detailScore : calculateScoreList[i].detailScore
-        })
-    }
+    const scoreMapping = {
+        polite: { up: 'I', down: 'F' },
+        moral: { up: 'U', down: 'N' },
+        grammar: { up: 'M', down: 'C' },
+        positive: { up: 'E', down: 'L' }
+    };
 
-    let conversationType = 8;
+    const initialScores = {
+        polite: 'N',
+        moral: 'N',
+        grammar: 'N',
+        positive: 'N'
+    };
 
-    if (list.every(score => score.detailScore >= 20)) { // 모든 점수가 20점 이상일 경우
-        conversationType = 0;
-    } else if (list.every(score => score.detailScore <= 5)) { // 모든 점수가 5점 이하일 경우
-        conversationType = 7;
-    } else { // 나머지
-        // 높은 점수 2개씩 뽑아서 분기, 정렬은 점수 계산 쪽에서 이미 했음
-        const highestScores = list.slice(0, 2);
-
-        if ((highestScores[0].label == "positive" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "positive")) {
-            conversationType = 1; // 불감
-        } else if ((highestScores[0].label == "grammar" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "grammar")) {
-            conversationType = 2; // 불맞
-        } else if ((highestScores[0].label == "polite" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "polite")) {
-            conversationType = 3; // 불존
-        } else if ((highestScores[0].label == "grammar" && highestScores[1].label == "polite") || (highestScores[0].label == "polite" && highestScores[1].label == "grammar")) {
-            conversationType = 4; // 맞존
-        } else if ((highestScores[0].label == "positive" && highestScores[1].label == "grammar") || (highestScores[0].label == "polite" && highestScores[1].label == "grammar")) {
-            conversationType = 5; // 맞감
-        } else if ((highestScores[0].label == "positive" && highestScores[1].label == "polite") || (highestScores[0].label == "polite" && highestScores[1].label == "positive")) {
-            conversationType = 6; // 존감
+    for (let detail of calculateScoreList) {
+        if (scoreMapping.hasOwnProperty(detail.label)) {
+            initialScores[detail.label] = detail.detailScore >= 50 ? scoreMapping[detail.label].up : scoreMapping[detail.label].down;
         }
     }
 
-    return conversationType
+    const conversationType = initialScores.polite + initialScores.moral + initialScores.grammar + initialScores.positive;
+    return conversationType;
+    // let charPolite = "N"
+    // let charMoral = "N"
+    // let charGrammar = "N"
+    // let charPositive = "N"
+    // for(let detail of calculateScoreList) {
+    //     if(detail.label == "polite") charPolite = (detail.detailScore >= 50) ? 'I' : 'F'
+    //     else if(detail.label == "moral") charMoral = (detail.detailScore >= 50) ? 'U' : 'N'
+    //     else if(detail.label == "grammar") charGrammar = (detail.detailScore >= 50) ? 'M' : 'C'
+    //     else charPositive = (detail.detailScore >= 50) ? 'E' : 'L'
+    // }
+
+    // const conversationType = charPolite + charMoral + charGrammar + charPositive
+    // return conversationType
+    // const list = []
+    // for(let i = 0; i < calculateScoreList.length; i++) {
+    //     list.push({
+    //         label : calculateScoreList[i].label,
+    //         detailScore : calculateScoreList[i].detailScore
+    //     })
+    // }
+
+    // let conversationType = 8;
+
+    // if (list.every(score => score.detailScore >= 20)) { // 모든 점수가 20점 이상일 경우
+    //     conversationType = 0;
+    // } else if (list.every(score => score.detailScore <= 5)) { // 모든 점수가 5점 이하일 경우
+    //     conversationType = 7;
+    // } else { // 나머지
+    //     // 높은 점수 2개씩 뽑아서 분기, 정렬은 점수 계산 쪽에서 이미 했음
+    //     const highestScores = list.slice(0, 2);
+
+    //     if ((highestScores[0].label == "positive" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "positive")) {
+    //         conversationType = 1; // 불감
+    //     } else if ((highestScores[0].label == "grammar" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "grammar")) {
+    //         conversationType = 2; // 불맞
+    //     } else if ((highestScores[0].label == "polite" && highestScores[1].label == "moral") || (highestScores[0].label == "moral" && highestScores[1].label == "polite")) {
+    //         conversationType = 3; // 불존
+    //     } else if ((highestScores[0].label == "grammar" && highestScores[1].label == "polite") || (highestScores[0].label == "polite" && highestScores[1].label == "grammar")) {
+    //         conversationType = 4; // 맞존
+    //     } else if ((highestScores[0].label == "positive" && highestScores[1].label == "grammar") || (highestScores[0].label == "polite" && highestScores[1].label == "grammar")) {
+    //         conversationType = 5; // 맞감
+    //     } else if ((highestScores[0].label == "positive" && highestScores[1].label == "polite") || (highestScores[0].label == "polite" && highestScores[1].label == "positive")) {
+    //         conversationType = 6; // 존감
+    //     }
+    // }
+
+    // return conversationType
 }
 
 const mergeList = (splittedList, analyzedList) => {
@@ -381,6 +524,8 @@ const mergeList = (splittedList, analyzedList) => {
     }
 }
 
+
+
 const GPUServerChecking = async (modelEndpoint) => {
     try { // 이거 감싸야 하나, 최상위에서 에러를 잡긴 하는데, 추후 수정 필요
         const response = await axios.post(`${modelEndpoint}/`, {
@@ -393,6 +538,132 @@ const GPUServerChecking = async (modelEndpoint) => {
         return response.data
     } catch (error) {
         return null
+    }
+}
+
+const requestAnalyzeVoice = async (audioFileBuffer, fileExtension, spk_count) => { // 오디오 파일, 파일 확장자, 화자 수
+    let returnZeroToken;
+
+    const data = `client_id=${RETURN_ZERO_CLIENT_ID}&client_secret=${RETURN_ZERO_CLIENT_SECRET}`;
+
+    try {
+        const response = await axios.post('https://openapi.vito.ai/v1/authenticate', data, {
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
+        returnZeroToken = response.data.access_token;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+
+    const voiceArray = await requestMultipleReturnZero(returnZeroToken, audioFileBuffer, fileExtension, spk_count, [true, false])
+    const results = []
+
+    let useDisfluencyTexts = voiceArray.find(item => item.label == true).speaks
+    let notUseDisfluencyTexts = voiceArray.find(item => item.label == false).speaks
+    let count = 1
+    notUseDisfluencyTexts.forEach(notUseDisfluencyText => {
+        const opponentText = useDisfluencyTexts.find(useDisfluencyText => useDisfluencyText.start == notUseDisfluencyText.start)
+        if (opponentText) {
+            results.push({
+              count: count,
+              speaker: notUseDisfluencyText.speaker,
+              original_chat_content: notUseDisfluencyText.chat_content,
+              analysisNeed: true,
+              chatContent: opponentText.chat_content,
+              useDisfluency: (opponentText.chat_content == notUseDisfluencyText.chat_content) ? true : false
+            });
+        } else {
+            results.push({
+              count, count,
+              speaker: notUseDisfluencyText.speaker,
+              original_chat_content: notUseDisfluencyText.chat_content,
+              chatContent: null,
+              analysisNeed: false,
+              useDisfluency: false
+            });
+        }
+        count++
+    })
+
+    return results;
+}
+
+const transcribeAudio = async (authToken, audioBuffer, fileExtension, spk_count, useDisfluencyFilter) => {
+    const config = {
+        use_diarization: true,
+        diarization: { spk_count: spk_count },
+        use_multi_channel: false,
+        use_itn: false,
+        use_disfluency_filter: useDisfluencyFilter,
+        use_profanity_filter: false,
+        use_paragraph_splitter: true,
+        paragraph_splitter: {
+            max: 50
+        }
+    };
+
+    const form = new FormData();
+    form.append('config', JSON.stringify(config));
+    form.append('file', audioBuffer, {
+        filename: `audio.${fileExtension}`,
+        contentType: `audio/${fileExtension}`
+    });
+
+    try {
+        const response = await axios.post('https://openapi.vito.ai/v1/transcribe', form, {
+            headers: {
+                'Authorization': `bearer ${authToken}`,
+                ...form.getHeaders()
+            }
+        });
+
+        const taskId = response.data.id;
+        console.log(`작업 ID: ${taskId}`);
+
+        const results = CheckTranscriptionStatus(taskId, authToken, useDisfluencyFilter)
+        return results;``
+    } catch (error) {
+        console.error('Error transcribing audio:', error);
+    }
+}
+
+const requestMultipleReturnZero = async (authToken, audioBuffer, fileExtension, spk_count, useDisfluencyFilters) => {
+    tasks = useDisfluencyFilters.map(filter => transcribeAudio(authToken, audioBuffer, fileExtension, spk_count, filter))
+    const results = await Promise.all(tasks)
+    return results
+}
+
+const CheckTranscriptionStatus = async (taskId, authToken, useDisfluencyFilter) => {
+    while (true) {
+        try {
+            const resp = await axios.get(`https://openapi.vito.ai/v1/transcribe/${taskId}`, {
+                headers: { 'Authorization': `bearer ${authToken}` }
+            });
+            const status = resp.data.status;
+            console.log(status)
+
+            if (status === 'completed') {
+                const speaks = []
+                const result = resp.data.results
+                for(let speak of result.utterances) {
+                    speaks.push({
+                        start: speak.start_at,
+                        speaker: speak.spk,
+                        chat_content: speak.msg
+                    })
+                }
+                return { label: useDisfluencyFilter, speaks: speaks}
+            }
+        } catch (error) {
+            console.error('Error checking transcription status:', error.response ? error.response.status : error.message);
+            return null
+        }
+
+        await sleep(5000); // 5초 대기
     }
 }
 
