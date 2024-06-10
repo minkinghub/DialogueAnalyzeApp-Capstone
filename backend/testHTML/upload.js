@@ -18,7 +18,7 @@ function uploadFile() {
 
         const token = 'MTk5OTAzMDJtaW5qdWtpbmchQA==';
 
-        axios.post('http://localhost:8080/api/upload/analyze/text', formData, {
+        axios.post('http://35.216.126.98:8080/api/upload/analyze/text', formData, {
             headers: {
                 // 'Content-Type': 'application/json',
                 'Content-Type': 'multipart/form-data',

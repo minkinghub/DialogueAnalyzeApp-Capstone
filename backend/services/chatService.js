@@ -613,32 +613,34 @@ const requestMultipleReturnZero = async (authToken, audioBuffer, fileExtension, 
 const CheckTranscriptionStatus = async (taskId, authToken, useDisfluencyFilter) => {
     while (true) {
         try {
+            console.log(`Checking status for task ID: ${taskId}`);
             const resp = await axios.get(`https://openapi.vito.ai/v1/transcribe/${taskId}`, {
                 headers: { 'Authorization': `bearer ${authToken}` }
             });
             const status = resp.data.status;
-            console.log(status)
+            console.log(`Status for task ID ${taskId}: ${status}`);
 
             if (status === 'completed') {
-                const speaks = []
-                const result = resp.data.results
-                for(let speak of result.utterances) {
+                const speaks = [];
+                const result = resp.data.results;
+                for (let speak of result.utterances) {
                     speaks.push({
                         start: speak.start_at,
                         speaker: "화자" + (speak.spk + 1),
                         chat_content: speak.msg
-                    })
+                    });
                 }
-                return { label: useDisfluencyFilter, speaks: speaks }
+                return { label: useDisfluencyFilter, speaks: speaks };
             }
         } catch (error) {
             console.error('Error checking transcription status:', error.response ? error.response.status : error.message);
-            return null
+            return null;
         }
 
         await sleep(5000); // 5초 대기
     }
 }
+
 
 module.exports = {
     analyzeTextService
