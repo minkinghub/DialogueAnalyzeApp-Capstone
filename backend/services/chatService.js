@@ -597,6 +597,8 @@ const transcribeAudio = async (authToken, audioBuffer, fileExtension, spk_count,
         const taskId = response.data.id;
         console.log(`작업 ID: ${taskId}`);
 
+        await sleep(1000) // 대충 1초만 대기
+
         const results = CheckTranscriptionStatus(taskId, authToken, useDisfluencyFilter)
         return results;``
     } catch (error) {
