@@ -126,10 +126,6 @@ const analyzeTextService = async (userId, content, dataType, fileExtension, mode
 
         mergeList(splittedList, analyzedList, dataType)
 
-        splittedList.forEach(speak => {
-            console.log(speak)
-        })
-
         const fullChat = [
             {
                 speaker: speakerArray[0].toString(),
@@ -311,19 +307,15 @@ const calculateScore = (fullChat, dataType) => { // 점수 계산 함수
                 } else {
                     standardCount[0][1]++
                 }
-                console.log("Moral : ", text.analyzeResult.isMoral)
                 if((text.analyzeResult.isMoral == 100) || (text.analyzeResult.isMoral == 0)) { // 불쾌 발언 미감지
                     standardCount[1][0]++
-                    console.log("위쪽 if문")
                 } else { // 불쾌 발언 감지
-                    console.log("아래쪽 else문")
                     if(text.analyzeResult.isMoral == 1) standardCount[1][1]++
                     else if(text.analyzeResult.isMoral == 2) standardCount[1][2]++
                     else if(text.analyzeResult.isMoral == 3) standardCount[1][3]++
                     else if(text.analyzeResult.isMoral == 4) standardCount[1][4]++
                     else if(text.analyzeResult.isMoral == 5) {
                         standardCount[1][5]++
-                        console.log("5번 왔음")
                     }
 
                     notTextCount[1].push(index)
@@ -400,7 +392,6 @@ const calculateScore = (fullChat, dataType) => { // 점수 계산 함수
                     })
                 }
             }
-            console.log(standardCount[count])
             const detail = {
                 label: standardArray[count], // 기준 명
                 standardCount: standardCount[count],
@@ -521,39 +512,55 @@ const requestAnalyzeVoice = async (audioFileBuffer, fileExtension, spk_count) =>
         });
         returnZeroToken = response.data.access_token;
     } catch (error) {
-        console.log(error);
+        console.error('Error during authentication:', error);
         return null;
     }
 
-    const voiceArray = await requestMultipleReturnZero(returnZeroToken, audioFileBuffer, fileExtension, spk_count, [true, false])
-    const results = []
+    let voiceArray;
+    try {
+        voiceArray = await requestMultipleReturnZero(returnZeroToken, audioFileBuffer, fileExtension, spk_count, [true, false]);
+    } catch (error) {
+        console.error('Error during voice array request:', error);
+        return null;
+    }
 
-    let useDisfluencyTexts = voiceArray.find(item => item.label == true).speaks
-    let notUseDisfluencyTexts = voiceArray.find(item => item.label == false).speaks
-    let count = 1
+    const results = [];
+
+    const useDisfluencyItem = voiceArray.find(item => item.label === true);
+    const notUseDisfluencyItem = voiceArray.find(item => item.label === false);
+
+    if (!useDisfluencyItem || !notUseDisfluencyItem) {
+        console.error('Error: Disfluency items not found');
+        return null;
+    }
+
+    const useDisfluencyTexts = useDisfluencyItem.speaks;
+    const notUseDisfluencyTexts = notUseDisfluencyItem.speaks;
+
+    let count = 1;
     notUseDisfluencyTexts.forEach(notUseDisfluencyText => {
-        const opponentText = useDisfluencyTexts.find(useDisfluencyText => useDisfluencyText.start == notUseDisfluencyText.start)
+        const opponentText = useDisfluencyTexts.find(useDisfluencyText => useDisfluencyText.start === notUseDisfluencyText.start);
         if (opponentText) {
             results.push({
-              count: count,
-              speaker: notUseDisfluencyText.speaker,
-              original_chat_content: notUseDisfluencyText.chat_content,
-              analysisNeed: true,
-              chatContent: opponentText.chat_content,
-              useDisfluency: (opponentText.chat_content == notUseDisfluencyText.chat_content) ? true : false
+                count: count,
+                speaker: notUseDisfluencyText.speaker,
+                original_chat_content: notUseDisfluencyText.chat_content,
+                analysisNeed: true,
+                chatContent: opponentText.chat_content,
+                useDisfluency: (opponentText.chat_content === notUseDisfluencyText.chat_content)
             });
         } else {
             results.push({
-              count, count,
-              speaker: notUseDisfluencyText.speaker,
-              original_chat_content: notUseDisfluencyText.chat_content,
-              chatContent: null,
-              analysisNeed: false,
-              useDisfluency: false
+                count: count,
+                speaker: notUseDisfluencyText.speaker,
+                original_chat_content: notUseDisfluencyText.chat_content,
+                chatContent: null,
+                analysisNeed: false,
+                useDisfluency: false
             });
         }
-        count++
-    })
+        count++;
+    });
 
     return results;
 }
