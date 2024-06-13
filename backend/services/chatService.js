@@ -615,12 +615,10 @@ const requestMultipleReturnZero = async (authToken, audioBuffer, fileExtension, 
 const CheckTranscriptionStatus = async (taskId, authToken, useDisfluencyFilter) => {
     while (true) {
         try {
-            console.log(`Checking status for task ID: ${taskId}`);
             const resp = await axios.get(`https://openapi.vito.ai/v1/transcribe/${taskId}`, {
                 headers: { 'Authorization': `bearer ${authToken}` }
             });
             const status = resp.data.status;
-            console.log(`Status for task ID ${taskId}: ${status}`);
 
             if (status === 'completed') {
                 const speaks = [];
