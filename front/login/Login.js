@@ -9,9 +9,9 @@ import SendServer from '../component/API/login/SendServer ' //유저정보 전�
 const Login = () => {
   const navigation = useNavigation(); //네비게이션 객체
 
-  // const handleLogin = () => {
-  //   console.log("Login");
-  // };
+  const handleLogin = () => {
+    console.log("Login");
+  };
 
   //카카오 로그인 버튼
   const kakaoLogin = async () => {
@@ -40,7 +40,7 @@ const Login = () => {
 
   return (
       <SafeAreaView style={{flex: 1, backgroundColor: '#fff',}}>
-        <View style={{justifyContent: 'center', alignItems: 'center', height: '10%', backgroundColor: '#f2cd79'}}>
+        <View style={{justifyContent: 'center', alignItems: 'center', height: '20%', backgroundColor: '#FFFDD0'}}>
           <Text style={{
             fontSize: 30,
             fontWeight: 'bold',
@@ -49,12 +49,13 @@ const Login = () => {
           }}>대화성향 분석 앱</Text>
         </View>
         
-        <View style={{justifyContent: 'center', alignItems: 'center', height: '90%', backgroundColor: '#f2cd79'}}>
+        <View style={{justifyContent: 'center', alignItems: 'center', height: '80%', backgroundColor: '#FFFDD0'}}>
 
           <View style={{
             justifyContent: 'center', 
-            alignItems: 'center', 
-            height: '95%', 
+            alignItems: 'center',
+            borderWidth: 1,
+            height: '90%', 
             width:'90%', 
             backgroundColor: 'white', 
             borderRadius: 20,
@@ -64,14 +65,54 @@ const Login = () => {
             <TouchableOpacity onPress={kakaoLogin}>
               <Image source={require('../assets/images/kakao_login_medium_wide.png')}/>
             </TouchableOpacity>
-            {/* <TouchableOpacity style={{marginTop: 10}} onPress={handleLogin}>
-              <Image style={{width: 300, height: 50, resizeMode: 'contain'}} source={require('../assets/images/naver_login.png')}/>
+
+            <View style={{flexDirection: 'row', alignItems: 'center', width: '80%', marginVertical: 15, marginTop: 20, marginBottom: 20}}>
+              <View style={{flex: 1, height: 1, backgroundColor: '#ccc'}} />
+                <View>
+                  <Text style={{width: 50, textAlign: 'center'}}>or</Text>
+                </View>
+              <View style={{flex: 1, height: 1, backgroundColor: '#ccc'}} />
+            </View>
+
+            <TouchableOpacity style={{
+              flexDirection: 'row',
+              justifyContent: 'center', 
+              alignItems: 'center',
+              height: 43,
+              width: 300,
+              borderWidth: 1,
+              borderRadius: 5,
+              borderColor: '#EDEDEF',
+              backgroundColor: '#03C75A',
+            }} onPress={handleLogin}>
+              <View style={{marginLeft: 10, width: '35%'}}>
+                <Image style={{height: 35, width: 35}} resizeMode="contain" source={require('../assets/images/naver_iconG.png')}/>
+              </View>
+              <View style={{width: '65%'}}>
+                <Text style={{color: '#FBFEFC', fontWeight: 'bold'}}>   네이버 로그인</Text>
+              </View>
             </TouchableOpacity>
-            <TouchableOpacity style={{marginTop: 10}} onPress={handleLogin}>
-              <Image style={{width: 300, height: 50, resizeMode: 'contain'}} source={require('../assets/images/google_signin.png')}/>
-            </TouchableOpacity> */}
+
+            <TouchableOpacity style={{
+              flexDirection: 'row',
+              justifyContent: 'center', 
+              alignItems: 'center',
+              height: 43,
+              width: 300,
+              borderWidth: 1,
+              borderRadius: 5,
+              borderColor: '#B2C8BF',
+              backgroundColor: '#FFFFFF',
+              marginTop: 10,
+            }} onPress={handleLogin}>
+              <View style={{marginLeft: 23, width: '35%'}}>
+                <Image style={{height: 20, width: 20}} resizeMode="contain" source={require('../assets/images/google_icon.png')}/>
+              </View>
+              <View style={{width: '65%'}}>
+                <Text style={{color: '#000000'}}> Google 로그인</Text>
+              </View>
+            </TouchableOpacity>
           </View>
-            
         </View>
       </SafeAreaView>
   );

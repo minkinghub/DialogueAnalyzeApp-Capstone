@@ -27,7 +27,7 @@ const History = () => {
 
   const handlePress = item => {
     const analyzeType = item.analysisType ? 'Etiquette' : 'Category';
-    navigation.push(analyzeType, {
+    navigation.push('Etiquette', {
       historyKey: item._id,
     });
   };
@@ -69,15 +69,13 @@ const History = () => {
               onPress={() => handlePress(item)}>
               <View style={styles.itemTitle}>
                 <Text style={styles.itemTitleName}>{item.chatName}</Text>
-                <View style={styles.itemTitleTypeView}>
-                  <Text style={styles.itemTitleType}>
-                    {item.analysisType ? '예절분석' : '타입분석'}
+
+                <View style={styles.itemTime}>
+                  <Text style={styles.itemTimeText}>
+                    {formatDate(item.uploadTime)}
                   </Text>
+                  {/* {console.log('item:', item.uploadTime)} */}
                 </View>
-              </View>
-              <View style={styles.itemTime}>
-                <Text>{formatDate(item.uploadTime)}</Text>
-                {/* {console.log('item:', item.uploadTime)} */}
               </View>
             </TouchableOpacity>
           ))}

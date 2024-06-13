@@ -3,7 +3,7 @@ import { View, Text, ActivityIndicator} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {uploadFile} from '../../../API';
 
-const FileSendServer = ({ selectedFile, onCompleted, resetFile}) => {
+const FileSendServer = ({ selectedFile, dataType, onCompleted, resetFile}) => {
     const navigation = useNavigation(); //네비게이션 객체
     const [isLoading, setIsLoading] = useState(false); // 로딩 상태
 
@@ -12,6 +12,7 @@ const FileSendServer = ({ selectedFile, onCompleted, resetFile}) => {
           // formData 객체 생성
           const formData = new FormData();
           formData.append('file', selectedFile);
+          formData.append('dataType', dataType);
 
           try {
             setIsLoading(true); // 로딩 시작

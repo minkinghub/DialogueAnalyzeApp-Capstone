@@ -4,14 +4,12 @@ function uploadFile() {
     const modelEndpoint = document.getElementById('modelEndpoint').value;
     const analysisTypeCheckbox = document.getElementById('analysisTypeCheckbox'); // 분석 타입 체크박스 접근
     const file = input.files[0];
-    const age = ageInput.value;
-    const analysisType = analysisTypeCheckbox.checked; // 분석 타입 체크박스의 상태 확인
+    const dataType = analysisTypeCheckbox.checked; // 분석 타입 체크박스의 상태 확인
 
     if (file) {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('opAge_range', age);
-        formData.append('analysisType', analysisType); // 분석 타입 데이터 추가
+        formData.append('dataType', dataType); // 분석 타입 데이터 추가
         formData.append('modelEndpoint', modelEndpoint)
 
         const historyData = {

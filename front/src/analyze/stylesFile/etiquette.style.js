@@ -24,60 +24,103 @@ const etiquetteStyles = isDarkMode => {
       color: theme.textColor,
     },
     //테이블 스타일
+    HighlightStyle: {
+      backgroundColor: theme.highlightColor,
+    },
+    HighlightTextStyle: {
+      color: theme.highlightTextColor,
+    },
     tableView: {
       backgroundColor: theme.subColor1,
-      alignItems: 'center',
+      // alignItems: 'center',
       padding: 10,
       marginHorizontal: 10,
       marginVertical: 5,
       borderRadius: 10,
     },
-    //라벨별 스타일
-    labelView: {
+    tableTitleView: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: 10,
+      width: '94%',
+      paddingHorizontal: 25,
+    },
+    tableTitle: {
+      fontSize: 20,
+      color: theme.highlightTextColor,
+      fontWeight: '700',
+    },
+    tableComment: {
+      color: theme.highlightTextColor,
+      fontSize: 14,
+      fontWeight: '500',
+      textAlign: 'center',
+      padding: 5,
+    },
+    //라벨별 스타일
+    labelView: {
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      // padding: 10,
       borderRadius: 10,
       backgroundColor: theme.backgroundColor,
       width: '94%',
       margin: 5,
     },
-    labelTextView: {
-      width: '30%',
-      borderColor: theme.borderColor,
-      borderRightWidth: 1,
-    },
+    labelTextView: {},
     labelText: {
-      fontSize: 18,
+      fontSize: 16,
       color: theme.textColor,
       textAlign: 'center',
       fontWeight: 'bold',
-      padding: 3,
     },
     lableScoreTextView: {
-      width: '65%',
-      paddingLeft: 10,
+      width: '90%',
       justifyContent: 'center',
+      alignItems: 'center',
+      flexDirection: 'row',
     },
     lableScoreText: {
-      fontSize: 16,
+      fontSize: 14,
       color: theme.textColor,
+      marginHorizontal: 5,
+      width: '11%',
     },
 
-    tableComment: {
-      color: theme.subTextColor,
-      fontSize: 14,
-      fontWeight: '500',
-    },
-    //테이블 스크롤뷰 스타일
-    scrollView: {
-      flex: 5,
+    scrollViewContainer: {
+      flex: 10,
       backgroundColor: theme.subColor1,
       margin: 10,
       borderRadius: 10,
       padding: 10,
     },
+    scoreBar: {
+      flex: 1,
+      height: 15,
+      backgroundColor: theme.backgroundColor,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    scoreBarNotWaring: {
+      backgroundColor: theme.backgroundColor,
+      height: 15,
+      flex: 1,
+    },
+    scoreBarWaring: {
+      backgroundColor: theme.warningColor,
+      flexDirection: 'row',
+      height: 15,
+      flex: 1,
+    },
+    scoreBarGood: {
+      backgroundColor: theme.goodColor,
+      height: 15,
+      flex: 1,
+    },
+
+    //테이블 스크롤뷰 스타일
+
     commentView: {
       // backgroundColor: theme.subColor2,
       padding: 10,
@@ -94,14 +137,17 @@ const etiquetteStyles = isDarkMode => {
       padding: 5,
     },
     commentLabelText: {
-      fontSize: 27,
+      fontSize: 24,
       color: theme.textColor,
       textAlign: 'center',
       fontWeight: '700',
     },
+    commentExCount: {
+      fontSize: 16,
+      color: theme.warningColor,
+    },
     commentExView: {
       width: '85%',
-      marginLeft: 5,
       padding: 5,
       // borderRadius: 10,
       // borderWidth: 1,
@@ -125,6 +171,17 @@ const etiquetteStyles = isDarkMode => {
       fontWeight: '400',
       borderRightWidth: 1,
       borderColor: theme.borderColor,
+    },
+    anyThingTextView: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    anyThingText: {
+      fontSize: 20,
+      color: theme.textColor,
+      textAlign: 'center',
+      fontWeight: '700',
     },
   });
 };
