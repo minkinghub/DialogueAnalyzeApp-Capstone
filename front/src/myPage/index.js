@@ -11,18 +11,16 @@ const MyPage = () => {
   const styles = myPageStyle(isDarkMode);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View>
-        <View style={styles.Switch}>
-          <ThemeSwitch />
-        </View>
-        <TouchableOpacity
-          style={{backgroundColor: 'gray', padding: 10}}
-          onPress={() => navigation.navigate('history')}>
-          <Text>기록보기</Text>
-        </TouchableOpacity>
+    <View style={styles.container}>
+      <View style={styles.Switch}>
+        <ThemeSwitch />
       </View>
-    </SafeAreaView>
+      <TouchableOpacity
+        style={{backgroundColor: 'gray', padding: 10}}
+        onPress={() => navigation.navigate('history')}>
+        <Text>기록보기</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 

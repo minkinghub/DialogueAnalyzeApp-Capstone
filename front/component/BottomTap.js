@@ -27,11 +27,11 @@ function BottomTap() {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: '#0D3DB2',
+        tabBarActiveTintColor: '#006400',
         tabBarInactiveTintColor: 'black',
         tabBarLabelStyle: {fontSize: 14},
         tabBarStyle: {
-          backgroundColor: '#f2cd79',
+          backgroundColor: '#FFFDD0',
           height: 60,
           borderTopColor: 'darkgrey',
           borderTopWidth: 1,

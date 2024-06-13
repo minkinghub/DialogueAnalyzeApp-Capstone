@@ -24,13 +24,35 @@ const etiquetteStyles = isDarkMode => {
       color: theme.textColor,
     },
     //테이블 스타일
+    HighlightStyle: {
+      backgroundColor: theme.highlightColor,
+    },
+    HighlightTextStyle: {
+      color: theme.highlightTextColor,
+    },
     tableView: {
       backgroundColor: theme.subColor1,
-      alignItems: 'center',
+      // alignItems: 'center',
       padding: 10,
       marginHorizontal: 10,
       marginVertical: 5,
       borderRadius: 10,
+    },
+    tableTitleView: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      width: '94%',
+    },
+    tableTitle: {
+      fontSize: 20,
+      color: theme.backgroundColor,
+      fontWeight: '700',
+    },
+    tableComment: {
+      color: theme.backgroundColor,
+      fontSize: 14,
+      fontWeight: '500',
     },
     //라벨별 스타일
     labelView: {
@@ -49,7 +71,7 @@ const etiquetteStyles = isDarkMode => {
       borderRightWidth: 1,
     },
     labelText: {
-      fontSize: 18,
+      fontSize: 16,
       color: theme.textColor,
       textAlign: 'center',
       fontWeight: 'bold',
@@ -57,27 +79,40 @@ const etiquetteStyles = isDarkMode => {
     },
     lableScoreTextView: {
       width: '65%',
-      paddingLeft: 10,
       justifyContent: 'center',
+      alignItems: 'center',
+      flexDirection: 'row',
+      flex: 1,
+      marginLeft: 5,
     },
     lableScoreText: {
-      fontSize: 16,
+      fontSize: 12,
       color: theme.textColor,
     },
 
-    tableComment: {
-      color: theme.subTextColor,
-      fontSize: 14,
-      fontWeight: '500',
-    },
-    //테이블 스크롤뷰 스타일
-    scrollView: {
-      flex: 5,
+    scrollViewContainer: {
+      flex: 10,
       backgroundColor: theme.subColor1,
       margin: 10,
       borderRadius: 10,
       padding: 10,
     },
+    scoreBar: {
+      flex: 1,
+      height: 20,
+      margin: 5,
+      backgroundColor: 'white',
+      borderWidth: 2,
+    },
+    scoreBarWaring: {
+      flex: 1,
+
+      // width: item.detailScore + '%',
+      backgroundColor: '#DC3545',
+    },
+
+    //테이블 스크롤뷰 스타일
+
     commentView: {
       // backgroundColor: theme.subColor2,
       padding: 10,
@@ -94,7 +129,7 @@ const etiquetteStyles = isDarkMode => {
       padding: 5,
     },
     commentLabelText: {
-      fontSize: 27,
+      fontSize: 24,
       color: theme.textColor,
       textAlign: 'center',
       fontWeight: '700',
@@ -125,6 +160,17 @@ const etiquetteStyles = isDarkMode => {
       fontWeight: '400',
       borderRightWidth: 1,
       borderColor: theme.borderColor,
+    },
+    anyThingTextView: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    anyThingText: {
+      fontSize: 20,
+      color: theme.textColor,
+      textAlign: 'center',
+      fontWeight: '700',
     },
   });
 };
