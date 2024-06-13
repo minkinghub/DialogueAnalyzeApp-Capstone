@@ -10,7 +10,6 @@ const ThemeSwitch = () => {
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
-      borderWidth: 2,
       padding: 5,
       backgroundColor: theme.backgroundColor,
       borderColor: theme.borderColor,

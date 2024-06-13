@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image } from 'react-native';
+import {Image} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
 import {useContext} from 'react';
@@ -12,16 +12,18 @@ import History from '../src/myPage/history';
 import {Category, Etiquette} from '../src/analyze';
 import ThemeContext from '../src/ThemeContext';
 
-import myPageIcon from '../assets/images/TapbarIcons/user_light.png'
-import myPageIconActive from '../assets/images/TapbarIcons/user_black.png'
-import analyzeIcon from '../assets/images/TapbarIcons/analytics_light.png'
-import analyzeIconActive from '../assets/images/TapbarIcons/analytics_black.png'
+import myPageIcon from '../assets/images/TapbarIcons/user_light.png';
+import myPageIconActive from '../assets/images/TapbarIcons/user_black.png';
+import analyzeIcon from '../assets/images/TapbarIcons/analytics_light.png';
+import analyzeIconActive from '../assets/images/TapbarIcons/analytics_black.png';
+import {useTheme} from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
 function BottomTap() {
-  const DarkMode = useContext(ThemeContext);
-  const isDarkMode = DarkMode.isDarkMode; //테마 설정
+  // const DarkMode = useContext(ThemeContext);
+  // const isDarkMode = DarkMode.isDarkMode; //테마 설정
+  const {isDarkMode} = useTheme();
   const theme = isDarkMode ? darkTheme : lightTheme;
 
   return (
@@ -44,12 +46,12 @@ function BottomTap() {
         name="Analyze"
         component={Analyze}
         options={{
-          tabBarLabel: '대화 분석', 
-          headerTitle: 'Conversation Analysis', 
-          tabBarIcon: ({ focused }) => (
+          tabBarLabel: '대화 분석',
+          headerTitle: 'Conversation Analysis',
+          tabBarIcon: ({focused}) => (
             <Image
               source={focused ? analyzeIconActive : analyzeIcon}
-              style={{ width: 35, height: 35 }}
+              style={{width: 35, height: 35}}
             />
           ),
           headerStyle: {
@@ -61,15 +63,16 @@ function BottomTap() {
         }}
       />
       <Tab.Screen
-        name="MyPageStack"
-        component={MyPageStack}
+        name="MyPage"
+        component={MyPage}
         options={{
           tabBarLabel: '마이 페이지',
           headerTitle: 'My Page',
-          tabBarIcon: ({ focused }) => (
+          headerShown: false,
+          tabBarIcon: ({focused}) => (
             <Image
               source={focused ? myPageIconActive : myPageIcon}
-              style={{ width: 35, height: 35 }}
+              style={{width: 35, height: 35}}
             />
           ),
           headerStyle: {
@@ -79,21 +82,10 @@ function BottomTap() {
           },
           headerTintColor: theme.textColor,
         }}
-      />
-      <Tab.Screen
-        name="Etiquette"
-        component={Etiquette}
-        options={{tabBarLabel: '에티켓', headerShown: false}}
-      />
-      <Tab.Screen
-        name="Category"
-        component={Category}
-        options={{tabBarLabel: '카테고리', headerShown: false}}
       />
     </Tab.Navigator>
   );
 }
-
 const MyPageStack = () => {
   const Stack = createStackNavigator();
   return (
@@ -102,7 +94,21 @@ const MyPageStack = () => {
         headerShown: false, // 모든 화면에서 헤더 숨기기
       }}>
       <Stack.Screen name="MyPage" component={MyPage} />
-      <Stack.Screen name="history" component={History} />
+      {/* <Stack.Screen
+        name="history"
+        component={History}
+        options={{
+          tabBarLabel: '마이 페이지',
+          headerTitle: 'My Page',
+
+          headerStyle: {
+            backgroundColor: theme.backgroundColor,
+            borderBottomColor: theme.borderColor,
+            borderBottomWidth: 1,
+          },
+          headerTintColor: theme.textColor,
+        }}
+      /> */}
     </Stack.Navigator>
   );
 };

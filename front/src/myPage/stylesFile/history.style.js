@@ -10,7 +10,7 @@ const historyStyle = isDarkMode => {
       padding: 10,
     },
     title: {
-      fontSize: 20,
+      fontSize: 25,
       fontWeight: 'bold',
       color: theme.textColor,
     },
@@ -66,8 +66,6 @@ const historyStyle = isDarkMode => {
     },
     itemTime: {
       justifyContent: 'flex-end',
-      //   borderWidth: 1,
-      alignSelf: 'flex-end',
     },
     itemTimeText: {
       color: theme.textColor,

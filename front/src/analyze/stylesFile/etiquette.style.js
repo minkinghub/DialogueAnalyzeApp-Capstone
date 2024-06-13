@@ -105,6 +105,7 @@ const etiquetteStyles = isDarkMode => {
     scoreBarNotWaring: {
       backgroundColor: theme.backgroundColor,
       height: 15,
+      flex: 1,
     },
     scoreBarWaring: {
       backgroundColor: theme.warningColor,
@@ -115,6 +116,7 @@ const etiquetteStyles = isDarkMode => {
     scoreBarGood: {
       backgroundColor: theme.goodColor,
       height: 15,
+      flex: 1,
     },
 
     //테이블 스크롤뷰 스타일
