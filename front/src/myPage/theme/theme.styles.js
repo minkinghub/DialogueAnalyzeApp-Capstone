@@ -1,12 +1,12 @@
 const darkTheme = {
   backgroundColor: '#121212',
-  borderColor: '#003595',
+  borderColor: '#424242',
   textColor: '#E0E0E0',
   subTextColor: '#B0B0B0',
-  subColor1: '#0e1452',
+  subColor1: '#666666',
   subColor2: '#9cb7d9',
-  warningColor: '#CF6679', //부정
-  sucessColor: '#03DAC6', //긍정
+  warningColor: '#FF6464', //부정
+  goodColor: '#03DAC6', //긍정
   infoColor: '#FFD600',
   highlightColor: '#BB86FC',
   highlightTextColor: '#ffffff',
@@ -19,7 +19,7 @@ const lightTheme = {
   subColor1: '#0e1452',
   subColor2: '#9cb7d9',
   warningColor: '#DC3545',
-  sucessColor: '#28A745',
+  goodColor: '#28A745',
   infoColor: '#FFC107',
   highlightColor: '#007BFF',
   highlightTextColor: '#ffffff',

@@ -71,7 +71,9 @@ const History = () => {
                 <Text style={styles.itemTitleName}>{item.chatName}</Text>
 
                 <View style={styles.itemTime}>
-                  <Text>{formatDate(item.uploadTime)}</Text>
+                  <Text style={styles.itemTimeText}>
+                    {formatDate(item.uploadTime)}
+                  </Text>
                   {/* {console.log('item:', item.uploadTime)} */}
                 </View>
               </View>

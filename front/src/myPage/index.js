@@ -4,7 +4,7 @@ import {useNavigation} from '@react-navigation/native';
 import ThemeSwitch from './theme/themeSwitch';
 import {useTheme} from '../ThemeContext';
 import myPageStyle from './stylesFile/MyPage.style';
-
+import History from './history';
 const MyPage = () => {
   const navigation = useNavigation();
   const {isDarkMode} = useTheme();
@@ -12,14 +12,17 @@ const MyPage = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.Switch}>
+      <View style={styles.headerStyle}>
+        <Text style={styles.headerTextStyle}>마이 페이지</Text>
         <ThemeSwitch />
       </View>
+      <History />
+      {/* 
       <TouchableOpacity
-        style={{backgroundColor: 'gray', padding: 10}}
+        style={styles.historyBtn}
         onPress={() => navigation.navigate('history')}>
-        <Text>기록보기</Text>
-      </TouchableOpacity>
+        <Text style={styles.historyBtnText}>기록보기</Text>
+      </TouchableOpacity> */}
     </View>
   );
 };

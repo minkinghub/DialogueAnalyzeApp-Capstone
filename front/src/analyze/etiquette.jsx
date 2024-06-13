@@ -1,19 +1,11 @@
-import React, {useRef, useState, useEffect, useCallback} from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Dimensions,
-} from 'react-native';
+import React, {useRef, useState, useEffect} from 'react';
+import {View, Text, TouchableOpacity, ScrollView} from 'react-native';
 import {useTheme} from '../ThemeContext';
 import {loadDatail} from './loadData';
 import useSpeakerPicker from './speakerPicker';
 import ActivityIndicatorLoading from './ActivityIndicatorLoading';
 import etiquetteStyles from './stylesFile/etiquette.style';
 import {labelKr, commentType} from './utilities';
-import {DrawBarChart} from './DrawChart';
-const screenWidth = Dimensions.get('window').width;
 
 const Etiquette = ({route}) => {
   const scrollViewRef = useRef(null);
@@ -26,7 +18,28 @@ const Etiquette = ({route}) => {
 
   const {isDarkMode} = useTheme();
   const styles = etiquetteStyles(isDarkMode);
-
+  const isStandardData = [
+    {
+      label: 0,
+      count: 4,
+    },
+    {
+      label: 1,
+      count: 3,
+    },
+    {
+      label: 2,
+      count: 1,
+    },
+    {
+      label: 3,
+      count: 0,
+    },
+    {
+      label: 4,
+      count: 11,
+    },
+  ];
   useEffect(() => {
     const fetchData = async () => {
       const data = await loadDatail(historyKey);
@@ -64,16 +77,9 @@ const Etiquette = ({route}) => {
       <View style={styles.tableView}>
         <Text style={styles.tableComment}>기준 클릭시 상세 내용으로 이동</Text>
         <View style={styles.tableTitleView}>
+          <Text style={styles.tableTitle}>없음</Text>
           <Text style={styles.tableTitle}>사용 빈도 </Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              width: '70%',
-            }}>
-            <Text style={styles.tableTitle}>부정</Text>
-            <Text style={styles.tableTitle}>긍정</Text>
-          </View>
+          <Text style={styles.tableTitle}>있음</Text>
         </View>
         {detailList[selpeaker]?.detailInfo.map((item, index) => (
           <TouchableOpacity
@@ -96,20 +102,33 @@ const Etiquette = ({route}) => {
               </Text>
             </View>
             <View style={styles.lableScoreTextView}>
-              <Text style={styles.lableScoreText}>{item.detailScore}</Text>
-              <View style={styles.scoreBar}>
-                <View
-                  style={[
-                    styles.scoreBarWaring,
-                    {
-                      width: item.detailScore + '%',
-                    },
-                  ]}
-                />
-              </View>
               <Text style={styles.lableScoreText}>
-                {100 - item.detailScore}
+                {100 - item.detailScore}%
               </Text>
+              <View style={styles.scoreBar}>
+                <View style={styles.scoreBarGood}>
+                  <View
+                    style={[
+                      styles.scoreBarNotWaring,
+                      {
+                        width: item.detailScore + '%',
+                      },
+                    ]}
+                  />
+                </View>
+
+                <View style={styles.scoreBarNotWaring}>
+                  <View
+                    style={[
+                      styles.scoreBarWaring,
+                      {
+                        width: item.detailScore + '%',
+                      },
+                    ]}
+                  />
+                </View>
+              </View>
+              <Text style={styles.lableScoreText}>{item.detailScore}%</Text>
             </View>
           </TouchableOpacity>
         ))}
@@ -144,7 +163,7 @@ const Etiquette = ({route}) => {
   return detailList ? (
     <View key="3000" style={styles.container}>
       <View key="3100" style={styles.headerStyle}>
-        <Text style={styles.headerTextStyle}>예절 분석 결과</Text>
+        <Text style={styles.headerTextStyle}>분석 결과</Text>
         <View key="3110" style={{width: '32%'}}>
           {renderSpeakerPicker()}
         </View>
@@ -160,6 +179,7 @@ const Etiquette = ({route}) => {
           scrollEventThrottle={16}>
           {detailList[selpeaker].detailInfo.map((infoItem, labelIndex) => {
             const infoKey = infoItem.label + labelIndex.toString();
+            // const info = infoItem.exampleText.length;
             return (
               <View
                 key={infoKey}
@@ -171,6 +191,52 @@ const Etiquette = ({route}) => {
                   </Text>
                 </View>
                 <View style={styles.commentExView}>
+                  {infoItem.exampleText ? (
+                    <View
+                      style={{
+                        borderWidth: 1,
+                      }}>
+                      <Text style={styles.commentExCount}>
+                        발견된 표현 갯수: {infoItem.exampleText.length}
+                      </Text>
+                      {
+                        // isStandardData
+                        infoItem.label === 'moral' ||
+                        infoItem.label === 'positive' ? (
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              margin: 3,
+                              paddingVertical: 3,
+                              justifyContent: 'space-around',
+                            }}>
+                            {isStandardData.map(
+                              item =>
+                                item.count > 0 && (
+                                  <View
+                                    style={{
+                                      // backgroundColor: 'gray',
+                                      alignItems: 'center',
+                                    }}>
+                                    <Text
+                                      style={{
+                                        borderBottomWidth: 1,
+                                        fontSize: 16,
+                                        paddingVertical: 5,
+                                      }}>
+                                      {commentType(infoItem.label, item.label)}
+                                    </Text>
+                                    <Text style={{margin: 3, fontSize: 14}}>
+                                      {item.count}
+                                    </Text>
+                                  </View>
+                                ),
+                            )}
+                          </View>
+                        ) : null
+                      }
+                    </View>
+                  ) : null}
                   {infoItem.exampleText ? (
                     infoItem.exampleText.map((item, index) => {
                       const key = infoKey + index.toString();
