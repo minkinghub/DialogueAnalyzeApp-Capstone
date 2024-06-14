@@ -288,7 +288,7 @@ const calculateScore = (fullChat, dataType) => { // 점수 계산 함수
     const list = []
     for(let splittedChat of fullChat) { // 대화 대상이 2명
         let totalText = 0
-        const standardArray = ["polite", "moral", "grammar", "positive"]
+        const standardArray = ["polite", "moral", dataType ? "grammar" : "useDisfluency", "positive"]
         const notTextCount = [[], [], [], []] // 인덱스만 저장해서 효율을 높이려고 함, 지금 배열 하나 하나 객체가 너무 큼
         const detailInfo = [] // 반환 배열
         const standardCount = [
@@ -464,9 +464,9 @@ const mergeList = (splittedList, analyzedList, dataType) => {
                     ...splittedList[i][j],
                     analyzeResult: {
                         correctChat : dataType ? analyzedList[i][count].gramarChat : splittedList[i][j].chatContent,
-                        [dataType ? "isPolite" : "useDisfluency"] : dataType ? analyzedList[i][count].isPolite : splittedList[i][j].useDisfluency,
+                        isPolite:analyzedList[i][count].isPolite,
                         isMoral: analyzedList[i][count].isMoral,
-                        isGrammar: analyzedList[i][count].isGrammar,
+                        [dataType ? "isGrammar" : "useDisfluency"] : dataType ? analyzedList[i][count].isGrammar : splittedList[i][j].useDisfluency,
                         isPositive: analyzedList[i][count].isPositive
                     }
                 }
