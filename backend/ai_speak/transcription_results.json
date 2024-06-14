@@ -2,25 +2,963 @@
     "results_without_filter": {
         "utterances": [
             {
+                "start_at": 2335,
+                "duration": 4250,
                 "spk": 0,
-                "msg": "아 음, 제가 음 집에 가려고 어 하는데 음 말이죠 음."
+                "spk_type": "NORMAL",
+                "msg": "공, 공, 공, 공, 공, 공 공입니다."
             },
             {
+                "start_at": 7285,
+                "duration": 2860,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "아, 주문 좀 하려는데요."
+            },
+            {
+                "start_at": 11524,
+                "duration": 12460,
                 "spk": 0,
-                "msg": "그 뭐냐, 부채가 제 눈앞에 떨어져서 음 에서 아팠어요."
+                "spk_type": "NORMAL",
+                "msg": "네, 고객님 전화 주셔서 감사합니다. 저희 공 공 공 공 처음 이용이시면 고객정보 등록 후에 주문 도와드리겠습니다."
+            },
+            {
+                "start_at": 24775,
+                "duration": 440,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네."
+            },
+            {
+                "start_at": 26775,
+                "duration": 2630,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "고객님의 회원 서비스 제공을 위해."
+            },
+            {
+                "start_at": 29965,
+                "duration": 570,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "성함"
+            },
+            {
+                "start_at": 31205,
+                "duration": 7740,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "생년월일 성별 주소 연락처 등록하고 있습니다. 이에 동의하십니까?"
+            },
+            {
+                "start_at": 39773,
+                "duration": 510,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네."
+            },
+            {
+                "start_at": 42382,
+                "duration": 4410,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "감사합니다. 고객님 본인 성함 말씀해 주시겠습니까?"
+            },
+            {
+                "start_at": 47432,
+                "duration": 1400,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "공공공."
+            },
+            {
+                "start_at": 50530,
+                "duration": 4780,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "공 공 공 고객님 생년월일 말씀해주시겠습니까?"
+            },
+            {
+                "start_at": 56079,
+                "duration": 4860,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "공공 년 공 공 월 공 공 일."
+            },
+            {
+                "start_at": 62558,
+                "duration": 2920,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "휴대전화번호 말씀해 주시겠습니까?"
+            },
+            {
+                "start_at": 66535,
+                "duration": 6180,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "군동분 공동공분 공동 공분."
+            },
+            {
+                "start_at": 75216,
+                "duration": 3460,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "유선전화 등록 가능한데 등록해드릴까요?"
+            },
+            {
+                "start_at": 79616,
+                "duration": 6920,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 공 공, 공, 공, 공, 공, 공, 공, 공 공이요."
+            },
+            {
+                "start_at": 88503,
+                "duration": 6940,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "공 공, 공, 공, 공 공 공 공 공 공 맞습니까?"
+            },
+            {
+                "start_at": 96063,
+                "duration": 1200,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 맞습니다."
+            },
+            {
+                "start_at": 99301,
+                "duration": 2030,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "주소 말씀해주시겠습니까?"
+            },
+            {
+                "start_at": 102513,
+                "duration": 8320,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "대구시 달서구 공 공 공 공 공 공 공 공 공 공 공."
+            },
+            {
+                "start_at": 112231,
+                "duration": 3350,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "공, 공, 공, 공, 공 맞나요?"
+            },
+            {
+                "start_at": 116191,
+                "duration": 1210,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 맞습니다."
+            },
+            {
+                "start_at": 119222,
+                "duration": 2080,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "네, 그 다음에요."
+            },
+            {
+                "start_at": 121962,
+                "duration": 6010,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "공 공 공 공 공 공 동 공 공 공 오."
+            },
+            {
+                "start_at": 130269,
+                "duration": 22178,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "확인 한번 해드립니다. 대곳이 달서고 다 공 공 공 공 공 공 공 공 공 공 공 공 공 공 공 공 공 동 공공 공 호. 맞습니까?"
+            },
+            {
+                "start_at": 153107,
+                "duration": 1270,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 맞습니다."
+            },
+            {
+                "start_at": 156336,
+                "duration": 7340,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "네, 이벤트나 상품 서비스 광고 문자로 드릴 수 있습니다. 받아보시겠습니까?"
+            },
+            {
+                "start_at": 164662,
+                "duration": 610,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "아니요."
+            },
+            {
+                "start_at": 166941,
+                "duration": 8250,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "네, 불편 드리지 않도록 주문 관련 문자만 발송해 드리겠습니다. 주문 도와드리겠습니다."
+            },
+            {
+                "start_at": 175831,
+                "duration": 840,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "잠깐만요."
+            },
+            {
+                "start_at": 178242,
+                "duration": 950,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "네, 고객님."
+            },
+            {
+                "start_at": 181660,
+                "duration": 2900,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "공 공, 공, 공 아파트 맞나요?"
+            },
+            {
+                "start_at": 185794,
+                "duration": 2060,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "네, 그렇게 되어 있습니다."
+            },
+            {
+                "start_at": 188691,
+                "duration": 1940,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 알겠습니다."
+            },
+            {
+                "start_at": 192012,
+                "duration": 14499,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "주문하시려는 상품이 현대 티비 방송 중인 캐나다산 공 공 공 공 공 랍스타 골드 사이즈 십 일만 구천 원 상품 맞습니까?"
+            },
+            {
+                "start_at": 207278,
+                "duration": 1520,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 맞습니다."
+            },
+            {
+                "start_at": 209806,
+                "duration": 7460,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "주문 수령 하나 말씀해주신 주소지로 배송합니다. 결제는 카드로 하십니까?"
+            },
+            {
+                "start_at": 218367,
+                "duration": 450,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네."
+            },
+            {
+                "start_at": 220562,
+                "duration": 3040,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "이제 카드번호 말씀해 주시겠습니까?"
+            },
+            {
+                "start_at": 224514,
+                "duration": 1560,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 잠깐만요."
+            },
+            {
+                "start_at": 227617,
+                "duration": 940,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "네, 고객님."
+            },
+            {
+                "start_at": 233544,
+                "duration": 9653,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "공공 공공 공 공 공 공 공 공 공 공 군 공 공 공."
+            },
+            {
+                "start_at": 244680,
+                "duration": 5200,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "네, 공 공 공 고객님 본인 명의의 카드입니까?"
+            },
+            {
+                "start_at": 251267,
+                "duration": 1340,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 맞습니다."
+            },
+            {
+                "start_at": 255261,
+                "duration": 7530,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "카드 소유주이신 공 공 공 고객님 생년월일 여섯 자리 말씀해 주시겠습니까?"
+            },
+            {
+                "start_at": 263918,
+                "duration": 3620,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "공 공 공 공 공 공."
+            },
+            {
+                "start_at": 268963,
+                "duration": 2290,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "유효기간 말씀해 주시겠습니까?"
+            },
+            {
+                "start_at": 273131,
+                "duration": 4400,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 유효기간이 공공년 공 공 월."
+            },
+            {
+                "start_at": 279212,
+                "duration": 4860,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "무이자 할부 육 개월 가능하네요. 할부 등록해드릴까요?"
+            },
+            {
+                "start_at": 286008,
+                "duration": 2800,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 무이자 육 개월 해주세요."
+            },
+            {
+                "start_at": 289886,
+                "duration": 9350,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "결제 금액 십 일만 구천 원이고, 무이자 육 개월에서 한 달에 만 구천 팔백 삼십 삼 원입니다."
+            },
+            {
+                "start_at": 300474,
+                "duration": 580,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네."
+            },
+            {
+                "start_at": 302329,
+                "duration": 5730,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "고객님의 안전한 결제를 위해 카드인증 에이알에스 연결해 드리는데요."
+            },
+            {
+                "start_at": 308951,
+                "duration": 6660,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "연결이 되면 안내 멘트에 따라 카드 비밀번호 앞 두 자리 입력 부탁드립니다."
+            },
+            {
+                "start_at": 316569,
+                "duration": 2110,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 알겠습니다."
+            },
+            {
+                "start_at": 321009,
+                "duration": 2630,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "카드 인증 에이알에스 연결합니다."
+            },
+            {
+                "start_at": 325697,
+                "duration": 110,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "네."
+            },
+            {
+                "start_at": 335512,
+                "duration": 10740,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "말씀해주신 삼성카드로 십 일만 구천 원 육 개월 무이자 할부 정상 결제되었습니다. 카드 정보 등록해드릴까요?"
+            },
+            {
+                "start_at": 347052,
+                "duration": 1290,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "아, 네."
+            },
+            {
+                "start_at": 350569,
+                "duration": 1400,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "바로 등록합니다."
+            },
+            {
+                "start_at": 352878,
+                "duration": 14137,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "배송은 일요일 월요일 공휴일 제외 평균 삼 일 이내에 배송되고, 교환 반품은 배송받으신 날로부터 일주일 내에 연락 주셔야 하며."
+            },
+            {
+                "start_at": 367665,
+                "duration": 8280,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "제품의 경우 제품 화자 외에 단순 변심 교환 반품 불가한 점 양해 부탁드립니다."
+            },
+            {
+                "start_at": 376783,
+                "duration": 1670,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 알겠습니다."
+            },
+            {
+                "start_at": 379839,
+                "duration": 9848,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "사은품 크래커는 부분과 합배송됩니다. 주문 접수 잘 되었습니다. 더 문의할 사항 없습니까?"
+            },
+            {
+                "start_at": 390698,
+                "duration": 1560,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "아, 네, 없습니다."
+            },
+            {
+                "start_at": 393456,
+                "duration": 8842,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "감사합니다. 고객님, 늘 최선을 다하겠습니다. 이천 십 구 년에도 좋은 상품으로 찾아뵙겠습니다."
+            },
+            {
+                "start_at": 403820,
+                "duration": 2080,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "공 공 공이었습니다."
+            },
+            {
+                "start_at": 406590,
+                "duration": 1970,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 수고하세요."
             }
-        ]
+        ],
+        "verified": false
     },
     "results_with_filter": {
         "utterances": [
             {
+                "start_at": 2335,
+                "duration": 4250,
                 "spk": 0,
-                "msg": "제가 집에 가려고 하는데 말이죠."
+                "spk_type": "NORMAL",
+                "msg": "공, 공, 공, 공, 공, 공 공입니다."
             },
             {
+                "start_at": 7295,
+                "duration": 2850,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "주문 좀 하려는데요."
+            },
+            {
+                "start_at": 11524,
+                "duration": 12460,
                 "spk": 0,
-                "msg": "뭐냐, 부채가 제 눈앞에 떨어져서 에서 아팠어요."
+                "spk_type": "NORMAL",
+                "msg": "네, 고객님 전화 주셔서 감사합니다. 저희 공 공 공 공 처음 이용이시면 고객정보 등록 후에 주문 도와드리겠습니다."
+            },
+            {
+                "start_at": 24775,
+                "duration": 440,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네."
+            },
+            {
+                "start_at": 26775,
+                "duration": 2630,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "고객님의 회원 서비스 제공을 위해."
+            },
+            {
+                "start_at": 29965,
+                "duration": 570,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "성함"
+            },
+            {
+                "start_at": 31205,
+                "duration": 7740,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "생년월일 성별 주소 연락처 등록하고 있습니다. 이에 동의하십니까?"
+            },
+            {
+                "start_at": 39773,
+                "duration": 510,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네."
+            },
+            {
+                "start_at": 42382,
+                "duration": 4410,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "감사합니다. 고객님 본인 성함 말씀해 주시겠습니까?"
+            },
+            {
+                "start_at": 47432,
+                "duration": 1400,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "공공공."
+            },
+            {
+                "start_at": 50530,
+                "duration": 4780,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "공 공 공 고객님 생년월일 말씀해주시겠습니까?"
+            },
+            {
+                "start_at": 56079,
+                "duration": 4860,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "공공 년 공 공 월 공 공 일."
+            },
+            {
+                "start_at": 62558,
+                "duration": 2920,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "휴대전화번호 말씀해 주시겠습니까?"
+            },
+            {
+                "start_at": 66535,
+                "duration": 6180,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "군동분 공동공분 공동 공분."
+            },
+            {
+                "start_at": 75216,
+                "duration": 3460,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "유선전화 등록 가능한데 등록해드릴까요?"
+            },
+            {
+                "start_at": 79616,
+                "duration": 6920,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 공 공, 공, 공, 공, 공, 공, 공, 공 공이요."
+            },
+            {
+                "start_at": 88503,
+                "duration": 6940,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "공 공, 공, 공, 공 공 공 공 공 공 맞습니까?"
+            },
+            {
+                "start_at": 96063,
+                "duration": 1200,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 맞습니다."
+            },
+            {
+                "start_at": 99301,
+                "duration": 2030,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "주소 말씀해주시겠습니까?"
+            },
+            {
+                "start_at": 102513,
+                "duration": 8320,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "대구시 달서구 공 공 공 공 공 공 공 공 공 공 공."
+            },
+            {
+                "start_at": 112231,
+                "duration": 3350,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "공, 공, 공, 공, 공 맞나요?"
+            },
+            {
+                "start_at": 116191,
+                "duration": 1210,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 맞습니다."
+            },
+            {
+                "start_at": 119222,
+                "duration": 2080,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "네, 그 다음에요."
+            },
+            {
+                "start_at": 121962,
+                "duration": 6010,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "공 공 공 공 공 공 동 공 공 공 오."
+            },
+            {
+                "start_at": 130269,
+                "duration": 22178,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "확인 한번 해드립니다. 대곳이 달서고 다 공 공 공 공 공 공 공 공 공 공 공 공 공 공 공 공 공 동 공공 공 호. 맞습니까?"
+            },
+            {
+                "start_at": 153107,
+                "duration": 1270,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 맞습니다."
+            },
+            {
+                "start_at": 156336,
+                "duration": 7340,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "네, 이벤트나 상품 서비스 광고 문자로 드릴 수 있습니다. 받아보시겠습니까?"
+            },
+            {
+                "start_at": 164662,
+                "duration": 610,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "아니요."
+            },
+            {
+                "start_at": 166941,
+                "duration": 8250,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "네, 불편 드리지 않도록 주문 관련 문자만 발송해 드리겠습니다. 주문 도와드리겠습니다."
+            },
+            {
+                "start_at": 175831,
+                "duration": 840,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "잠깐만요."
+            },
+            {
+                "start_at": 178242,
+                "duration": 950,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "네, 고객님."
+            },
+            {
+                "start_at": 181660,
+                "duration": 2900,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "공 공, 공, 공 아파트 맞나요?"
+            },
+            {
+                "start_at": 185794,
+                "duration": 2060,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "네, 그렇게 되어 있습니다."
+            },
+            {
+                "start_at": 188691,
+                "duration": 1940,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 알겠습니다."
+            },
+            {
+                "start_at": 192012,
+                "duration": 14499,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "주문하시려는 상품이 현대 티비 방송 중인 캐나다산 공 공 공 공 공 랍스타 골드 사이즈 십 일만 구천 원 상품 맞습니까?"
+            },
+            {
+                "start_at": 207278,
+                "duration": 1520,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 맞습니다."
+            },
+            {
+                "start_at": 209806,
+                "duration": 7460,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "주문 수령 하나 말씀해주신 주소지로 배송합니다. 결제는 카드로 하십니까?"
+            },
+            {
+                "start_at": 218367,
+                "duration": 450,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네."
+            },
+            {
+                "start_at": 220562,
+                "duration": 3040,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "이제 카드번호 말씀해 주시겠습니까?"
+            },
+            {
+                "start_at": 224514,
+                "duration": 1560,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 잠깐만요."
+            },
+            {
+                "start_at": 227617,
+                "duration": 940,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "네, 고객님."
+            },
+            {
+                "start_at": 233544,
+                "duration": 9653,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "공공 공 공 공 공 공 공 공 공 군 공 공 공."
+            },
+            {
+                "start_at": 244680,
+                "duration": 5200,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "네, 공 공 공 고객님 본인 명의의 카드입니까?"
+            },
+            {
+                "start_at": 251267,
+                "duration": 1340,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 맞습니다."
+            },
+            {
+                "start_at": 255261,
+                "duration": 7530,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "카드 소유주이신 공 공 공 고객님 생년월일 여섯 자리 말씀해 주시겠습니까?"
+            },
+            {
+                "start_at": 263918,
+                "duration": 3620,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "공 공 공 공 공 공."
+            },
+            {
+                "start_at": 268963,
+                "duration": 2290,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "유효기간 말씀해 주시겠습니까?"
+            },
+            {
+                "start_at": 273131,
+                "duration": 4400,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 유효기간이 공공년 공 공 월."
+            },
+            {
+                "start_at": 279212,
+                "duration": 4860,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "무이자 할부 육 개월 가능하네요. 할부 등록해드릴까요?"
+            },
+            {
+                "start_at": 286008,
+                "duration": 2800,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 무이자 육 개월 해주세요."
+            },
+            {
+                "start_at": 289886,
+                "duration": 9350,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "결제 금액 십 일만 구천 원이고, 무이자 육 개월에서 한 달에 만 구천 팔백 삼십 삼 원입니다."
+            },
+            {
+                "start_at": 300474,
+                "duration": 580,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네."
+            },
+            {
+                "start_at": 302329,
+                "duration": 5730,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "고객님의 안전한 결제를 위해 카드인증 에이알에스 연결해 드리는데요."
+            },
+            {
+                "start_at": 308951,
+                "duration": 6660,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "연결이 되면 안내 멘트에 따라 카드 비밀번호 앞 두 자리 입력 부탁드립니다."
+            },
+            {
+                "start_at": 316569,
+                "duration": 2110,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 알겠습니다."
+            },
+            {
+                "start_at": 321009,
+                "duration": 2630,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "카드 인증 에이알에스 연결합니다."
+            },
+            {
+                "start_at": 325697,
+                "duration": 110,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "네."
+            },
+            {
+                "start_at": 335512,
+                "duration": 10740,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "말씀해주신 삼성카드로 십 일만 구천 원 육 개월 무이자 할부 정상 결제되었습니다. 카드 정보 등록해드릴까요?"
+            },
+            {
+                "start_at": 347052,
+                "duration": 1290,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네."
+            },
+            {
+                "start_at": 350569,
+                "duration": 1400,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "바로 등록합니다."
+            },
+            {
+                "start_at": 352878,
+                "duration": 14137,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "배송은 일요일 월요일 공휴일 제외 평균 삼 일 이내에 배송되고, 교환 반품은 배송받으신 날로부터 일주일 내에 연락 주셔야 하며."
+            },
+            {
+                "start_at": 367665,
+                "duration": 8280,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "제품의 경우 제품 화자 외에 단순 변심 교환 반품 불가한 점 양해 부탁드립니다."
+            },
+            {
+                "start_at": 376783,
+                "duration": 1670,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 알겠습니다."
+            },
+            {
+                "start_at": 379839,
+                "duration": 9848,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "사은품 크래커는 부분과 합배송됩니다. 주문 접수 잘 되었습니다. 더 문의할 사항 없습니까?"
+            },
+            {
+                "start_at": 390698,
+                "duration": 1560,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 없습니다."
+            },
+            {
+                "start_at": 393456,
+                "duration": 8842,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "감사합니다. 고객님, 늘 최선을 다하겠습니다. 이천 십 구 년에도 좋은 상품으로 찾아뵙겠습니다."
+            },
+            {
+                "start_at": 403820,
+                "duration": 2080,
+                "spk": 0,
+                "spk_type": "NORMAL",
+                "msg": "공 공 공이었습니다."
+            },
+            {
+                "start_at": 406590,
+                "duration": 1970,
+                "spk": 1,
+                "spk_type": "NORMAL",
+                "msg": "네, 수고하세요."
             }
-        ]
+        ],
+        "verified": false
     }
 }

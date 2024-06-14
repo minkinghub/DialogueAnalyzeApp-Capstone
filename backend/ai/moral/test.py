@@ -1,5 +1,6 @@
 import torch
 import pandas as pd
+import matplotlib.pyplot as plt
 from transformers import BertTokenizer, BertForSequenceClassification
 from torch.utils.data import DataLoader, Dataset
 from sklearn.metrics import classification_report
@@ -47,7 +48,7 @@ class HateSpeechDataset(Dataset):
 # 데이터 로드
 df = pd.read_csv('data/test.csv')
 
-df = df.sample(n=1000, random_state=42)
+#df = df.sample(n=1000, random_state=42)
 X = df['text'].tolist()
 y = df['types'].tolist()
 
@@ -59,7 +60,9 @@ test_loader = DataLoader(test_dataset, batch_size=16, shuffle=True)
 model.eval()
 correct = 0
 total = 0
-offset = 0  # 추가된 코드: 각 배치의 시작 인덱스를 추적하기 위함
+data_processed = []  # 처리된 데이터의 총량을 저장할 리스트
+accuracies = []  # 각 스텝에서의 정확도를 저장할 리스트
+
 for batch in test_loader:
     batch = {k: v.to(device) for k, v in batch.items()}
     with torch.no_grad():
@@ -68,23 +71,25 @@ for batch in test_loader:
     batch_predictions = torch.argmax(logits, dim=1).tolist()
     batch_true_labels = batch['labels'].tolist()
     
-    # 0~5까지의 레이블을 0과 1로 축소
-    #batch_predictions = [0 if pred == 0 else 1 for pred in batch_predictions]
-    #batch_true_labels = [0 if true_label == 0 else 1 for true_label in batch_true_labels]
-    
-    # 수정된 코드: 각 배치에 대해 올바른 텍스트, 예측, 실제 레이블을 출력하기 위해 인덱스를 조정
     for i in range(len(batch_predictions)):
-        text = X[offset + i]
         pred = batch_predictions[i]
         true_label = batch_true_labels[i]
-        print(f"Text: {text}")
-        print(f"Predicted Label: {pred}")
-        print(f"True Label: {true_label}")
-        print()
         if pred == true_label:
             correct += 1
     total += len(batch_predictions)
-    offset += len(batch_predictions)  # 각 배치 후 인덱스 업데이트
+    
+    # 각 배치 후 정확도 계산하여 리스트에 추가
+    batch_accuracy = correct / total
+    accuracies.append(batch_accuracy)
+    data_processed.append(total)  # 처리된 데이터의 총량을 리스트에 추가
 
-accuracy = correct / total
-print(f"Accuracy: {accuracy:.2f}")
+# 정확도 그래프 그리기
+plt.figure(figsize=(10, 6))
+plt.plot(data_processed, accuracies, label='Accuracy per data processed')  # x축을 처리된 데이터의 총량으로 변경
+plt.xlabel('Number of data processed')
+plt.ylabel('Accuracy')
+plt.title('Accuracy per data processed during evaluation')
+plt.legend()
+plt.grid(True)
+plt.savefig('accuracy_graph.png')  # 그래프를 파일로 저장
+plt.show()

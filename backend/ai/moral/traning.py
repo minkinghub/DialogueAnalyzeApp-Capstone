@@ -6,6 +6,7 @@ from transformers import get_linear_schedule_with_warmup
 import torch
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
+import matplotlib.pyplot as plt
 
 # 데이터 로드
 df = pd.read_csv('data/output2.csv')
@@ -96,15 +97,22 @@ model.save_pretrained('./saved_model')
 # 토크나이저 저장
 tokenizer.save_pretrained('./saved_model')
 
-# 평가
-model.eval()
-predictions, true_labels = [], []
-for batch in test_loader:
-    batch = {k: v.to(device) for k, v in batch.items()}
-    with torch.no_grad():
-        outputs = model(**batch)
-    logits = outputs.logits
-    predictions.extend(torch.argmax(logits, dim=1).tolist())
-    true_labels.extend(batch['labels'].tolist())
-
-print(classification_report(true_labels, predictions))
+results = model.fit(X, Y, validation_split=0.33, epochs=150, batch_size=10, verbose=0)
+# list all data in history
+print(results.history.keys())
+# summarize history for accuracy
+plt.plot(results.history['acc'])
+plt.plot(results.history['val_acc'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+# summarize history for loss
+plt.plot(results.history['loss'])
+plt.plot(results.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
