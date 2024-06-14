@@ -137,27 +137,54 @@ const etiquetteStyles = isDarkMode => {
       padding: 5,
     },
     commentLabelText: {
-      fontSize: 24,
+      fontSize: 15,
       color: theme.textColor,
       textAlign: 'center',
       fontWeight: '700',
     },
-    commentExCount: {
-      fontSize: 16,
-      color: theme.warningColor,
-    },
     commentExView: {
       width: '85%',
       padding: 5,
-      // borderRadius: 10,
-      // borderWidth: 1,
+    },
+    commentExCount: {
+      fontSize: 14,
+      color: theme.warningColor,
+    },
+    exTopView: {
+      borderTopWidth: 0.5,
+      borderLeftWidth: 0.5,
+      borderRightWidth: 2,
+      borderBottomWidth: 2,
+      margin: 3,
+      borderRadius: 10,
+      padding: 5,
+      justifyContent: 'center',
+      borderColor: theme.borderColor,
+    },
+    exSubView: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+
+      width: '100%',
+    },
+    exSubTitleText: {
+      borderBottomWidth: 1,
+      fontSize: 13,
+      paddingVertical: 5,
+      color: theme.textColor,
+      borderColor: theme.borderColor,
+    },
+    exSubCountText: {
+      margin: 3,
+      fontSize: 11,
+      color: theme.textColor,
     },
     commentExTextView: {
       flexDirection: 'row',
       margin: 3,
     },
     commentExText: {
-      fontSize: 14,
+      fontSize: 11,
       color: theme.textColor,
       width: '68%',
     },
@@ -178,7 +205,7 @@ const etiquetteStyles = isDarkMode => {
       alignItems: 'center',
     },
     anyThingText: {
-      fontSize: 20,
+      fontSize: 16,
       color: theme.textColor,
       textAlign: 'center',
       fontWeight: '700',

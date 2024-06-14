@@ -18,28 +18,7 @@ const Etiquette = ({route}) => {
 
   const {isDarkMode} = useTheme();
   const styles = etiquetteStyles(isDarkMode);
-  const isStandardData = [
-    {
-      label: 0,
-      count: 4,
-    },
-    {
-      label: 1,
-      count: 3,
-    },
-    {
-      label: 2,
-      count: 1,
-    },
-    {
-      label: 3,
-      count: 0,
-    },
-    {
-      label: 4,
-      count: 11,
-    },
-  ];
+
   useEffect(() => {
     const fetchData = async () => {
       const data = await loadDatail(historyKey);
@@ -187,54 +166,40 @@ const Etiquette = ({route}) => {
                 onLayout={event => handleLayout(labelIndex, event)}>
                 <View style={styles.commentLabelTextView}>
                   <Text style={styles.commentLabelText}>
-                    {labelKr(infoItem.label)}
+                    {labelKr(infoItem.label)} 사용
                   </Text>
                 </View>
                 <View style={styles.commentExView}>
                   {infoItem.exampleText ? (
-                    <View
-                      style={{
-                        borderWidth: 1,
-                      }}>
+                    <View style={styles.exTopView}>
                       <Text style={styles.commentExCount}>
                         발견된 표현 갯수: {infoItem.exampleText.length}
                       </Text>
-                      {
-                        // isStandardData
-                        infoItem.label === 'moral' ||
-                        infoItem.label === 'positive' ? (
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              margin: 3,
-                              paddingVertical: 3,
-                              justifyContent: 'space-around',
-                            }}>
-                            {isStandardData.map(
-                              item =>
-                                item.count > 0 && (
-                                  <View
-                                    style={{
-                                      // backgroundColor: 'gray',
-                                      alignItems: 'center',
-                                    }}>
-                                    <Text
-                                      style={{
-                                        borderBottomWidth: 1,
-                                        fontSize: 16,
-                                        paddingVertical: 5,
-                                      }}>
-                                      {commentType(infoItem.label, item.label)}
-                                    </Text>
-                                    <Text style={{margin: 3, fontSize: 14}}>
-                                      {item.count}
-                                    </Text>
-                                  </View>
-                                ),
-                            )}
-                          </View>
-                        ) : null
-                      }
+                      {infoItem.label === 'moral' ||
+                      infoItem.label === 'positive' ? (
+                        <View style={styles.exSubView}>
+                          {infoItem.standardCount.map((item, index) => {
+                            if (index > 0) {
+                              return (
+                                <View
+                                  style={{
+                                    // backgroundColor: 'gray',
+                                    alignItems: 'center',
+                                    margin: 3,
+                                  }}
+                                  key={infoItem.label + index.toString()}>
+                                  <Text style={styles.exSubTitleText}>
+                                    {commentType(infoItem.label, index)}
+                                  </Text>
+                                  <Text style={styles.exSubCountText}>
+                                    {item}
+                                  </Text>
+                                </View>
+                              );
+                            }
+                          })}
+                        </View>
+                      ) : null}
                     </View>
                   ) : null}
                   {infoItem.exampleText ? (
@@ -247,7 +212,7 @@ const Etiquette = ({route}) => {
                               <Text
                                 style={[
                                   styles.commentTitleText,
-                                  {fontSize: 16},
+                                  {fontSize: 14},
                                 ]}>
                                 대화내용
                               </Text>
@@ -265,7 +230,7 @@ const Etiquette = ({route}) => {
                                   <Text
                                     style={[
                                       styles.commentTitleText,
-                                      {fontSize: 12},
+                                      {fontSize: 11},
                                     ]}>
                                     감지된 표현
                                   </Text>
@@ -284,7 +249,7 @@ const Etiquette = ({route}) => {
                     //만점을 맞았을 경우 없음을 표시
                     <View style={styles.anyThingTextView}>
                       <Text style={styles.anyThingText}>
-                        감지된 표현이 없습니다.
+                        문제가 될만한 표현이 없습니다.
                       </Text>
                     </View>
                   )}
