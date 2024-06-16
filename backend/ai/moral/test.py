@@ -3,16 +3,21 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from transformers import BertTokenizer, BertForSequenceClassification
 from torch.utils.data import DataLoader, Dataset
-from sklearn.metrics import classification_report
+from tqdm import tqdm
+from sklearn.metrics import classification_report, accuracy_score, precision_score, recall_score, f1_score
 
 # 모델 로드
-model = BertForSequenceClassification.from_pretrained('./saved_model')
-tokenizer = BertTokenizer.from_pretrained('./saved_model')
+moral_TF_model = BertForSequenceClassification.from_pretrained('./saved_TF_model', num_labels=2)
+moral_model = BertForSequenceClassification.from_pretrained('./saved_model', num_labels=6)
 
-# 모델 학습
+moral_TF_tokenizer = BertTokenizer.from_pretrained('./saved_TF_model')
+moral_tokenizer = BertTokenizer.from_pretrained('./saved_model')
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model.to(device)
+moral_TF_model.to(device)
+moral_model.to(device)
+
 
 # 데이터셋 정의
 class HateSpeechDataset(Dataset):
@@ -46,50 +51,103 @@ class HateSpeechDataset(Dataset):
     
 
 # 데이터 로드
-df = pd.read_csv('data/test.csv')
+df = pd.read_csv('data/sum.csv')
+# 데이터 랜덤으로 1000개 선택
+df = df.sample(n=1000, random_state=42)
 
-#df = df.sample(n=1000, random_state=42)
 X = df['text'].tolist()
 y = df['types'].tolist()
+y2 = df['types2'].tolist()
 
-test_dataset = HateSpeechDataset(X, y, tokenizer)
-
+test_dataset = HateSpeechDataset(X, y, moral_tokenizer)
 test_loader = DataLoader(test_dataset, batch_size=16, shuffle=True)
 
-# 평가
-model.eval()
-correct = 0
-total = 0
-data_processed = []  # 처리된 데이터의 총량을 저장할 리스트
-accuracies = []  # 각 스텝에서의 정확도를 저장할 리스트
+# 평가 (moral_model)
+moral_model.eval()
+moral_correct = 0
+moral_total = 0
+moral_data_processed = []
+moral_accuracies = []
+moral_metrics = {
+    'accuracy': [],
+    'precision': [],
+    'recall': [],
+    'f1': []
+}
 
-for batch in test_loader:
+
+for batch in tqdm(test_loader, desc='Evaluating'):
     batch = {k: v.to(device) for k, v in batch.items()}
     with torch.no_grad():
-        outputs = model(**batch)
+        outputs = moral_model(**batch)
     logits = outputs.logits
     batch_predictions = torch.argmax(logits, dim=1).tolist()
     batch_true_labels = batch['labels'].tolist()
     
     for i in range(len(batch_predictions)):
         pred = batch_predictions[i]
-        true_label = batch_true_labels[i]
+        true_label = batch['labels'][i].item()
         if pred == true_label:
-            correct += 1
-    total += len(batch_predictions)
+            moral_correct += 1
+    moral_total += len(batch_predictions)
     
-    # 각 배치 후 정확도 계산하여 리스트에 추가
-    batch_accuracy = correct / total
-    accuracies.append(batch_accuracy)
-    data_processed.append(total)  # 처리된 데이터의 총량을 리스트에 추가
+    batch_accuracy = accuracy_score(batch_true_labels, batch_predictions)
+    batch_precision = precision_score(batch_true_labels, batch_predictions, average='weighted')
+    batch_recall = recall_score(batch_true_labels, batch_predictions, average='weighted')
+    batch_f1 = f1_score(batch_true_labels, batch_predictions, average='weighted')
+    
+    moral_metrics['accuracy'].append(batch_accuracy)
+    moral_metrics['precision'].append(batch_precision)
+    moral_metrics['recall'].append(batch_recall)
+    moral_metrics['f1'].append(batch_f1)
 
-# 정확도 그래프 그리기
+# 평가 (moral_TF_model)
+moral_TF_model.eval()
+moral_TF_correct = 0
+moral_TF_total = 0
+moral_TF_data_processed = []
+moral_TF_accuracies = []
+moral_TF_metrics = {
+    'accuracy': [],
+    'precision': [],
+    'recall': [],
+    'f1': []
+}
+
+for batch in tqdm(test_loader, desc='Evaluating'):
+    batch = {k: v.to(device) for k, v in batch.items()}
+    with torch.no_grad():
+        outputs = moral_TF_model(**batch)
+    logits = outputs.logits
+    batch_predictions = torch.argmax(logits, dim=1).tolist()
+    batch_true_labels = batch['labels'].tolist()
+    
+    for i in range(len(batch_predictions)):
+        pred = batch_predictions[i]
+        true_label = batch['labels'][i].item()
+        if pred == true_label:
+            moral_TF_correct += 1
+    moral_TF_total += len(batch_predictions)
+    
+    batch_accuracy = accuracy_score(batch_true_labels, batch_predictions)
+    batch_precision = precision_score(batch_true_labels, batch_predictions, average='weighted')
+    batch_recall = recall_score(batch_true_labels, batch_predictions, average='weighted')
+    batch_f1 = f1_score(batch_true_labels, batch_predictions, average='weighted')
+    
+    moral_TF_metrics['accuracy'].append(batch_accuracy)
+    moral_TF_metrics['precision'].append(batch_precision)
+    moral_TF_metrics['recall'].append(batch_recall)
+    moral_TF_metrics['f1'].append(batch_f1)
+
+# 그래프 그리기
 plt.figure(figsize=(10, 6))
-plt.plot(data_processed, accuracies, label='Accuracy per data processed')  # x축을 처리된 데이터의 총량으로 변경
+for metric in ['accuracy', 'precision', 'recall', 'f1']:
+    plt.plot(moral_data_processed, moral_metrics[metric], label=f'moral_model {metric}')
+    plt.plot(moral_TF_data_processed, moral_TF_metrics[metric], label=f'moral_TF_model {metric}')
 plt.xlabel('Number of data processed')
-plt.ylabel('Accuracy')
-plt.title('Accuracy per data processed during evaluation')
+plt.ylabel('Metric value')
+plt.title('Evaluation metrics per data processed during evaluation')
 plt.legend()
 plt.grid(True)
-plt.savefig('accuracy_graph.png')  # 그래프를 파일로 저장
+plt.savefig('metrics_graph.png')
 plt.show()
