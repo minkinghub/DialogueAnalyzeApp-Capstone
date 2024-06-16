@@ -378,7 +378,7 @@ const calculateScore = (fullChat, dataType) => { // 점수 계산 함수
             }
             
             let exampleText = null
-            if(detailScore < 100 && notTextCount[count].length >= 1) { // 2개 미만이면 무한 반복임
+            if(notTextCount[count].length >= 1) { // 2개 미만이면 무한 반복임
                 exampleText = []
                 for(let i of notTextCount[count]) {
                     exampleText.push({
