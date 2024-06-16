@@ -1,10 +1,10 @@
 import {useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity, ScrollView} from 'react-native';
-import {loadList} from '../analyze/loadData';
-import ActivityIndicatorLoading from '../analyze/ActivityIndicatorLoading';
+import {loadList} from '../utilities/API/loadData';
+import {ActivityIndicatorLoading} from '../utilities/analyze/utilities';
 import {useNavigation} from '@react-navigation/native';
-import {useTheme} from '../ThemeContext';
-import historyStyle from './stylesFile/history.style';
+import {useTheme} from '../utilities/Theme/ThemeContext';
+import historyStyle from '../stylesFile/history.style';
 
 const History = () => {
   const navigation = useNavigation(); // 네비게이션 객체
