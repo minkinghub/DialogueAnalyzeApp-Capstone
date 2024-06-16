@@ -1,12 +1,10 @@
 import React from 'react';
-import {Text, View, SafeAreaView, TouchableOpacity} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import ThemeSwitch from './theme/themeSwitch';
-import {useTheme} from '../ThemeContext';
-import myPageStyle from './stylesFile/MyPage.style';
+import {Text, View} from 'react-native';
+import ThemeSwitch from '../utilities/Theme/themeSwitch';
+import {useTheme} from '../utilities/Theme/ThemeContext';
+import myPageStyle from '../stylesFile/MyPage.style';
 import History from './history';
 const MyPage = () => {
-  const navigation = useNavigation();
   const {isDarkMode} = useTheme();
   const styles = myPageStyle(isDarkMode);
 
