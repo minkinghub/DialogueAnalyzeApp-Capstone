@@ -1,10 +1,10 @@
 import {useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity, ScrollView} from 'react-native';
-import {loadList} from '../analyze/loadData';
-import ActivityIndicatorLoading from '../analyze/ActivityIndicatorLoading';
+import {loadList} from '../utilities/API/loadData';
+import {ActivityIndicatorLoading} from '../utilities/analyze/utilities';
 import {useNavigation} from '@react-navigation/native';
-import {useTheme} from '../ThemeContext';
-import historyStyle from './stylesFile/history.style';
+import {useTheme} from '../utilities/Theme/ThemeContext';
+import historyStyle from '../stylesFile/history.style';
 
 const History = () => {
   const navigation = useNavigation(); // 네비게이션 객체
@@ -27,7 +27,7 @@ const History = () => {
 
   const handlePress = item => {
     const analyzeType = item.analysisType ? 'Etiquette' : 'Category';
-    navigation.push(analyzeType, {
+    navigation.push('Etiquette', {
       historyKey: item._id,
     });
   };
@@ -69,15 +69,13 @@ const History = () => {
               onPress={() => handlePress(item)}>
               <View style={styles.itemTitle}>
                 <Text style={styles.itemTitleName}>{item.chatName}</Text>
-                <View style={styles.itemTitleTypeView}>
-                  <Text style={styles.itemTitleType}>
-                    {item.analysisType ? '예절분석' : '타입분석'}
+
+                <View style={styles.itemTime}>
+                  <Text style={styles.itemTimeText}>
+                    {formatDate(item.uploadTime)}
                   </Text>
+                  {/* {console.log('item:', item.uploadTime)} */}
                 </View>
-              </View>
-              <View style={styles.itemTime}>
-                <Text>{formatDate(item.uploadTime)}</Text>
-                {/* {console.log('item:', item.uploadTime)} */}
               </View>
             </TouchableOpacity>
           ))}

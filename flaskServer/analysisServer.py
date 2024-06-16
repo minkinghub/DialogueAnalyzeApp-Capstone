@@ -31,6 +31,7 @@ def home():
 
 @app.route('/analysis', methods=['POST'])
 def analysis():
+    print("분석 요청 접수")
     if request.is_json:
         data = request.get_json()  # JSON 데이터를 파이썬 딕셔너리로 변환
         request_array = data.get('requestArray')  # 'requestArray' 키로 배열 데이터 추출
@@ -38,8 +39,7 @@ def analysis():
         if request_array is None:
             return jsonify({'error': 'No requestArray key found'}), 400
 
-        results = []        
-        print("분석 시작")
+        results = []
         for speaker in request_array:
             textArray = speaker
             result = analyzeAllModel(corrected_texts=textArray, device=device, grammar_model=grammar_model, emotion_TF_model=emotion_TF_model, emotion_model=emotion_model, moral_TF_model=moral_TF_model, moral_model=moral_model, politely_model=politely_model,

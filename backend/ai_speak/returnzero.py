@@ -41,7 +41,7 @@ def get_transcription_results(audio_file):
     # 인증 토큰 받기
     resp = requests.post(
         'https://openapi.vito.ai/v1/authenticate',
-        data={'client_id': 'pY5fW2sMvQ9qwj5jCHSK',
+        data= {'client_id': 'pY5fW2sMvQ9qwj5jCHSK',
               'client_secret': '0N05lmQf_kA9oSteVr4X8G6qcv3QaNju7V8x6-zk'}
     )
     resp.raise_for_status()

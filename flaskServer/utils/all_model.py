@@ -3,7 +3,7 @@ from torch.utils.data import Dataset, DataLoader
 from .cleaner import clean
 
 def analyzeAllModel(corrected_texts, device, grammar_model, emotion_TF_model, emotion_model, moral_TF_model, moral_model, politely_model, grammar_tokenizer, emotion_TF_tokenizer, emotion_tokenizer, moral_TF_tokenizer, moral_tokenizer, politely_tokenizer):
-
+    print("예측 시작")
     # 맞춤법 검증 모델
     corrected_texts_results = []
     original_texts = []
@@ -172,7 +172,7 @@ def analyzeAllModel(corrected_texts, device, grammar_model, emotion_TF_model, em
         emotion_result_TF = sentence_predict_TF(corrected_texts_results[i])
 
         # 감정 분석이 부정일 경우 세부 분석 시행
-        if emotion_result_TF == 0:
+        if emotion_result_TF != 2:
             emotion_result_TF = sentence_predict(corrected_texts_results[i])
         else:
             emotion_result_TF = 100
@@ -192,10 +192,10 @@ def analyzeAllModel(corrected_texts, device, grammar_model, emotion_TF_model, em
         model_result = {
             "Text": corrected_texts[i],
             "grammar_text": grammar,
-            "grammar": grammar_result,
-            "emotion": int(emotion_result_TF),
-            "moral": int(moral_result_TF),
-            "politely": politely_label
+            "isGrammar": grammar_result,
+            "isPositive": int(emotion_result_TF),
+            "isMoral": int(moral_result_TF),
+            "isPolite": politely_label
         }
         print(model_result)
         model_results.append(model_result)

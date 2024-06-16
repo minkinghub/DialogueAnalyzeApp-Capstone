@@ -9,12 +9,13 @@ const exampleTextSchema = new mongoose.Schema({
 const detailInfoSchema = new mongoose.Schema({
     label: String,
     detailScore: Number,
+    standardCount: Array,
     exampleText: [exampleTextSchema]
 }, { _id: false });
 
 const detailListSchema = new mongoose.Schema({
     speaker: String,
-    conversationType: Number,
+    conversationType: String,
     detailInfo: [detailInfoSchema],
 }, { _id: false });
 
