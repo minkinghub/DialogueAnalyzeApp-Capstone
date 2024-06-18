@@ -46,7 +46,7 @@ const Etiquette = ({route}) => {
     // 해당 standard의 comment를 이동하기 위한 함수
     const scrollToItem = index => {
       // scrollTo 위치 계산
-      let nowHeight = 0;
+      let nowHeight = 5;
       for (let i = 0; i < index; i++) {
         nowHeight += CommentHeight[i] || 0;
       }
@@ -159,7 +159,7 @@ const Etiquette = ({route}) => {
           key="3300"
           ref={scrollViewRef}
           onScroll={handleScroll}
-          scrollEventThrottle={16}>
+          scrollEventThrottle={0}>
           {detailList[selpeaker].detailInfo.map((infoItem, labelIndex) => {
             const infoKey = infoItem.label + labelIndex.toString();
             const labelType =
@@ -188,7 +188,9 @@ const Etiquette = ({route}) => {
                           <Text style={styles.commentExCount}>
                             발견된 표현 갯수: {infoItem.exampleText.length}
                           </Text>
-                          <Text>{isVisible ? 'A' : 'V'}</Text>
+                          <Text style={{fontSize: 20}}>
+                            {isVisible ? '▽' : '△'}
+                          </Text>
                         </TouchableOpacity>
                       ) : (
                         <View
